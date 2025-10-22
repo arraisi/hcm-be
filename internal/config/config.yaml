@@ -1,0 +1,16 @@
+app:
+  name: hcm-be
+  env: development # development|staging|production
+server:
+  host: 0.0.0.0
+  port: 8080
+  readTimeout: 10s
+  writeTimeout: 15s
+  idleTimeout: 60s
+  requestTimeout: 15s
+observability:
+  metricsEnabled: true
+  pprofEnabled: true
+database:
+  driver: sqlserver # memory|postgres|sqlserver
+  dsn: 'sqlserver://sa:YourStrong@Passw0rd@localhost:1433?database=hcmdb&encrypt=disable&trustServerCertificate=true'

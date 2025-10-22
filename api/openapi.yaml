@@ -1,0 +1,18 @@
+openapi: 3.1.0
+info:
+  title: hcm-be API
+  version: 0.1.0
+paths:
+  /api/v1/users:
+    get:
+      summary: List users
+      responses: { "200": { description: OK } }
+    post:
+      summary: Create user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses: { "201": { description: Created } }
