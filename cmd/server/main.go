@@ -23,6 +23,14 @@ func main() {
 		RequestTimeout: cfg.Server.RequestTimeout,
 		EnableMetrics:  cfg.Observability.MetricsEnabled,
 		EnablePprof:    cfg.Observability.PprofEnabled,
+		Database: app.DatabaseConfig{
+			Driver:                cfg.Database.Driver,
+			DSN:                   cfg.Database.DSN,
+			MaxOpenConnections:    cfg.Database.MaxOpenConnections,
+			MaxIdleConnections:    cfg.Database.MaxIdleConnections,
+			MaxConnectionLifetime: cfg.Database.MaxConnectionLifetime,
+			MaxConnectionIdleTime: cfg.Database.MaxConnectionIdleTime,
+		},
 	}); err != nil {
 		log.Fatalf("app error: %v", err)
 	}

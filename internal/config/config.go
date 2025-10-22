@@ -23,8 +23,12 @@ type Observability struct {
 	PprofEnabled   bool
 }
 type Database struct {
-	Driver string // Supported: memory, postgres, sqlserver
-	DSN    string // Data Source Name - connection string for the database
+	Driver                string // Supported: memory, postgres, sqlserver
+	DSN                   string // Data Source Name - connection string for the database
+	MaxOpenConnections    int
+	MaxIdleConnections    int
+	MaxConnectionLifetime time.Duration
+	MaxConnectionIdleTime time.Duration
 }
 
 type Config struct {
@@ -38,6 +42,7 @@ func Load() (*Config, error) {
 	v := viper.New()
 	v.SetConfigType("yaml")
 	v.SetConfigName("config")
+	v.AddConfigPath("./internal/config")
 	v.AddConfigPath("./configs")
 	v.SetEnvPrefix("APP")
 	v.AutomaticEnv()
@@ -55,6 +60,10 @@ func Load() (*Config, error) {
 	v.SetDefault("observability.pprofEnabled", true)
 	v.SetDefault("database.driver", "memory")
 	v.SetDefault("database.dsn", "")
+	v.SetDefault("database.maxOpenConnections", 25)
+	v.SetDefault("database.maxIdleConnections", 25)
+	v.SetDefault("database.maxConnectionLifetime", "5m")
+	v.SetDefault("database.maxConnectionIdleTime", "5m")
 
 	_ = v.ReadInConfig() // ignore if missing
 

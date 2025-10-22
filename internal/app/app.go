@@ -10,9 +10,13 @@ import (
 
 	apphttp "hcm-be/internal/http"
 	"hcm-be/internal/http/handlers"
-	"hcm-be/internal/repository"
-	"hcm-be/internal/repository/memory"
 	"hcm-be/internal/service"
+
+	"database/sql"
+
+	sqlsrvrepo "hcm-be/internal/repository/sqlserver"
+
+	_ "github.com/microsoft/go-mssqldb" // register driver
 )
 
 type Config struct {
@@ -25,11 +29,33 @@ type Config struct {
 	RequestTimeout time.Duration
 	EnableMetrics  bool
 	EnablePprof    bool
+	Database       DatabaseConfig
+}
+
+type DatabaseConfig struct {
+	Driver                string
+	DSN                   string
+	MaxOpenConnections    int
+	MaxIdleConnections    int
+	MaxConnectionLifetime time.Duration
+	MaxConnectionIdleTime time.Duration
 }
 
 func Run(cfg Config) error {
 	// wire dependencies
-	var userRepo repository.UserRepository = memory.NewUserRepo()
+	db, err := sql.Open(cfg.Database.Driver, cfg.Database.DSN)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	// configure connection pool from config
+	db.SetMaxOpenConns(cfg.Database.MaxOpenConnections)
+	db.SetMaxIdleConns(cfg.Database.MaxIdleConnections)
+	db.SetConnMaxLifetime(cfg.Database.MaxConnectionLifetime)
+	db.SetConnMaxIdleTime(cfg.Database.MaxConnectionIdleTime)
+
+	userRepo := sqlsrvrepo.NewUserRepo(db)
 	userSvc := service.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userSvc)
 

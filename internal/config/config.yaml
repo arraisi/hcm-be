@@ -14,3 +14,7 @@ observability:
 database:
   driver: sqlserver # memory|postgres|sqlserver
   dsn: 'sqlserver://sa:YourStrong@Passw0rd@localhost:1433?database=hcmdb&encrypt=disable&trustServerCertificate=true'
+  maxOpenConnections: 25
+  maxIdleConnections: 25
+  maxConnectionLifetime: 5m
+  maxConnectionIdleTime: 5m
