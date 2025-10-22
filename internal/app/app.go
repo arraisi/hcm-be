@@ -10,11 +10,10 @@ import (
 
 	apphttp "hcm-be/internal/http"
 	"hcm-be/internal/http/handlers"
+	userRepository "hcm-be/internal/repository/user"
 	"hcm-be/internal/service"
 
 	"database/sql"
-
-	sqlsrvrepo "hcm-be/internal/repository/sqlserver"
 
 	_ "github.com/microsoft/go-mssqldb" // register driver
 )
@@ -55,7 +54,10 @@ func Run(cfg Config) error {
 	db.SetConnMaxLifetime(cfg.Database.MaxConnectionLifetime)
 	db.SetConnMaxIdleTime(cfg.Database.MaxConnectionIdleTime)
 
-	userRepo := sqlsrvrepo.NewUserRepo(db)
+	// create repository factory and main repository
+	userRepo := userRepository.NewUserRepository(db)
+
+	// create services and handlers
 	userSvc := service.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userSvc)
 

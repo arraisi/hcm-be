@@ -6,6 +6,7 @@ import (
 
 	"hcm-be/internal/http/handlers"
 	"hcm-be/internal/http/middleware"
+
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 )
@@ -42,8 +43,13 @@ func NewRouter(userHandler *handlers.UserHandler, opts RouterOptions) http.Handl
 
 	// API v1
 	r.Route("/api/v1", func(api chi.Router) {
-		api.Get("/users", userHandler.List)
-		api.Post("/users", userHandler.Create)
+		api.Route("/users", func(users chi.Router) {
+			users.Get("/", userHandler.List)
+			users.Post("/", userHandler.Create)
+			users.Get("/{id}", userHandler.Get)
+			users.Put("/{id}", userHandler.Update)
+			users.Delete("/{id}", userHandler.Delete)
+		})
 	})
 
 	// root
