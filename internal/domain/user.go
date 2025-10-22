@@ -17,3 +17,7 @@ func (u *User) TableName() string {
 func (u *User) Columns() []string {
 	return []string{"id", "email", "name", "created_at", "updated_at"}
 }
+
+func (u *User) SelectColumns() []string {
+	return []string{"CAST(id AS NVARCHAR(36)) as id", "email", "name", "created_at", "updated_at"}
+}

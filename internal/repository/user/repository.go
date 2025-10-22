@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"hcm-be/internal/domain"
 	"hcm-be/internal/domain/dto/user"
-	"strings"
 	"time"
 
 	"github.com/elgris/sqrl"
@@ -36,53 +35,31 @@ func NewUserRepository(db iDB) *repository {
 
 func (r *repository) GetUsers(ctx context.Context, req user.GetUsersRequest) ([]domain.User, error) {
 	var users []domain.User
-	var args []interface{}
-	argIndex := 0
+	model := domain.User{}
 
 	// Base query
-	query := `SELECT CAST(id AS NVARCHAR(36)) as id, email, name, created_at 
-			  FROM dbo.users`
+	query := sqrl.Select(model.SelectColumns()...).
+		From(model.TableName()).
+		OrderBy("id DESC")
 
 	// Add search filter if provided
 	if req.Search != "" {
 		searchTerm := "%" + req.Search + "%"
-		argIndex++
-		query += fmt.Sprintf(" WHERE (email LIKE @p%d OR name LIKE @p%d)", argIndex, argIndex)
-		args = append(args, searchTerm)
+		query.Where(sqrl.Eq{"email": searchTerm, "name": searchTerm})
 	}
-
-	// Add sorting
-	sortBy := "created_at"
-	if req.SortBy != "" {
-		// Validate sort field to prevent SQL injection
-		validSortFields := map[string]bool{
-			"email":      true,
-			"name":       true,
-			"created_at": true,
-		}
-		if validSortFields[req.SortBy] {
-			sortBy = req.SortBy
-		}
-	}
-
-	order := "DESC"
-	if req.Order != "" && strings.ToUpper(req.Order) == "ASC" {
-		order = "ASC"
-	}
-
-	query += fmt.Sprintf(" ORDER BY %s %s", sortBy, order)
 
 	// Add SQL Server pagination
 	if req.Limit > 0 {
-		argIndex++
-		offsetParam := argIndex
-		argIndex++
-		limitParam := argIndex
-		query += fmt.Sprintf(" OFFSET @p%d ROWS FETCH NEXT @p%d ROWS ONLY", offsetParam, limitParam)
-		args = append(args, req.Offset, req.Limit)
+		query = query.Suffix(fmt.Sprintf("OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", req.Offset, req.Limit))
 	}
 
-	err := r.db.SelectContext(ctx, &users, query, args...)
+	sqlQuery, args, err := query.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build query: %w", err)
+	}
+
+	sqlQuery = r.db.Rebind(sqlQuery)
+	err = r.db.SelectContext(ctx, &users, sqlQuery, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query users: %w", err)
 	}
@@ -91,18 +68,16 @@ func (r *repository) GetUsers(ctx context.Context, req user.GetUsersRequest) ([]
 }
 
 func (r *repository) GetUserByID(ctx context.Context, id string) (*domain.User, error) {
-	// const query = `SELECT CAST(id AS NVARCHAR(36)) as id, email, name, created_at FROM dbo.users WHERE id = @p1`
-
 	var user domain.User
-	query, args, err := sqrl.
-		Select(user.TableName()).
-		Columns(user.Columns()...).
+	query, args, err := sqrl.Select(user.SelectColumns()...).
+		From(user.TableName()).
 		Where(sqrl.Eq{"id": id}).
 		ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query: %w", err)
 	}
 
+	query = r.db.Rebind(query)
 	err = r.db.GetContext(ctx, &user, query, args...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
