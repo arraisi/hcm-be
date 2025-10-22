@@ -11,10 +11,10 @@ import (
 	apphttp "hcm-be/internal/http"
 	"hcm-be/internal/http/handlers"
 	userRepository "hcm-be/internal/repository/user"
+	transactionRepository "hcm-be/internal/repository/transaction"
 	"hcm-be/internal/service"
 
-	"database/sql"
-
+	"github.com/jmoiron/sqlx"
 	_ "github.com/microsoft/go-mssqldb" // register driver
 )
 
@@ -42,7 +42,7 @@ type DatabaseConfig struct {
 
 func Run(cfg Config) error {
 	// wire dependencies
-	db, err := sql.Open(cfg.Database.Driver, cfg.Database.DSN)
+	db, err := sqlx.Open(cfg.Database.Driver, cfg.Database.DSN)
 	if err != nil {
 		return err
 	}
@@ -56,9 +56,10 @@ func Run(cfg Config) error {
 
 	// create repository factory and main repository
 	userRepo := userRepository.NewUserRepository(db)
+	txRepo := transactionRepository.New(db)
 
 	// create services and handlers
-	userSvc := service.NewUserService(userRepo)
+	userSvc := service.NewUserService(userRepo, txRepo)
 	userHandler := handlers.NewUserHandler(userSvc)
 
 	router := apphttp.NewRouter(userHandler, apphttp.RouterOptions{

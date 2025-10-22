@@ -3,8 +3,10 @@ module hcm-be
 go 1.24.0
 
 require (
+	github.com/elgris/sqrl v0.0.0-20210727210741-7e0198b30236
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/google/uuid v1.6.0
+	github.com/jmoiron/sqlx v1.4.0
 	github.com/microsoft/go-mssqldb v1.9.3
 	github.com/prometheus/client_golang v1.23.2
 	github.com/spf13/viper v1.21.0
