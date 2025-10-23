@@ -19,8 +19,12 @@ type GetUserRequest struct {
 
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetUserRequest) Apply(q *sqrl.SelectBuilder) {
+	if req.ID != "" {
+		q.Where(sqrl.Eq{"id": req.ID})
+	}
+
 	if req.Limit > 0 {
-		q = q.Suffix(fmt.Sprintf("OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", req.Offset, req.Limit))
+		q.Suffix(fmt.Sprintf("OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", req.Offset, req.Limit))
 	}
 
 	if req.Search != "" {
