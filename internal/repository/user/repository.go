@@ -7,10 +7,8 @@ import (
 	"fmt"
 	"hcm-be/internal/domain"
 	"hcm-be/internal/domain/dto/user"
-	"time"
 
 	"github.com/elgris/sqrl"
-	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -33,7 +31,7 @@ func NewUserRepository(db iDB) *repository {
 	}
 }
 
-func (r *repository) GetUsers(ctx context.Context, req user.GetUsersRequest) ([]domain.User, error) {
+func (r *repository) GetUsers(ctx context.Context, req user.GetUserRequest) ([]domain.User, error) {
 	var users []domain.User
 	model := domain.User{}
 
@@ -43,15 +41,7 @@ func (r *repository) GetUsers(ctx context.Context, req user.GetUsersRequest) ([]
 		OrderBy("id DESC")
 
 	// Add search filter if provided
-	if req.Search != "" {
-		searchTerm := "%" + req.Search + "%"
-		query.Where(sqrl.Eq{"email": searchTerm, "name": searchTerm})
-	}
-
-	// Add SQL Server pagination
-	if req.Limit > 0 {
-		query = query.Suffix(fmt.Sprintf("OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", req.Offset, req.Limit))
-	}
+	req.Apply(query)
 
 	sqlQuery, args, err := query.ToSql()
 	if err != nil {
@@ -67,38 +57,40 @@ func (r *repository) GetUsers(ctx context.Context, req user.GetUsersRequest) ([]
 	return users, nil
 }
 
-func (r *repository) GetUserByID(ctx context.Context, id string) (*domain.User, error) {
-	var user domain.User
-	query, args, err := sqrl.Select(user.SelectColumns()...).
-		From(user.TableName()).
-		Where(sqrl.Eq{"id": id}).
-		ToSql()
+func (r *repository) GetUser(ctx context.Context, req user.GetUserRequest) (domain.User, error) {
+	var model domain.User
+
+	query := sqrl.Select(model.SelectColumns()...).
+		From(model.TableName())
+	req.Apply(query)
+
+	sqlQuery, args, err := query.ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("failed to build query: %w", err)
+		return model, fmt.Errorf("failed to build query: %w", err)
 	}
 
-	query = r.db.Rebind(query)
-	err = r.db.GetContext(ctx, &user, query, args...)
+	sqlQuery = r.db.Rebind(sqlQuery)
+	err = r.db.GetContext(ctx, &model, sqlQuery, args...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("user with id %s not found", id)
+			return model, fmt.Errorf("user with id %v not found", req)
 		}
-		return nil, fmt.Errorf("failed to get user by id: %w", err)
+		return model, fmt.Errorf("failed to get user by id: %w", err)
 	}
 
-	return &user, nil
+	return model, nil
 }
 
 func (r *repository) CreateUser(ctx context.Context, tx *sqlx.Tx, req user.CreateUserRequest) error {
-	id := uuid.NewString()
-	createdAt := time.Now().UTC()
-
 	model := domain.User{}
-	query, args, err := sqrl.Insert(model.TableName()).Columns("id", "email", "name", "created_at").Values(id, req.Email, req.Name, createdAt).ToSql()
+	query, args, err := sqrl.Insert(model.TableName()).
+		Columns("id", "email", "name", "created_at", "updated_at").
+		Values(req.ID, req.Email, req.Name, req.CreatedAt, req.CreatedAt).ToSql()
 	if err != nil {
 		return fmt.Errorf("failed to build query: %w", err)
 	}
 
+	query = r.db.Rebind(query)
 	_, err = tx.ExecContext(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("failed to create user: %w", err)
@@ -110,15 +102,13 @@ func (r *repository) CreateUser(ctx context.Context, tx *sqlx.Tx, req user.Creat
 func (r *repository) UpdateUser(ctx context.Context, tx *sqlx.Tx, id string, req user.UpdateUserRequest) error {
 	model := domain.User{}
 	query, args, err := sqrl.Update(model.TableName()).
-		SetMap(map[string]interface{}{
-			"email":      req.Email,
-			"name":       req.Name,
-			"updated_at": time.Now().UTC(),
-		}).Where(sqrl.Eq{"id": id}).ToSql()
+		SetMap(req.MapToUpdateBuilder()).
+		Where(sqrl.Eq{"id": id}).ToSql()
 	if err != nil {
 		return fmt.Errorf("failed to build query: %w", err)
 	}
 
+	query = r.db.Rebind(query)
 	result, err := tx.ExecContext(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("failed to update user: %w", err)

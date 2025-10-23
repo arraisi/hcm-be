@@ -10,14 +10,15 @@ import (
 
 	apphttp "hcm-be/internal/http"
 	"hcm-be/internal/http/handlers"
-	userRepository "hcm-be/internal/repository/user"
 	transactionRepository "hcm-be/internal/repository/transaction"
+	userRepository "hcm-be/internal/repository/user"
 	"hcm-be/internal/service"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/microsoft/go-mssqldb" // register driver
 )
 
+// Config holds the application configuration.
 type Config struct {
 	Name           string
 	Host           string
@@ -31,6 +32,7 @@ type Config struct {
 	Database       DatabaseConfig
 }
 
+// DatabaseConfig holds the database configuration.
 type DatabaseConfig struct {
 	Driver                string
 	DSN                   string
@@ -40,13 +42,16 @@ type DatabaseConfig struct {
 	MaxConnectionIdleTime time.Duration
 }
 
+// Run starts the application with the given configuration.
 func Run(cfg Config) error {
 	// wire dependencies
 	db, err := sqlx.Open(cfg.Database.Driver, cfg.Database.DSN)
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer func() {
+		_ = db.Close()
+	}()
 
 	// configure connection pool from config
 	db.SetMaxOpenConns(cfg.Database.MaxOpenConnections)

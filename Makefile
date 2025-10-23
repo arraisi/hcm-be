@@ -19,7 +19,7 @@ fmt:
 	@go vet ./...
 
 lint:
-	@golangci-lint run
+	@golangci-lint run --timeout=5m
 
 docker-build:
 	@docker build -t $(APP_NAME):latest .

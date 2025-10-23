@@ -11,6 +11,7 @@ type ctxKey string
 
 const requestIDKey ctxKey = "rid"
 
+// RequestID is a middleware that assigns a unique request ID to each HTTP request.
 func RequestID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rid := r.Header.Get("X-Request-ID")
@@ -23,6 +24,7 @@ func RequestID(next http.Handler) http.Handler {
 	})
 }
 
+// FromContext retrieves the request ID from the context.
 func FromContext(ctx context.Context) string {
 	v, _ := ctx.Value(requestIDKey).(string)
 	return v

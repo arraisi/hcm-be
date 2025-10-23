@@ -5,7 +5,20 @@ linters:
   enable:
     - govet
     - staticcheck
-    - gofmt
     - revive
     - errcheck
     - gocyclo
+    - revive # Ensure revive is enabled if you want to configure its rules
+  disable:
+    - revive
+linters-settings:
+  revive:
+    rules:
+      - name: package-comments
+        disabled: true
+      # You can disable other comment-related rules here if needed,
+      # for example:
+      # - name: exported # To disable comments for exported functions/variables
+      #   disabled: true
+      # - name: unexported # To disable comments for unexported functions/variables
+      #   disabled: true

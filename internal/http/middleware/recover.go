@@ -7,6 +7,7 @@ import (
 	"runtime/debug"
 )
 
+// Recover is a middleware that recovers from panics and returns a 500 Internal Server Error response.
 func Recover(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {

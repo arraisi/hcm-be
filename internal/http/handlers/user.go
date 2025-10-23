@@ -5,25 +5,29 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi/v5"
 	"hcm-be/internal/domain/dto/user"
 	"hcm-be/internal/service"
 	"hcm-be/pkg/response"
+
+	"github.com/go-chi/chi/v5"
 )
 
+// UserHandler handles HTTP requests for user operations
 type UserHandler struct {
 	svc *service.UserService
 }
 
+// NewUserHandler creates a new UserHandler instance
 func NewUserHandler(s *service.UserService) *UserHandler {
 	return &UserHandler{svc: s}
 }
 
+// List retrieves a list of users
 func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Parse query parameters
-	req := user.GetUsersRequest{
+	req := user.GetUserRequest{
 		Limit:  10, // default limit
 		Offset: 0,
 	}
@@ -60,6 +64,7 @@ func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]any{"data": users, "message": ""})
 }
 
+// Create creates a new user
 func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -82,6 +87,7 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusCreated, map[string]any{"message": "user created successfully"})
 }
 
+// Get retrieves a user by ID
 func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := chi.URLParam(r, "id")
@@ -91,7 +97,9 @@ func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.svc.Get(ctx, id)
+	result, err := h.svc.Get(ctx, user.GetUserRequest{
+		ID: id,
+	})
 	if err != nil {
 		if err.Error() == "user not found" {
 			response.Error(w, http.StatusNotFound, "user not found")
@@ -100,9 +108,10 @@ func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	response.JSON(w, http.StatusOK, map[string]any{"data": user, "message": ""})
+	response.JSON(w, http.StatusOK, map[string]any{"data": result, "message": ""})
 }
 
+// Update updates a user by ID
 func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := chi.URLParam(r, "id")
@@ -129,6 +138,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]any{"message": "user updated successfully"})
 }
 
+// Delete deletes a user by ID
 func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := chi.URLParam(r, "id")

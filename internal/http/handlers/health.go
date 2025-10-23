@@ -4,12 +4,14 @@ import (
 	"net/http"
 )
 
-func Liveness(w http.ResponseWriter, r *http.Request) {
+// Liveness handles the liveness probe
+func Liveness(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("alive"))
 }
 
-func Readiness(w http.ResponseWriter, r *http.Request) {
+// Readiness handles the readiness probe
+func Readiness(w http.ResponseWriter, _ *http.Request) {
 	// Tambahkan cek depedensi (DB, cache) jika perlu
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("ready"))

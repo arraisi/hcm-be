@@ -11,11 +11,13 @@ import (
 	chimw "github.com/go-chi/chi/v5/middleware"
 )
 
+// RouterOptions holds configuration options for the router.
 type RouterOptions struct {
 	EnableMetrics bool
 	EnablePprof   bool
 }
 
+// NewRouter creates and configures a new HTTP router.
 func NewRouter(userHandler *handlers.UserHandler, opts RouterOptions) http.Handler {
 	r := chi.NewRouter()
 
@@ -53,8 +55,8 @@ func NewRouter(userHandler *handlers.UserHandler, opts RouterOptions) http.Handl
 	})
 
 	// root
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hcm-be is running"))
+	r.Get("/", func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte("hcm-be is running"))
 	})
 
 	return r

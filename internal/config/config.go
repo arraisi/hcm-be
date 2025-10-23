@@ -38,6 +38,7 @@ type Config struct {
 	Database      Database
 }
 
+// Load reads the configuration from file and environment variables.
 func Load() (*Config, error) {
 	v := viper.New()
 	v.SetConfigType("yaml")
