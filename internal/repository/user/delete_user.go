@@ -3,7 +3,8 @@ package user
 import (
 	"context"
 	"fmt"
-	"hcm-be/internal/domain"
+
+	"github.com/arraisi/hcm-be/internal/domain"
 
 	"github.com/elgris/sqrl"
 	"github.com/jmoiron/sqlx"

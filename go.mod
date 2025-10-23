@@ -1,4 +1,4 @@
-module hcm-be
+module github.com/arraisi/hcm-be
 
 go 1.24.0
 

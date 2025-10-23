@@ -3,8 +3,9 @@ package user
 import (
 	"context"
 	"fmt"
-	"hcm-be/internal/domain"
-	"hcm-be/internal/domain/dto/user"
+
+	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/user"
 
 	"github.com/elgris/sqrl"
 	"github.com/jmoiron/sqlx"

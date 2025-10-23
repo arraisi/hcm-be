@@ -1,8 +1,9 @@
 package user
 
 import (
-	"hcm-be/internal/domain/dto/user"
 	"testing"
+
+	"github.com/arraisi/hcm-be/internal/domain/dto/user"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"

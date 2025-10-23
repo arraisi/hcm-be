@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"hcm-be/internal/domain/dto/user"
-	"hcm-be/internal/service"
-	"hcm-be/pkg/response"
+	"github.com/arraisi/hcm-be/internal/domain/dto/user"
+	"github.com/arraisi/hcm-be/internal/service"
+	"github.com/arraisi/hcm-be/pkg/response"
 
 	"github.com/go-chi/chi/v5"
 )

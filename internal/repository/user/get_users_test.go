@@ -1,10 +1,11 @@
 package user
 
 import (
-	"hcm-be/internal/domain"
-	"hcm-be/internal/domain/dto/user"
 	"testing"
 	"time"
+
+	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/user"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"

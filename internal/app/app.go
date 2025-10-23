@@ -8,11 +8,11 @@ import (
 	"syscall"
 	"time"
 
-	apphttp "hcm-be/internal/http"
-	"hcm-be/internal/http/handlers"
-	transactionRepository "hcm-be/internal/repository/transaction"
-	userRepository "hcm-be/internal/repository/user"
-	"hcm-be/internal/service"
+	apphttp "github.com/arraisi/hcm-be/internal/http"
+	"github.com/arraisi/hcm-be/internal/http/handlers"
+	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
+	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
+	"github.com/arraisi/hcm-be/internal/service"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/microsoft/go-mssqldb" // register driver

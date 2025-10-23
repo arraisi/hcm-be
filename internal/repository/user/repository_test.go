@@ -2,8 +2,9 @@ package user
 
 import (
 	"context"
-	"hcm-be/internal/config"
 	"testing"
+
+	"github.com/arraisi/hcm-be/internal/config"
 
 	"github.com/golang/mock/gomock"
 	"github.com/jmoiron/sqlx"

@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"hcm-be/internal/app"
-	"hcm-be/internal/config"
+	"github.com/arraisi/hcm-be/internal/app"
+	"github.com/arraisi/hcm-be/internal/config"
 )
 
 func main() {

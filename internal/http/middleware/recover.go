@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"hcm-be/pkg/response"
 	"log"
 	"net/http"
 	"runtime/debug"
+
+	"github.com/arraisi/hcm-be/pkg/response"
 )
 
 // Recover is a middleware that recovers from panics and returns a 500 Internal Server Error response.

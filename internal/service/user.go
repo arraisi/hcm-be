@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"time"
 
-	"hcm-be/internal/domain"
-	"hcm-be/internal/domain/dto/user"
+	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/user"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	stdprof "net/http/pprof"
 
-	"hcm-be/internal/http/handlers"
-	"hcm-be/internal/http/middleware"
+	"github.com/arraisi/hcm-be/internal/http/handlers"
+	"github.com/arraisi/hcm-be/internal/http/middleware"
 
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
