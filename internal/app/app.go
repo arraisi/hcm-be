@@ -12,7 +12,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
-	"github.com/arraisi/hcm-be/internal/service"
+	"github.com/arraisi/hcm-be/internal/service/user"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/microsoft/go-mssqldb" // register driver
@@ -64,7 +64,7 @@ func Run(cfg Config) error {
 	txRepo := transactionRepository.New(db)
 
 	// create services and handlers
-	userSvc := service.NewUserService(userRepo, txRepo)
+	userSvc := user.NewUserService(userRepo, txRepo)
 	userHandler := handlers.NewUserHandler(userSvc)
 
 	router := apphttp.NewRouter(userHandler, apphttp.RouterOptions{

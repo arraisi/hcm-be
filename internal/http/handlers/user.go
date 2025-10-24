@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/user"
-	"github.com/arraisi/hcm-be/internal/service"
+	user2 "github.com/arraisi/hcm-be/internal/service/user"
 	"github.com/arraisi/hcm-be/pkg/response"
 
 	"github.com/go-chi/chi/v5"
@@ -14,11 +14,11 @@ import (
 
 // UserHandler handles HTTP requests for user operations
 type UserHandler struct {
-	svc *service.UserService
+	svc *user2.UserService
 }
 
 // NewUserHandler creates a new UserHandler instance
-func NewUserHandler(s *service.UserService) *UserHandler {
+func NewUserHandler(s *user2.UserService) *UserHandler {
 	return &UserHandler{svc: s}
 }
 
