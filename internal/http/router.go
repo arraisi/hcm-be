@@ -4,6 +4,7 @@ import (
 	"net/http"
 	stdprof "net/http/pprof"
 
+	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 
@@ -11,14 +12,8 @@ import (
 	chimw "github.com/go-chi/chi/v5/middleware"
 )
 
-// RouterOptions holds configuration options for the router.
-type RouterOptions struct {
-	EnableMetrics bool
-	EnablePprof   bool
-}
-
 // NewRouter creates and configures a new HTTP router.
-func NewRouter(userHandler *handlers.UserHandler, opts RouterOptions) http.Handler {
+func NewRouter(config *config.Config, userHandler *handlers.UserHandler, webhookHandler *handlers.WebhookHandler) http.Handler {
 	r := chi.NewRouter()
 
 	// standard middlewares
@@ -34,12 +29,12 @@ func NewRouter(userHandler *handlers.UserHandler, opts RouterOptions) http.Handl
 	r.Get("/readyz", handlers.Readiness)
 
 	// metrics
-	if opts.EnableMetrics {
+	if config.Observability.MetricsEnabled {
 		r.Handle("/metrics", handlers.MetricsHandler())
 	}
 
 	// pprof
-	if opts.EnablePprof {
+	if config.Observability.PprofEnabled {
 		r.Mount("/debug/pprof", pprofRouter())
 	}
 
@@ -52,6 +47,12 @@ func NewRouter(userHandler *handlers.UserHandler, opts RouterOptions) http.Handl
 			users.Put("/{id}", userHandler.Update)
 			users.Delete("/{id}", userHandler.Delete)
 		})
+
+	})
+
+	// Webhook endpoints
+	r.Route("/webhook", func(webhook chi.Router) {
+		webhook.Post("/test-drive-booking", webhookHandler.TestDriveBooking)
 	})
 
 	// root

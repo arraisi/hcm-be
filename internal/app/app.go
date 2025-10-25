@@ -8,42 +8,20 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/arraisi/hcm-be/internal/config"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
 	"github.com/arraisi/hcm-be/internal/service/user"
+	"github.com/arraisi/hcm-be/pkg/mq"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/microsoft/go-mssqldb" // register driver
 )
 
-// Config holds the application configuration.
-type Config struct {
-	Name           string
-	Host           string
-	Port           int
-	ReadTimeout    time.Duration
-	WriteTimeout   time.Duration
-	IdleTimeout    time.Duration
-	RequestTimeout time.Duration
-	EnableMetrics  bool
-	EnablePprof    bool
-	Database       DatabaseConfig
-}
-
-// DatabaseConfig holds the database configuration.
-type DatabaseConfig struct {
-	Driver                string
-	DSN                   string
-	MaxOpenConnections    int
-	MaxIdleConnections    int
-	MaxConnectionLifetime time.Duration
-	MaxConnectionIdleTime time.Duration
-}
-
 // Run starts the application with the given configuration.
-func Run(cfg Config) error {
+func Run(cfg *config.Config) error {
 	// wire dependencies
 	db, err := sqlx.Open(cfg.Database.Driver, cfg.Database.DSN)
 	if err != nil {
@@ -67,23 +45,39 @@ func Run(cfg Config) error {
 	userSvc := user.NewUserService(userRepo, txRepo)
 	userHandler := handlers.NewUserHandler(userSvc)
 
-	router := apphttp.NewRouter(userHandler, apphttp.RouterOptions{
-		EnableMetrics: cfg.EnableMetrics,
-		EnablePprof:   cfg.EnablePprof,
-	})
+	// create webhook dependencies
+	mqPublisher := mq.NewInMemoryPublisher()
+
+	// Create webhook config from app config
+	webhookConfig := &config.Config{
+		Webhook: config.Webhook{
+			APIKey:     cfg.Webhook.APIKey,
+			HMACSecret: cfg.Webhook.HMACSecret,
+		},
+		FeatureFlag: config.FeatureFlag{
+			WebhookConfig: config.WebhookFeatureConfig{
+				EnableSignatureValidation: cfg.FeatureFlag.WebhookConfig.EnableSignatureValidation,
+				EnableTimestampValidation: cfg.FeatureFlag.WebhookConfig.EnableTimestampValidation,
+			},
+		},
+	}
+
+	webhookHandler := handlers.NewWebhookHandler(webhookConfig, mqPublisher)
+
+	router := apphttp.NewRouter(cfg, userHandler, webhookHandler)
 
 	srv := apphttp.NewServer(router, apphttp.Opts{
-		Host:         cfg.Host,
-		Port:         cfg.Port,
-		ReadTimeout:  cfg.ReadTimeout,
-		WriteTimeout: cfg.WriteTimeout,
-		IdleTimeout:  cfg.IdleTimeout,
+		Host:         cfg.Server.Host,
+		Port:         cfg.Server.Port,
+		ReadTimeout:  cfg.Server.ReadTimeout,
+		WriteTimeout: cfg.Server.WriteTimeout,
+		IdleTimeout:  cfg.Server.IdleTimeout,
 	})
 
 	// start
 	errCh := make(chan error, 1)
 	go func() {
-		log.Printf("%s listening on %s:%d", cfg.Name, cfg.Host, cfg.Port)
+		log.Printf("%s listening on %s:%d", cfg.App.Name, cfg.Server.Host, cfg.Server.Port)
 		if err := srv.Start(); err != nil && err.Error() != "http: Server closed" {
 			errCh <- err
 		}

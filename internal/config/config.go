@@ -1,45 +1,24 @@
 package config
 
 import (
-	"time"
+	"log"
 
 	"github.com/spf13/viper"
 )
 
-type App struct {
-	Name string
-	Env  string
-}
-type Server struct {
-	Host           string
-	Port           int
-	ReadTimeout    time.Duration
-	WriteTimeout   time.Duration
-	IdleTimeout    time.Duration
-	RequestTimeout time.Duration
-}
-type Observability struct {
-	MetricsEnabled bool
-	PprofEnabled   bool
-}
-type Database struct {
-	Driver                string // Supported: memory, postgres, sqlserver
-	DSN                   string // Data Source Name - connection string for the database
-	MaxOpenConnections    int
-	MaxIdleConnections    int
-	MaxConnectionLifetime time.Duration
-	MaxConnectionIdleTime time.Duration
-}
+var configuration *Config
 
-type Config struct {
-	App           App
-	Server        Server
-	Observability Observability
-	Database      Database
+func New() (*Config, error) {
+	configuration = &Config{}
+	if err := Load(configuration); err == nil {
+		log.Fatal(err)
+	}
+
+	return configuration, nil
 }
 
 // Load reads the configuration from file and environment variables.
-func Load() (*Config, error) {
+func Load(object interface{}) error {
 	v := viper.New()
 	v.SetConfigType("yaml")
 	v.SetConfigName("config")
@@ -65,12 +44,12 @@ func Load() (*Config, error) {
 	v.SetDefault("database.maxIdleConnections", 25)
 	v.SetDefault("database.maxConnectionLifetime", "5m")
 	v.SetDefault("database.maxConnectionIdleTime", "5m")
+	v.SetDefault("webhook.apiKey", "your-webhook-api-key")
+	v.SetDefault("webhook.hmacSecret", "your-hmac-secret-key")
+	v.SetDefault("featureFlag.webhook.enableSignatureValidation", true)
+	v.SetDefault("featureFlag.webhook.enableTimestampValidation", true)
 
 	_ = v.ReadInConfig() // ignore if missing
 
-	var cfg Config
-	if err := v.Unmarshal(&cfg); err != nil {
-		return nil, err
-	}
-	return &cfg, nil
+	return viper.Unmarshal(&object)
 }
