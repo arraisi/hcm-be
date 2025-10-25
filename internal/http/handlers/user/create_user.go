@@ -5,7 +5,9 @@ import (
 	"net/http"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/user"
+	"github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/response"
+	"github.com/arraisi/hcm-be/pkg/utils/validator"
 )
 
 // Create creates a new user
@@ -14,19 +16,26 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var req user.CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.Error(w, http.StatusBadRequest, "invalid json")
+		errorResponse := errors.NewErrorResponseFromList(errors.ErrInvalidJSON, errors.ErrListUser)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
-	// Basic validation
-	if req.Email == "" || req.Name == "" {
-		response.Error(w, http.StatusBadRequest, "email and name are required")
+	// Validate using the existing validator
+	if err := validator.ValidateStruct(&req); err != nil {
+		validationErrors := response.NormalizeValidationError(err)
+		response.Validation(w, validationErrors)
 		return
 	}
 
 	if err := h.svc.Create(ctx, req); err != nil {
-		response.Error(w, http.StatusInternalServerError, err.Error())
+		// Use NewErrorResponseFromList to determine HTTP status code
+		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListUser)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
-	response.JSON(w, http.StatusCreated, map[string]any{"message": "user created successfully"})
+
+	response.Created(w, map[string]interface{}{
+		"message": "User created successfully",
+	}, "User created successfully")
 }

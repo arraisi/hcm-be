@@ -9,6 +9,8 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/pkg/constants"
+	"github.com/arraisi/hcm-be/pkg/errors"
+	"github.com/arraisi/hcm-be/pkg/response"
 	"github.com/arraisi/hcm-be/pkg/utils/validator"
 )
 
@@ -17,45 +19,58 @@ func (h *Handler) TestDriveBooking(w http.ResponseWriter, r *http.Request) {
 	// Read raw body for signature verification
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		h.sendErrorResponse(w, http.StatusBadRequest, "Failed to read request body")
+		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookReadBodyFailed, errors.ErrListWebhook)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
 	// Extract and validate headers
 	headers, err := h.extractHeaders(r)
 	if err != nil {
-		h.sendErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("Header extraction failed: %v", err))
+		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookInvalidHeaders, errors.ErrListWebhook)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
 	// Validate all webhook requirements
 	if err := h.validateWebhookRequest(r.Context(), headers); err != nil {
-		statusCode := http.StatusBadRequest
-		if err.Error() == "invalid API key" ||
-			fmt.Sprintf("%v", err)[:9] == "signature" {
-			statusCode = http.StatusUnauthorized
+		var webhookErr error
+		if err.Error() == "invalid API key" {
+			webhookErr = errors.ErrWebhookInvalidAPIKey
+		} else if fmt.Sprintf("%v", err)[:9] == "signature" {
+			webhookErr = errors.ErrWebhookInvalidSignature
+		} else {
+			webhookErr = err // Use the original error for other cases
 		}
-		h.sendErrorResponse(w, statusCode, err.Error())
+
+		errorResponse := errors.NewErrorResponseFromList(webhookErr, errors.ErrListWebhook)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
 	// Parse JSON body
 	var bookingEvent domain.BookingEvent
 	if err := json.Unmarshal(body, &bookingEvent); err != nil {
-		h.sendErrorResponse(w, http.StatusBadRequest, "Invalid JSON payload")
+		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookInvalidPayload, errors.ErrListWebhook)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
 	// Validate payload and process booking
 	if err := h.validateAndProcessBooking(&bookingEvent); err != nil {
-		statusCode := http.StatusBadRequest
+		var webhookErr error
 		if err.Error() == "duplicate event ID" {
-			statusCode = http.StatusConflict
-		} else if err.Error() == "failed to store idempotency key" ||
-			err.Error() == "failed to publish event" {
-			statusCode = http.StatusInternalServerError
+			webhookErr = errors.ErrWebhookDuplicateEvent
+		} else if err.Error() == "failed to store idempotency key" {
+			webhookErr = errors.ErrWebhookIdempotencyFailed
+		} else if err.Error() == "failed to publish event" {
+			webhookErr = errors.ErrWebhookPublishFailed
+		} else {
+			webhookErr = errors.ErrWebhookValidationFailed
 		}
-		h.sendErrorResponse(w, statusCode, err.Error())
+
+		errorResponse := errors.NewErrorResponseFromList(webhookErr, errors.ErrListWebhook)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
@@ -63,17 +78,24 @@ func (h *Handler) TestDriveBooking(w http.ResponseWriter, r *http.Request) {
 	case constants.TestDriveBookingStatusSubmitted:
 		err = h.testDriveSvc.CreateTestDriveBooking(r.Context(), bookingEvent)
 		if err != nil {
-			h.sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+			// Combine webhook and test drive error lists
+			combinedErrorList := errors.ErrListWebhook.Extend(errors.ErrListTestDrive)
+			errorResponse := errors.NewErrorResponseFromList(err, combinedErrorList)
+			response.ErrorResponseJSON(w, errorResponse)
 			return
 		}
 	case constants.TestDriveBookingStatusChangeRequest, constants.TestDriveBookingStatusCancelSubmitted:
 		err = h.testDriveSvc.UpdateTestDriveBooking(r.Context(), bookingEvent)
 		if err != nil {
-			h.sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+			// Combine webhook and test drive error lists
+			combinedErrorList := errors.ErrListWebhook.Extend(errors.ErrListTestDrive)
+			errorResponse := errors.NewErrorResponseFromList(err, combinedErrorList)
+			response.ErrorResponseJSON(w, errorResponse)
 			return
 		}
 	default:
-		h.sendErrorResponse(w, http.StatusBadRequest, "Unsupported test drive status")
+		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookUnsupportedStatus, errors.ErrListWebhook)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
@@ -95,12 +117,12 @@ func (h *Handler) TestDriveBooking(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) validateAndProcessBooking(bookingEvent *domain.BookingEvent) error {
 	// Validate payload structure
 	if err := validator.ValidateStruct(bookingEvent); err != nil {
-		return fmt.Errorf("payload validation failed: %v", err)
+		return errors.ErrWebhookValidationFailed
 	}
 
 	// Store event ID for idempotency
 	if err := h.idempotencySvc.Store(bookingEvent.EventID); err != nil {
-		return fmt.Errorf("failed to store idempotency key")
+		return errors.ErrWebhookIdempotencyFailed
 	}
 
 	return nil

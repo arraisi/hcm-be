@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/user"
+	"github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/response"
 )
 
@@ -44,8 +45,26 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 
 	users, err := h.svc.List(ctx, req)
 	if err != nil {
-		response.Error(w, http.StatusInternalServerError, err.Error())
+		// Use NewErrorResponseFromList to determine HTTP status code
+		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListUser)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
-	response.JSON(w, http.StatusOK, map[string]any{"data": users, "message": ""})
+
+	// Create pagination metadata
+	meta := map[string]interface{}{
+		"pagination": map[string]interface{}{
+			"limit":  req.Limit,
+			"offset": req.Offset,
+		},
+	}
+
+	// Use the new unified response with metadata
+	resp := response.Response{
+		Data:    users,
+		Message: "Users retrieved successfully",
+		Meta:    meta,
+	}
+
+	response.JSON(w, http.StatusOK, resp)
 }

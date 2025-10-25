@@ -3,6 +3,7 @@ package user
 import (
 	"net/http"
 
+	"github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/response"
 	"github.com/go-chi/chi/v5"
 )
@@ -13,17 +14,17 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	if id == "" {
+		errorResponse := errors.NewErrorResponseFromList(errors.ErrUserIDRequired, errors.ErrListUser)
+		response.ErrorResponseJSON(w, errorResponse)
 		response.Error(w, http.StatusBadRequest, "user id is required")
 		return
 	}
 
 	if err := h.svc.Delete(ctx, id); err != nil {
-		if err.Error() == "user not found" {
-			response.Error(w, http.StatusNotFound, "user not found")
-			return
-		}
-		response.Error(w, http.StatusInternalServerError, err.Error())
+		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListUser)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
-	response.JSON(w, http.StatusOK, map[string]any{"message": "user deleted successfully"})
+
+	response.OK(w, "user successfully deleted")
 }

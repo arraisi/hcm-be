@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/user"
+	"github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/response"
 	"github.com/go-chi/chi/v5"
 )
@@ -14,7 +15,8 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	if id == "" {
-		response.Error(w, http.StatusBadRequest, "user id is required")
+		errorResponse := errors.NewErrorResponseFromList(errors.ErrMissingRequired, errors.ErrListUser)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
@@ -22,12 +24,11 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		ID: id,
 	})
 	if err != nil {
-		if err.Error() == "user not found" {
-			response.Error(w, http.StatusNotFound, "user not found")
-			return
-		}
-		response.Error(w, http.StatusInternalServerError, err.Error())
+		// Use NewErrorResponseFromList to determine HTTP status code
+		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListUser)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
-	response.JSON(w, http.StatusOK, map[string]any{"data": result, "message": ""})
+
+	response.OK(w, result, "User retrieved successfully")
 }
