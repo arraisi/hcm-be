@@ -6,6 +6,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
+	"github.com/arraisi/hcm-be/internal/service/testdrive"
 	"github.com/arraisi/hcm-be/internal/service/user"
 	"github.com/arraisi/hcm-be/pkg/mq"
 
@@ -41,7 +42,9 @@ func Run(cfg *config.Config) error {
 	// create webhook dependencies
 	mqPublisher := mq.NewInMemoryPublisher()
 
-	webhookHandler := handlers.NewWebhookHandler(cfg, mqPublisher)
+	testDriveSvc := testdrive.New(cfg)
+
+	webhookHandler := handlers.NewWebhookHandler(cfg, mqPublisher, testDriveSvc)
 
 	router := apphttp.NewRouter(cfg, userHandler, webhookHandler)
 

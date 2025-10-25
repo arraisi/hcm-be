@@ -17,23 +17,29 @@ import (
 	"github.com/arraisi/hcm-be/pkg/webhook"
 )
 
+type TestDriveService interface {
+	CreateTestDriveRequest(request domain.BookingEvent) error
+}
+
 // WebhookHandler handles webhook requests
 type WebhookHandler struct {
+	config            *config.Config
 	validator         *webhook.Validator
 	signatureVerifier *webhook.SignatureVerifier
 	idempotencyStore  webhook.IdempotencyStore
 	publisher         mq.Publisher
-	config            *config.Config
+	testDriveSvc      TestDriveService
 }
 
 // NewWebhookHandler creates a new webhook handler
-func NewWebhookHandler(cfg *config.Config, publisher mq.Publisher) *WebhookHandler {
+func NewWebhookHandler(cfg *config.Config, publisher mq.Publisher, testDriveSvc TestDriveService) *WebhookHandler {
 	return &WebhookHandler{
+		config:            cfg,
 		validator:         webhook.NewValidator(),
 		signatureVerifier: webhook.NewSignatureVerifier(cfg.Webhook.HMACSecret),
 		idempotencyStore:  webhook.NewInMemoryIdempotencyStore(24 * time.Hour), // 24 hour TTL
 		publisher:         publisher,
-		config:            cfg,
+		testDriveSvc:      testDriveSvc,
 	}
 }
 
@@ -83,6 +89,8 @@ func (h *WebhookHandler) TestDriveBooking(w http.ResponseWriter, r *http.Request
 		h.sendErrorResponse(w, statusCode, err.Error())
 		return
 	}
+
+	h.testDriveSvc.CreateTestDriveRequest(bookingEvent)
 
 	// Send success response
 	httpResp := webhookDto.Response{
