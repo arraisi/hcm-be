@@ -5,6 +5,7 @@
 package webhook
 
 import (
+	context "context"
 	reflect "reflect"
 
 	domain "github.com/arraisi/hcm-be/internal/domain"
@@ -34,18 +35,32 @@ func (m *MockTestDriveService) EXPECT() *MockTestDriveServiceMockRecorder {
 	return m.recorder
 }
 
-// CreateTestDriveRequest mocks base method.
-func (m *MockTestDriveService) CreateTestDriveRequest(request domain.BookingEvent) error {
+// CreateTestDriveBooking mocks base method.
+func (m *MockTestDriveService) CreateTestDriveBooking(ctx context.Context, request domain.BookingEvent) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateTestDriveRequest", request)
+	ret := m.ctrl.Call(m, "CreateTestDriveBooking", ctx, request)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// CreateTestDriveRequest indicates an expected call of CreateTestDriveRequest.
-func (mr *MockTestDriveServiceMockRecorder) CreateTestDriveRequest(request interface{}) *gomock.Call {
+// CreateTestDriveBooking indicates an expected call of CreateTestDriveBooking.
+func (mr *MockTestDriveServiceMockRecorder) CreateTestDriveBooking(ctx, request interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTestDriveRequest", reflect.TypeOf((*MockTestDriveService)(nil).CreateTestDriveRequest), request)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTestDriveBooking", reflect.TypeOf((*MockTestDriveService)(nil).CreateTestDriveBooking), ctx, request)
+}
+
+// UpdateTestDriveBooking mocks base method.
+func (m *MockTestDriveService) UpdateTestDriveBooking(ctx context.Context, request domain.BookingEvent) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTestDriveBooking", ctx, request)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateTestDriveBooking indicates an expected call of UpdateTestDriveBooking.
+func (mr *MockTestDriveServiceMockRecorder) UpdateTestDriveBooking(ctx, request interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTestDriveBooking", reflect.TypeOf((*MockTestDriveService)(nil).UpdateTestDriveBooking), ctx, request)
 }
 
 // MockIdempotencyStore is a mock of IdempotencyStore interface.

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/arraisi/hcm-be/internal/config"
+	"github.com/arraisi/hcm-be/pkg/webhook"
 	"github.com/golang/mock/gomock"
 )
 
@@ -14,7 +15,7 @@ type mock struct {
 	Ctx                context.Context
 	mockTestDriveSvc   *MockTestDriveService
 	mockIdempotencySvc *MockIdempotencyStore
-	handler            Handler
+	handler            *Handler
 }
 
 func setupMock(t *testing.T) mock {
@@ -29,8 +30,9 @@ func setupMock(t *testing.T) mock {
 		},
 		FeatureFlag: config.FeatureFlag{
 			WebhookConfig: config.WebhookFeatureConfig{
-				EnableSignatureValidation: true,
-				EnableTimestampValidation: true,
+				EnableSignatureValidation:        true,
+				EnableTimestampValidation:        true,
+				EnableDuplicateEventIDValidation: true,
 			},
 		},
 	}
@@ -38,7 +40,12 @@ func setupMock(t *testing.T) mock {
 	m.mockTestDriveSvc = NewMockTestDriveService(m.Ctrl)
 	m.mockIdempotencySvc = NewMockIdempotencyStore(m.Ctrl)
 
-	m.handler = NewWebhookHandler(m.Config, m.mockIdempotencySvc, m.mockTestDriveSvc)
+	m.handler = &Handler{
+		config:            m.Config,
+		signatureVerifier: webhook.NewSignatureVerifier(m.Config.Webhook.HMACSecret),
+		idempotencySvc:    m.mockIdempotencySvc,
+		testDriveSvc:      m.mockTestDriveSvc,
+	}
 
 	return m
 }

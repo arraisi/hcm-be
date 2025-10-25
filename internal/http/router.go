@@ -58,7 +58,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 	})
 
 	// Webhook endpoints
-	r.Route("/webhook", func(webhook chi.Router) {
+	r.Route("/api/v1/webhook", func(webhook chi.Router) {
 		webhook.Post("/test-drive-booking", handler.WebhookHandler.TestDriveBooking)
 	})
 

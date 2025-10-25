@@ -8,6 +8,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
+	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/utils/validator"
 )
 
@@ -58,8 +59,21 @@ func (h *Handler) TestDriveBooking(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.testDriveSvc.CreateTestDriveRequest(bookingEvent)
-	if err != nil {
+	switch bookingEvent.Data.TestDrive.TestDriveStatus {
+	case constants.TestDriveBookingStatusSubmitted:
+		err = h.testDriveSvc.CreateTestDriveBooking(r.Context(), bookingEvent)
+		if err != nil {
+			h.sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+	case constants.TestDriveBookingStatusChangeRequest, constants.TestDriveBookingStatusCancelSubmitted:
+		err = h.testDriveSvc.UpdateTestDriveBooking(r.Context(), bookingEvent)
+		if err != nil {
+			h.sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+	default:
+		h.sendErrorResponse(w, http.StatusBadRequest, "Unsupported test drive status")
 		return
 	}
 
