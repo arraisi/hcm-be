@@ -25,3 +25,4 @@ featureFlag:
   webhook:
     enableSignatureValidation: false
     enableTimestampValidation: false
+    enableDuplicateEventIDValidation: false

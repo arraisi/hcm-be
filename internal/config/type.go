@@ -36,8 +36,9 @@ type FeatureFlag struct {
 }
 
 type WebhookFeatureConfig struct {
-	EnableSignatureValidation bool `yaml:"enableSignatureValidation"`
-	EnableTimestampValidation bool `yaml:"enableTimestampValidation"`
+	EnableSignatureValidation        bool `yaml:"enableSignatureValidation"`
+	EnableTimestampValidation        bool `yaml:"enableTimestampValidation"`
+	EnableDuplicateEventIDValidation bool `yaml:"enableDuplicateEventIDValidation"`
 }
 
 type Config struct {

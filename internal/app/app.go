@@ -1,14 +1,17 @@
 package app
 
 import (
+	"time"
+
 	"github.com/arraisi/hcm-be/internal/config"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
+	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
+	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	"github.com/arraisi/hcm-be/internal/service/testdrive"
 	"github.com/arraisi/hcm-be/internal/service/user"
-	"github.com/arraisi/hcm-be/pkg/mq"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/microsoft/go-mssqldb" // register driver
@@ -40,11 +43,13 @@ func Run(cfg *config.Config) error {
 	userHandler := handlers.NewUserHandler(userSvc)
 
 	// create webhook dependencies
-	mqPublisher := mq.NewInMemoryPublisher()
+	//mqPublisher := mq.NewInMemoryPublisher()
 
 	testDriveSvc := testdrive.New(cfg)
 
-	webhookHandler := handlers.NewWebhookHandler(cfg, mqPublisher, testDriveSvc)
+	idempotencyStore := idempotencyService.NewInMemoryIdempotencyStore(24 * time.Hour) // 24 hour TTL
+
+	webhookHandler := webhook.NewWebhookHandler(cfg, idempotencyStore, testDriveSvc)
 
 	router := apphttp.NewRouter(cfg, userHandler, webhookHandler)
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
+	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 
 	"github.com/go-chi/chi/v5"
@@ -13,7 +14,7 @@ import (
 )
 
 // NewRouter creates and configures a new HTTP router.
-func NewRouter(config *config.Config, userHandler *handlers.UserHandler, webhookHandler *handlers.WebhookHandler) http.Handler {
+func NewRouter(config *config.Config, userHandler *handlers.UserHandler, webhookHandler *webhook.Handler) http.Handler {
 	r := chi.NewRouter()
 
 	// standard middlewares
