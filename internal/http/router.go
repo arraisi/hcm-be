@@ -6,6 +6,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
+	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 
@@ -13,8 +14,13 @@ import (
 	chimw "github.com/go-chi/chi/v5/middleware"
 )
 
+type Handler struct {
+	UserHandler    user.Handler
+	WebhookHandler webhook.Handler
+}
+
 // NewRouter creates and configures a new HTTP router.
-func NewRouter(config *config.Config, userHandler *handlers.UserHandler, webhookHandler *webhook.Handler) http.Handler {
+func NewRouter(config *config.Config, handler Handler) http.Handler {
 	r := chi.NewRouter()
 
 	// standard middlewares
@@ -42,18 +48,18 @@ func NewRouter(config *config.Config, userHandler *handlers.UserHandler, webhook
 	// API v1
 	r.Route("/api/v1", func(api chi.Router) {
 		api.Route("/users", func(users chi.Router) {
-			users.Get("/", userHandler.List)
-			users.Post("/", userHandler.Create)
-			users.Get("/{id}", userHandler.Get)
-			users.Put("/{id}", userHandler.Update)
-			users.Delete("/{id}", userHandler.Delete)
+			users.Get("/", handler.UserHandler.List)
+			users.Post("/", handler.UserHandler.Create)
+			users.Get("/{id}", handler.UserHandler.Get)
+			users.Put("/{id}", handler.UserHandler.Update)
+			users.Delete("/{id}", handler.UserHandler.Delete)
 		})
 
 	})
 
 	// Webhook endpoints
 	r.Route("/webhook", func(webhook chi.Router) {
-		webhook.Post("/test-drive-booking", webhookHandler.TestDriveBooking)
+		webhook.Post("/test-drive-booking", handler.WebhookHandler.TestDriveBooking)
 	})
 
 	// root

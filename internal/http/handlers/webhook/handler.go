@@ -37,8 +37,8 @@ type Handler struct {
 }
 
 // NewWebhookHandler creates a new webhook handler
-func NewWebhookHandler(cfg *config.Config, idempotencySvc IdempotencyStore, testDriveSvc TestDriveService) *Handler {
-	return &Handler{
+func NewWebhookHandler(cfg *config.Config, idempotencySvc IdempotencyStore, testDriveSvc TestDriveService) Handler {
+	return Handler{
 		config:            cfg,
 		signatureVerifier: webhook.NewSignatureVerifier(cfg.Webhook.HMACSecret),
 		idempotencySvc:    idempotencySvc,

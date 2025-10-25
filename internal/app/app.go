@@ -5,13 +5,13 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
-	"github.com/arraisi/hcm-be/internal/http/handlers"
+	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	"github.com/arraisi/hcm-be/internal/service/testdrive"
-	"github.com/arraisi/hcm-be/internal/service/user"
+	userService "github.com/arraisi/hcm-be/internal/service/user"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/microsoft/go-mssqldb" // register driver
@@ -39,8 +39,8 @@ func Run(cfg *config.Config) error {
 	txRepo := transactionRepository.New(db)
 
 	// create services and handlers
-	userSvc := user.NewUserService(userRepo, txRepo)
-	userHandler := handlers.NewUserHandler(userSvc)
+	userSvc := userService.NewUserService(userRepo, txRepo)
+	userHandler := user.NewUserHandler(userSvc)
 
 	// create webhook dependencies
 	//mqPublisher := mq.NewInMemoryPublisher()
@@ -51,7 +51,10 @@ func Run(cfg *config.Config) error {
 
 	webhookHandler := webhook.NewWebhookHandler(cfg, idempotencyStore, testDriveSvc)
 
-	router := apphttp.NewRouter(cfg, userHandler, webhookHandler)
+	router := apphttp.NewRouter(cfg, apphttp.Handler{
+		UserHandler:    userHandler,
+		WebhookHandler: webhookHandler,
+	})
 
 	return apphttp.NewServer(cfg, router)
 }

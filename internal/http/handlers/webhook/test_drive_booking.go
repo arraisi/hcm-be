@@ -46,7 +46,7 @@ func (h *Handler) TestDriveBooking(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate payload and process booking
-	if err := h.validateAndProcessBooking(headers, &bookingEvent); err != nil {
+	if err := h.validateAndProcessBooking(&bookingEvent); err != nil {
 		statusCode := http.StatusBadRequest
 		if err.Error() == "duplicate event ID" {
 			statusCode = http.StatusConflict
@@ -78,20 +78,10 @@ func (h *Handler) TestDriveBooking(w http.ResponseWriter, r *http.Request) {
 }
 
 // validateAndProcessBooking performs all payload validations and processing
-func (h *Handler) validateAndProcessBooking(headers webhookDto.Headers, bookingEvent *domain.BookingEvent) error {
+func (h *Handler) validateAndProcessBooking(bookingEvent *domain.BookingEvent) error {
 	// Validate payload structure
 	if err := validator.ValidateStruct(bookingEvent); err != nil {
 		return fmt.Errorf("payload validation failed: %v", err)
-	}
-
-	// Validate event ID match
-	if headers.EventID != bookingEvent.EventID {
-		return fmt.Errorf("header X-Event-Id does not match body event_ID")
-	}
-
-	// Check idempotency
-	if h.idempotencySvc.Exists(bookingEvent.EventID) {
-		return fmt.Errorf("duplicate event ID")
 	}
 
 	// Store event ID for idempotency

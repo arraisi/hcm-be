@@ -14,7 +14,7 @@ type mock struct {
 	Ctx                context.Context
 	mockTestDriveSvc   *MockTestDriveService
 	mockIdempotencySvc *MockIdempotencyStore
-	handler            *Handler
+	handler            Handler
 }
 
 func setupMock(t *testing.T) mock {
