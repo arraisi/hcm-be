@@ -2,7 +2,7 @@ app:
   name: hcm-be
   env: development # development|staging|production
 server:
-  host: 0.0.0.0
+  host: localhost
   port: 8080
   readTimeout: 10s
   writeTimeout: 15s

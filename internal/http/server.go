@@ -3,8 +3,14 @@ package http
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
+
+	"github.com/arraisi/hcm-be/internal/config"
 )
 
 // Server represents an HTTP server.
@@ -12,25 +18,39 @@ type Server struct {
 	srv *http.Server
 }
 
-// Opts holds the configuration options for the HTTP server.
-type Opts struct {
-	Host         string
-	Port         int
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-	IdleTimeout  time.Duration
-}
-
 // NewServer creates a new HTTP server with the given handler and options.
-func NewServer(handler http.Handler, o Opts) *Server {
-	s := &http.Server{
-		Addr:         fmt.Sprintf("%s:%d", o.Host, o.Port),
+func NewServer(cfg *config.Config, handler http.Handler) error {
+	srv := Server{srv: &http.Server{
+		Addr:         fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
 		Handler:      handler,
-		ReadTimeout:  o.ReadTimeout,
-		WriteTimeout: o.WriteTimeout,
-		IdleTimeout:  o.IdleTimeout,
+		ReadTimeout:  cfg.Server.ReadTimeout,
+		WriteTimeout: cfg.Server.WriteTimeout,
+		IdleTimeout:  cfg.Server.IdleTimeout,
+	}}
+
+	// start
+	errCh := make(chan error, 1)
+	go func() {
+		log.Printf("%s listening on %s:%d", cfg.App.Name, cfg.Server.Host, cfg.Server.Port)
+		if err := srv.Start(); err != nil && err.Error() != "http: Server closed" {
+			errCh <- err
+		}
+	}()
+
+	// graceful shutdown
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+	select {
+	case <-stop:
+		log.Println("shutting down...")
+	case err := <-errCh:
+		return err
 	}
-	return &Server{srv: s}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	return srv.Shutdown(ctx)
 }
 
 // Start runs the HTTP server.
