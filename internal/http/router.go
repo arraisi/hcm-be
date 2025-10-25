@@ -4,21 +4,24 @@ import (
 	"net/http"
 	stdprof "net/http/pprof"
 
+	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
+	"github.com/arraisi/hcm-be/internal/http/handlers/user"
+	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 )
 
-// RouterOptions holds configuration options for the router.
-type RouterOptions struct {
-	EnableMetrics bool
-	EnablePprof   bool
+type Handler struct {
+	UserHandler    user.Handler
+	WebhookHandler webhook.Handler
+	Config         *config.Config
 }
 
 // NewRouter creates and configures a new HTTP router.
-func NewRouter(userHandler *handlers.UserHandler, opts RouterOptions) http.Handler {
+func NewRouter(config *config.Config, handler Handler) http.Handler {
 	r := chi.NewRouter()
 
 	// standard middlewares
@@ -34,24 +37,36 @@ func NewRouter(userHandler *handlers.UserHandler, opts RouterOptions) http.Handl
 	r.Get("/readyz", handlers.Readiness)
 
 	// metrics
-	if opts.EnableMetrics {
+	if config.Observability.MetricsEnabled {
 		r.Handle("/metrics", handlers.MetricsHandler())
 	}
 
 	// pprof
-	if opts.EnablePprof {
+	if config.Observability.PprofEnabled {
 		r.Mount("/debug/pprof", pprofRouter())
 	}
 
 	// API v1
 	r.Route("/api/v1", func(api chi.Router) {
 		api.Route("/users", func(users chi.Router) {
-			users.Get("/", userHandler.List)
-			users.Post("/", userHandler.Create)
-			users.Get("/{id}", userHandler.Get)
-			users.Put("/{id}", userHandler.Update)
-			users.Delete("/{id}", userHandler.Delete)
+			users.Get("/", handler.UserHandler.List)
+			users.Post("/", handler.UserHandler.Create)
+			users.Get("/{id}", handler.UserHandler.Get)
+			users.Put("/{id}", handler.UserHandler.Update)
+			users.Delete("/{id}", handler.UserHandler.Delete)
 		})
+
+	})
+
+	// Webhook endpoints with middleware
+	r.Route("/api/v1/webhook", func(webhook chi.Router) {
+		// Create webhook middleware
+		webhookMiddleware := middleware.NewWebhookMiddleware(config)
+
+		// Apply webhook-specific middleware
+		webhook.Use(webhookMiddleware.ExtractAndValidateHeaders)
+
+		webhook.Post("/test-drive-booking", handler.WebhookHandler.TestDriveBooking)
 	})
 
 	// root

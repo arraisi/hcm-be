@@ -2,7 +2,7 @@ app:
   name: hcm-be
   env: development # development|staging|production
 server:
-  host: 0.0.0.0
+  host: localhost
   port: 8080
   readTimeout: 10s
   writeTimeout: 15s
@@ -13,8 +13,16 @@ observability:
   pprofEnabled: true
 database:
   driver: sqlserver # memory|postgres|sqlserver
-  dsn: 'sqlserver://sa:YourStrong@Passw0rd@localhost:1433?database=hcmdb&encrypt=disable&trustServerCertificate=true'
+  dsn: 'sqlserver://hcmfreshuser:iniP4ssword!!Sql@tabeldata.ip-dynamic.com:64123?database=devhcmrefresment&encrypt=disable&trustServerCertificate=true'
   maxOpenConnections: 25
   maxIdleConnections: 25
   maxConnectionLifetime: 5m
   maxConnectionIdleTime: 5m
+webhook:
+  apiKey: 'your-webhook-api-key'
+  hmacSecret: 'your-hmac-secret-key'
+featureFlag:
+  webhook:
+    enableSignatureValidation: false
+    enableTimestampValidation: false
+    enableDuplicateEventIDValidation: false
