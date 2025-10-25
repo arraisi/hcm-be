@@ -21,7 +21,6 @@ database:
 webhook:
   apiKey: 'your-webhook-api-key'
   hmacSecret: 'your-hmac-secret-key'
-
 featureFlag:
   webhook:
     enableSignatureValidation: false

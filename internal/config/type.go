@@ -3,48 +3,48 @@ package config
 import "time"
 
 type App struct {
-	Name string
-	Env  string
+	Name string `yaml:"name"`
+	Env  string `yaml:"env"`
 }
 type Server struct {
-	Host           string
-	Port           int
-	ReadTimeout    time.Duration
-	WriteTimeout   time.Duration
-	IdleTimeout    time.Duration
-	RequestTimeout time.Duration
+	Host           string        `yaml:"host"`
+	Port           int           `yaml:"port"`
+	ReadTimeout    time.Duration `yaml:"readTimeout"`
+	WriteTimeout   time.Duration `yaml:"writeTimeout"`
+	IdleTimeout    time.Duration `yaml:"idleTimeout"`
+	RequestTimeout time.Duration `yaml:"requestTimeout"`
 }
 type Observability struct {
-	MetricsEnabled bool
-	PprofEnabled   bool
+	MetricsEnabled bool `yaml:"metricsEnabled"`
+	PprofEnabled   bool `yaml:"pprofEnabled"`
 }
 type Database struct {
-	Driver                string // Supported: memory, postgres, sqlserver
-	DSN                   string // Data Source Name - connection string for the database
-	MaxOpenConnections    int
-	MaxIdleConnections    int
-	MaxConnectionLifetime time.Duration
-	MaxConnectionIdleTime time.Duration
+	Driver                string        `yaml:"driver"` // Supported: memory, postgres, sqlserver
+	DSN                   string        `yaml:"dsn"`    // Data Source Name - connection string for the database
+	MaxOpenConnections    int           `yaml:"maxOpenConnections"`
+	MaxIdleConnections    int           `yaml:"maxIdleConnections"`
+	MaxConnectionLifetime time.Duration `yaml:"maxConnectionLifetime"`
+	MaxConnectionIdleTime time.Duration `yaml:"maxConnectionIdleTime"`
 }
 type Webhook struct {
-	APIKey     string // API key for webhook authentication
-	HMACSecret string // HMAC secret for signature verification
+	APIKey     string `yaml:"apiKey"`     // API key for webhook authentication
+	HMACSecret string `yaml:"hmacSecret"` // HMAC secret for signature verification
 }
 
 type FeatureFlag struct {
-	WebhookConfig WebhookFeatureConfig `mapstructure:"webhook"`
+	WebhookConfig WebhookFeatureConfig `yaml:"webhook"`
 }
 
 type WebhookFeatureConfig struct {
-	EnableSignatureValidation bool `mapstructure:"enableSignatureValidation"`
-	EnableTimestampValidation bool `mapstructure:"enableTimestampValidation"`
+	EnableSignatureValidation bool `yaml:"enableSignatureValidation"`
+	EnableTimestampValidation bool `yaml:"enableTimestampValidation"`
 }
 
 type Config struct {
-	App           App
-	Server        Server
-	Observability Observability
-	Database      Database
-	Webhook       Webhook
-	FeatureFlag   FeatureFlag `mapstructure:"featureFlag"`
+	App           App           `yaml:"app"`
+	Server        Server        `yaml:"server"`
+	Observability Observability `yaml:"observability"`
+	Database      Database      `yaml:"database"`
+	Webhook       Webhook       `yaml:"webhook"`
+	FeatureFlag   FeatureFlag   `yaml:"featureFlag"`
 }
