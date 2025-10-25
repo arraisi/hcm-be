@@ -17,6 +17,7 @@ import (
 type Handler struct {
 	UserHandler    user.Handler
 	WebhookHandler webhook.Handler
+	Config         *config.Config
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -57,8 +58,14 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 
 	})
 
-	// Webhook endpoints
+	// Webhook endpoints with middleware
 	r.Route("/api/v1/webhook", func(webhook chi.Router) {
+		// Create webhook middleware
+		webhookMiddleware := middleware.NewWebhookMiddleware(config)
+
+		// Apply webhook-specific middleware
+		webhook.Use(webhookMiddleware.ExtractAndValidateHeaders)
+
 		webhook.Post("/test-drive-booking", handler.WebhookHandler.TestDriveBooking)
 	})
 

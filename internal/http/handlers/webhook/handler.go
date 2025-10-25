@@ -12,7 +12,6 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	validatorDto "github.com/arraisi/hcm-be/internal/domain/dto/validator"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
-	"github.com/arraisi/hcm-be/pkg/response"
 	"github.com/arraisi/hcm-be/pkg/webhook"
 	"github.com/google/uuid"
 )
@@ -45,16 +44,6 @@ func NewWebhookHandler(cfg *config.Config, idempotencySvc IdempotencyStore, test
 		idempotencySvc:    idempotencySvc,
 		testDriveSvc:      testDriveSvc,
 	}
-}
-
-// sendErrorResponse sends a standardized error response
-func (h *Handler) sendErrorResponse(w http.ResponseWriter, statusCode int, message string) {
-	errorResponse := webhookDto.ErrorResponse{
-		Data:    make(map[string]interface{}),
-		Message: message,
-	}
-
-	response.JSON(w, statusCode, errorResponse)
 }
 
 // extractHeaders extracts and returns required webhook headers

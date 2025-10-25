@@ -2,12 +2,12 @@ package webhook
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
+	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/response"
@@ -16,34 +16,19 @@ import (
 
 // TestDriveBooking handles POST /webhook/test-drive-booking
 func (h *Handler) TestDriveBooking(w http.ResponseWriter, r *http.Request) {
-	// Read raw body for signature verification
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookReadBodyFailed, errors.ErrListWebhook)
-		response.ErrorResponseJSON(w, errorResponse)
-		return
-	}
-
-	// Extract and validate headers
-	headers, err := h.extractHeaders(r)
-	if err != nil {
+	// Headers are already validated by middleware, just verify they exist
+	_, ok := middleware.GetWebhookHeaders(r.Context())
+	if !ok {
+		// This should not happen if middleware is working correctly
 		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookInvalidHeaders, errors.ErrListWebhook)
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
-	// Validate all webhook requirements
-	if err := h.validateWebhookRequest(r.Context(), headers); err != nil {
-		var webhookErr error
-		if err.Error() == "invalid API key" {
-			webhookErr = errors.ErrWebhookInvalidAPIKey
-		} else if fmt.Sprintf("%v", err)[:9] == "signature" {
-			webhookErr = errors.ErrWebhookInvalidSignature
-		} else {
-			webhookErr = err // Use the original error for other cases
-		}
-
-		errorResponse := errors.NewErrorResponseFromList(webhookErr, errors.ErrListWebhook)
+	// Read raw body for signature verification (if needed later)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookReadBodyFailed, errors.ErrListWebhook)
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}

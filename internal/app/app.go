@@ -54,6 +54,7 @@ func Run(cfg *config.Config) error {
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		UserHandler:    userHandler,
 		WebhookHandler: webhookHandler,
+		Config:         cfg,
 	})
 
 	return apphttp.NewServer(cfg, router)
