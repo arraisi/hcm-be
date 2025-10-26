@@ -45,6 +45,8 @@ var (
 	ErrWebhookUnsupportedStatus = errors.New("unsupported test drive status")
 	ErrWebhookValidationFailed  = errors.New("payload validation failed")
 	ErrWebhookReadBodyFailed    = errors.New("failed to read request body")
+	ErrWebhookInvalidTimestamp  = errors.New("invalid timestamp format")
+	ErrWebhookInvalidEventID    = errors.New("invalid event ID format")
 	// Webhook-specific error list
 	ErrListWebhook = ErrList{
 		{Error: ErrWebhookInvalidPayload, Code: http.StatusBadRequest},
@@ -57,6 +59,8 @@ var (
 		{Error: ErrWebhookUnsupportedStatus, Code: http.StatusBadRequest},
 		{Error: ErrWebhookValidationFailed, Code: http.StatusBadRequest},
 		{Error: ErrWebhookReadBodyFailed, Code: http.StatusBadRequest},
+		{Error: ErrWebhookInvalidTimestamp, Code: http.StatusBadRequest},
+		{Error: ErrWebhookInvalidEventID, Code: http.StatusBadRequest},
 	}
 
 	ErrTestDriveNotFound      = errors.New("test drive booking not found")

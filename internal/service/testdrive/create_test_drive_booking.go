@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/arraisi/hcm-be/pkg/errors"
 )
 
-func (s service) CreateTestDriveBooking(_ context.Context, request domain.BookingEvent) error {
+func (s service) CreateTestDriveBooking(_ context.Context, request testdrive.TestDriveEvent) error {
 	// logging the received test drive request
-	fmt.Printf("[CreateTestDriveBooking] TestDrive Data: %+v\n", request)
+	fmt.Printf("[CreateTestDriveBooking] TestDriveRequest Data: %+v\n", request)
 
 	// Validate test drive data
 	if request.Data.TestDrive.TestDriveID == "" {
@@ -27,7 +27,7 @@ func (s service) CreateTestDriveBooking(_ context.Context, request domain.Bookin
 		return errors.ErrTestDriveInvalidData
 	}
 
-	// Validate OneAccount information
+	// Validate OneAccountRequest information
 	if request.Data.OneAccount.OneAccountID == "" || request.Data.OneAccount.FirstName == "" {
 		return errors.ErrTestDriveInvalidData
 	}

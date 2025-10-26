@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/arraisi/hcm-be/pkg/constants"
@@ -14,8 +14,8 @@ import (
 	"github.com/arraisi/hcm-be/pkg/utils/validator"
 )
 
-// TestDriveBooking handles POST /webhook/test-drive-booking
-func (h *Handler) TestDriveBooking(w http.ResponseWriter, r *http.Request) {
+// TestDriveEvent handles POST /webhook/test-drive-booking
+func (h *Handler) TestDriveEvent(w http.ResponseWriter, r *http.Request) {
 	// Headers are already validated by middleware, just verify they exist
 	_, ok := middleware.GetWebhookHeaders(r.Context())
 	if !ok {
@@ -34,7 +34,7 @@ func (h *Handler) TestDriveBooking(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse JSON body
-	var bookingEvent domain.BookingEvent
+	var bookingEvent testdrive.TestDriveEvent
 	if err := json.Unmarshal(body, &bookingEvent); err != nil {
 		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookInvalidPayload, errors.ErrListWebhook)
 		response.ErrorResponseJSON(w, errorResponse)
@@ -99,7 +99,7 @@ func (h *Handler) TestDriveBooking(w http.ResponseWriter, r *http.Request) {
 }
 
 // validateAndProcessBooking performs all payload validations and processing
-func (h *Handler) validateAndProcessBooking(bookingEvent *domain.BookingEvent) error {
+func (h *Handler) validateAndProcessBooking(bookingEvent *testdrive.TestDriveEvent) error {
 	// Validate payload structure
 	if err := validator.ValidateStruct(bookingEvent); err != nil {
 		return errors.ErrWebhookValidationFailed

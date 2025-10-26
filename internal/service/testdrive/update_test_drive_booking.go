@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/arraisi/hcm-be/pkg/errors"
 )
 
-func (s service) UpdateTestDriveBooking(_ context.Context, request domain.BookingEvent) error {
+func (s service) UpdateTestDriveBooking(_ context.Context, request testdrive.TestDriveEvent) error {
 	// logging the received test drive request
-	fmt.Printf("[UpdateTestDriveBooking] TestDrive Data: %+v\n", request)
+	fmt.Printf("[UpdateTestDriveBooking] TestDriveRequest Data: %+v\n", request)
 
 	// Validate test drive data
 	if request.Data.TestDrive.TestDriveID == "" {

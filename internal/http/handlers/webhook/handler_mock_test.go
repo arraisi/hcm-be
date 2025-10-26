@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	domain "github.com/arraisi/hcm-be/internal/domain"
+	testdrive "github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -36,7 +36,7 @@ func (m *MockTestDriveService) EXPECT() *MockTestDriveServiceMockRecorder {
 }
 
 // CreateTestDriveBooking mocks base method.
-func (m *MockTestDriveService) CreateTestDriveBooking(ctx context.Context, request domain.BookingEvent) error {
+func (m *MockTestDriveService) CreateTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTestDriveBooking", ctx, request)
 	ret0, _ := ret[0].(error)
@@ -50,7 +50,7 @@ func (mr *MockTestDriveServiceMockRecorder) CreateTestDriveBooking(ctx, request 
 }
 
 // UpdateTestDriveBooking mocks base method.
-func (m *MockTestDriveService) UpdateTestDriveBooking(ctx context.Context, request domain.BookingEvent) error {
+func (m *MockTestDriveService) UpdateTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTestDriveBooking", ctx, request)
 	ret0, _ := ret[0].(error)
