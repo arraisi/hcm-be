@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
@@ -29,7 +28,7 @@ type UserRepository interface {
 
 // TransactionRepository defines the interface for transaction management
 type TransactionRepository interface {
-	BeginTransaction(ctx context.Context, opts *sql.TxOptions) (*sqlx.Tx, error)
+	BeginTransaction(ctx context.Context) (*sqlx.Tx, error)
 	CommitTransaction(tx *sqlx.Tx) error
 	RollbackTransaction(tx *sqlx.Tx) error
 }
@@ -51,7 +50,7 @@ func (s *UserService) Get(ctx context.Context, req user.GetUserRequest) (domain.
 
 // Create creates a new user within a transaction
 func (s *UserService) Create(ctx context.Context, req user.CreateUserRequest) error {
-	tx, err := s.trxRepo.BeginTransaction(ctx, nil)
+	tx, err := s.trxRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err
 	}
@@ -71,7 +70,7 @@ func (s *UserService) Create(ctx context.Context, req user.CreateUserRequest) er
 
 // Update updates a user by ID within a transaction
 func (s *UserService) Update(ctx context.Context, id string, req user.UpdateUserRequest) error {
-	tx, err := s.trxRepo.BeginTransaction(ctx, nil)
+	tx, err := s.trxRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err
 	}
@@ -88,7 +87,7 @@ func (s *UserService) Update(ctx context.Context, id string, req user.UpdateUser
 
 // Delete deletes a user by ID within a transaction
 func (s *UserService) Delete(ctx context.Context, id string) error {
-	tx, err := s.trxRepo.BeginTransaction(ctx, nil)
+	tx, err := s.trxRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err
 	}

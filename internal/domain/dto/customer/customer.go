@@ -36,3 +36,35 @@ func (req GetCustomerRequest) Apply(q *sqrl.SelectBuilder) {
 		q.Suffix(fmt.Sprintf("OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", req.Offset, req.Limit))
 	}
 }
+
+type UpdateCustomerRequest struct {
+	IID          string
+	OneAccountID string
+	FirstName    *string
+	LastName     *string
+	Gender       *string
+	PhoneNumber  *string
+	Email        *string
+}
+
+func (req UpdateCustomerRequest) ToUpdateMap() map[string]interface{} {
+	updateMap := make(map[string]interface{})
+
+	if req.FirstName != nil {
+		updateMap["first_name"] = *req.FirstName
+	}
+	if req.LastName != nil {
+		updateMap["last_name"] = *req.LastName
+	}
+	if req.Gender != nil {
+		updateMap["gender"] = *req.Gender
+	}
+	if req.PhoneNumber != nil {
+		updateMap["phone_number"] = *req.PhoneNumber
+	}
+	if req.Email != nil {
+		updateMap["email"] = *req.Email
+	}
+
+	return updateMap
+}

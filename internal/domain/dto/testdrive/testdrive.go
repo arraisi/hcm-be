@@ -1,10 +1,14 @@
 package testdrive
 
 import (
+	"strings"
 	"time"
 
+	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/lead"
+	"github.com/arraisi/hcm-be/pkg/utils"
+	"github.com/elgris/sqrl"
 )
 
 // TestDriveRequest represents the test drive information from the webhook
@@ -30,7 +34,7 @@ type TestDriveRequest struct {
 type TestDriveEventData struct {
 	OneAccount customer.OneAccountRequest `json:"one_account" validate:"required"`
 	TestDrive  TestDriveRequest           `json:"test_drive" validate:"required"`
-	Leads      lead.LeadsRequest          `json:"leads" validate:"required"`
+	Leads      lead.LeadRequest           `json:"leads" validate:"required"`
 	Score      lead.Score                 `json:"score" validate:"required"`
 }
 
@@ -57,4 +61,78 @@ func (td *TestDriveRequest) GetStartTime() time.Time {
 
 func (td *TestDriveRequest) GetEndTime() time.Time {
 	return time.Unix(td.TestDriveDatetimeEnd, 0)
+}
+
+// ToTestDriveModel converts the TestDriveEvent to the internal TestDrive model
+func (be *TestDriveEvent) ToTestDriveModel() domain.TestDrive {
+	return domain.TestDrive{
+		TestDriveID: be.Data.TestDrive.TestDriveID,
+		Model:       be.Data.TestDrive.Model,
+		Variant:     be.Data.TestDrive.Variant,
+		CreatedAt:   be.Data.TestDrive.GetCreatedTime(),
+		StartTime:   be.Data.TestDrive.GetStartTime(),
+		EndTime:     be.Data.TestDrive.GetEndTime(),
+		Location:    be.Data.TestDrive.Location,
+		OutletID:    be.Data.TestDrive.OutletID,
+		OutletName:  be.Data.TestDrive.OutletName,
+		Status:      be.Data.TestDrive.TestDriveStatus,
+		Reason:      utils.ToValue(be.Data.TestDrive.CancellationReason),
+		OtherReason: utils.ToValue(be.Data.TestDrive.OtherCancellationReason),
+		Consent:     be.Data.TestDrive.CustomerDrivingConsent,
+	}
+}
+
+// ToCustomerModel converts the TestDriveEvent to the internal Customer model
+func (be *TestDriveEvent) ToCustomerModel() domain.Customer {
+	return domain.Customer{
+		OneAccountID: be.Data.OneAccount.OneAccountID,
+		FirstName:    be.Data.OneAccount.FirstName,
+		LastName:     be.Data.OneAccount.LastName,
+		Email:        be.Data.OneAccount.Email,
+		PhoneNumber:  be.Data.OneAccount.PhoneNumber,
+	}
+}
+
+// ToLeadModel converts the TestDriveEvent to the internal Lead model
+func (be *TestDriveEvent) ToLeadModel() domain.Lead {
+	return domain.Lead{
+		LeadsID:                         strings.ReplaceAll(be.Data.Leads.LeadsID, "-", ""),
+		LeadsType:                       be.Data.Leads.LeadsType,
+		LeadsFollowUpStatus:             be.Data.Leads.LeadsFollowUpStatus,
+		LeadsPreferenceContactTimeStart: be.Data.Leads.LeadsPreferenceContactTimeStart,
+		LeadsPreferenceContactTimeEnd:   be.Data.Leads.LeadsPreferenceContactTimeEnd,
+		LeadSource:                      be.Data.Leads.LeadSource,
+		AdditionalNotes:                 be.Data.Leads.AdditionalNotes,
+	}
+}
+
+// ToLeadScoreModel converts the TestDriveEvent to the internal LeadScore model
+func (be *TestDriveEvent) ToLeadScoreModel() domain.LeadScore {
+	return domain.LeadScore{
+		IID:                     strings.ReplaceAll(be.Data.Leads.LeadsID, "-", ""),
+		TAMLeadScore:            be.Data.Score.TAMLeadScore,
+		OutletLeadScore:         be.Data.Score.OutletLeadScore,
+		PurchasePlanCriteria:    be.Data.Score.Parameter.PurchasePlanCriteria,
+		PaymentPreferCriteria:   be.Data.Score.Parameter.PaymentPreferCriteria,
+		NegotiationCriteria:     be.Data.Score.Parameter.NegotiationCriteria,
+		TestDriveCriteria:       be.Data.Score.Parameter.TestDriveCriteria,
+		TradeInCriteria:         be.Data.Score.Parameter.TradeInCriteria,
+		BrowsingHistoryCriteria: be.Data.Score.Parameter.BrowsingHistoryCriteria,
+		VehicleAgeCriteria:      be.Data.Score.Parameter.VehicleAgeCriteria,
+	}
+}
+
+type GetTestDriveRequest struct {
+	IID         *string
+	TestDriveID *string
+}
+
+// Apply applies the request parameters to the given SelectBuilder
+func (req GetTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
+	if req.IID != nil {
+		q.Where(sqrl.Eq{"i_id": req.IID})
+	}
+	if req.TestDriveID != nil {
+		q.Where(sqrl.Eq{"test_drive_ID": req.TestDriveID})
+	}
 }

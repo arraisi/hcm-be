@@ -1,21 +1,23 @@
 package domain
 
+import "time"
+
 type TestDrive struct {
-	IID         string `json:"i_id" db:"i_id"`
-	TestDriveID string `json:"test_drive_ID" db:"test_drive_ID"`
-	Katashiki   string `json:"katashiki_code" db:"katashiki_code"`
-	Model       string `json:"model" db:"model"`
-	Variant     string `json:"variant" db:"variant"`
-	StartTime   int64  `json:"test_drive_datetime_start" db:"test_drive_datetime_start"`
-	EndTime     int64  `json:"test_drive_datetime_end" db:"test_drive_datetime_end"`
-	Location    string `json:"location" db:"location"`
-	OutletID    string `json:"outlet_ID" db:"outlet_ID"`
-	OutletName  string `json:"outlet_name" db:"outlet_name"`
-	Status      string `json:"test_drive_status" db:"test_drive_status"`
-	Reason      string `json:"cancellation_reason" db:"cancellation_reason"`
-	OtherReason string `json:"other_cancellation_reason" db:"other_cancellation_reason"`
-	CreatedAt   int64  `json:"created_datetime" db:"created_datetime"`
-	Consent     bool   `json:"customer_driving_consent" db:"customer_driving_consent"`
+	IID         string    `json:"i_id" db:"i_id"`
+	TestDriveID string    `json:"test_drive_ID" db:"test_drive_ID"`
+	Katashiki   string    `json:"katashiki_code" db:"katashiki_code"`
+	Model       string    `json:"model" db:"model"`
+	Variant     string    `json:"variant" db:"variant"`
+	StartTime   time.Time `json:"test_drive_datetime_start" db:"test_drive_datetime_start"`
+	EndTime     time.Time `json:"test_drive_datetime_end" db:"test_drive_datetime_end"`
+	Location    string    `json:"location" db:"location"`
+	OutletID    string    `json:"outlet_ID" db:"outled_ID"`
+	OutletName  string    `json:"outlet_name" db:"outlet_name"`
+	Status      string    `json:"test_drive_status" db:"test_drive_status"`
+	Reason      string    `json:"cancellation_reason" db:"cancellation_reason"`
+	OtherReason string    `json:"other_cancellation_reason" db:"other_cancellation_reason"`
+	CreatedAt   time.Time `json:"created_datetime" db:"created_datetime"`
+	Consent     bool      `json:"customer_driving_consent" db:"customer_driving_consent"`
 }
 
 // TableName returns the database table name for the User model
@@ -34,13 +36,33 @@ func (u *TestDrive) Columns() []string {
 		"test_drive_datetime_start",
 		"test_drive_datetime_end",
 		"location",
-		"outlet_ID",
+		"outled_ID",
 		"outlet_name",
 		"test_drive_status",
 		"cancellation_reason",
 		"other_cancellation_reason",
 		"created_datetime",
 		"customer_driving_consent",
+	}
+}
+
+func (u *TestDrive) ToValues() []interface{} {
+	return []interface{}{
+		u.IID,
+		u.TestDriveID,
+		u.Katashiki,
+		u.Model,
+		u.Variant,
+		u.StartTime,
+		u.EndTime,
+		u.Location,
+		u.OutletID,
+		u.OutletName,
+		u.Status,
+		u.Reason,
+		u.OtherReason,
+		u.CreatedAt,
+		u.Consent,
 	}
 }
 
@@ -55,7 +77,7 @@ func (u *TestDrive) SelectColumns() []string {
 		"test_drive_datetime_start",
 		"test_drive_datetime_end",
 		"location",
-		"outlet_ID",
+		"outled_ID",
 		"outlet_name",
 		"test_drive_status",
 		"cancellation_reason",
@@ -63,4 +85,46 @@ func (u *TestDrive) SelectColumns() []string {
 		"created_datetime",
 		"customer_driving_consent",
 	}
+}
+
+func (u *TestDrive) ToUpdateMap() map[string]interface{} {
+	updateMap := make(map[string]interface{})
+	if u.Katashiki != "" {
+		updateMap["katashiki_code"] = u.Katashiki
+	}
+	if u.Model != "" {
+		updateMap["model"] = u.Model
+	}
+	if u.Variant != "" {
+		updateMap["variant"] = u.Variant
+	}
+	if !u.StartTime.IsZero() {
+		updateMap["test_drive_datetime_start"] = u.StartTime
+	}
+	if !u.EndTime.IsZero() {
+		updateMap["test_drive_datetime_end"] = u.EndTime
+	}
+	if u.Location != "" {
+		updateMap["location"] = u.Location
+	}
+	if u.OutletID != "" {
+		updateMap["outled_ID"] = u.OutletID
+	}
+	if u.OutletName != "" {
+		updateMap["outlet_name"] = u.OutletName
+	}
+	if u.Status != "" {
+		updateMap["test_drive_status"] = u.Status
+	}
+	if u.Reason != "" {
+		updateMap["cancellation_reason"] = u.Reason
+	}
+	if u.OtherReason != "" {
+		updateMap["other_cancellation_reason"] = u.OtherReason
+	}
+	if !u.CreatedAt.IsZero() {
+		updateMap["created_datetime"] = u.CreatedAt
+	}
+	updateMap["customer_driving_consent"] = u.Consent
+	return updateMap
 }

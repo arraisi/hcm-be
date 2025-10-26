@@ -32,21 +32,25 @@ All HTTP responses follow this unified structure:
 ## Success Responses
 
 ### Basic Success (200 OK)
+
 ```go
 response.OK(w, userData, "User retrieved successfully")
 ```
 
 ### Created (201 Created)
+
 ```go
 response.Created(w, newUser, "User created successfully")
 ```
 
 ### No Content (204 No Content)
+
 ```go
 response.NoContent(w)
 ```
 
 ### With Metadata (Pagination)
+
 ```go
 meta := map[string]interface{}{
     "pagination": map[string]interface{}{
@@ -67,6 +71,7 @@ response.JSON(w, http.StatusOK, resp)
 ## Error Responses
 
 ### Domain Errors
+
 Domain errors provide structured error handling with automatic HTTP status mapping:
 
 ```go
@@ -75,11 +80,11 @@ func (s *UserService) GetUser(id string) error {
     if id == "" {
         return errors.NewDomainError(errors.ErrBadRequest, "User ID is required")
     }
-    
+
     if userNotFound {
         return errors.NewDomainError(errors.ErrNotFound, "User not found")
     }
-    
+
     return nil
 }
 
@@ -91,6 +96,7 @@ if err := service.GetUser(id); err != nil {
 ```
 
 ### Validation Errors
+
 Validation errors are normalized to a consistent format:
 
 ```go
@@ -108,9 +114,10 @@ response.Validation(w, validationErrors)
 ```
 
 ### Quick Error Responses
+
 ```go
 response.BadRequest(w, "Invalid parameters")
-response.NotFound(w, "Resource not found") 
+response.NotFound(w, "Resource not found")
 response.Unauthorized(w, "Authentication required")
 response.Forbidden(w, "Access denied")
 response.Conflict(w, "Resource already exists")
@@ -121,17 +128,17 @@ response.InternalServerError(w, "Something went wrong")
 
 Pre-defined domain errors with appropriate HTTP status codes:
 
-| Error Type | HTTP Status | Usage |
-|------------|-------------|-------|
-| `ErrBadRequest` | 400 | Invalid request parameters |
-| `ErrUnauthorized` | 401 | Authentication required |
-| `ErrForbidden` | 403 | Access denied |
-| `ErrNotFound` | 404 | Resource not found |
-| `ErrConflict` | 409 | Resource conflict |
-| `ErrValidation` | 400 | Validation failure |
-| `ErrInternal` | 500 | Internal server error |
-| `ErrNotImplemented` | 501 | Feature not implemented |
-| `ErrServiceUnavailable` | 503 | Service unavailable |
+| Error Type              | HTTP Status | Usage                      |
+| ----------------------- | ----------- | -------------------------- |
+| `ErrBadRequest`         | 400         | Invalid request parameters |
+| `ErrUnauthorized`       | 401         | Authentication required    |
+| `ErrForbidden`          | 403         | Access denied              |
+| `ErrNotFound`           | 404         | Resource not found         |
+| `ErrConflict`           | 409         | Resource conflict          |
+| `ErrValidation`         | 400         | Validation failure         |
+| `ErrInternal`           | 500         | Internal server error      |
+| `ErrNotImplemented`     | 501         | Feature not implemented    |
+| `ErrServiceUnavailable` | 503         | Service unavailable        |
 
 ### Creating Custom Domain Errors
 
@@ -156,6 +163,7 @@ err := errors.Wrap(errors.ErrInternal, dbError)
 ## Middleware
 
 ### Request ID Middleware
+
 Automatically generates or extracts request IDs:
 
 ```go
@@ -166,6 +174,7 @@ requestID := middleware.GetRequestID(ctx)
 ```
 
 ### Recovery Middleware
+
 Catches panics and returns JSON 500 responses:
 
 ```go
@@ -173,6 +182,7 @@ handler = middleware.Recovery(handler)
 ```
 
 ### Middleware Stack Example
+
 ```go
 var handler http.Handler = yourRouter
 
@@ -184,6 +194,7 @@ handler = middleware.Recovery(handler)
 ## Migration Guide
 
 ### Before (Old System)
+
 ```go
 func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
     user, err := h.service.GetUser(id)
@@ -200,6 +211,7 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 ```
 
 ### After (New System)
+
 ```go
 func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
     user, err := h.service.GetUser(id)
@@ -214,68 +226,72 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 ## Response Examples
 
 ### Success Response
+
 ```json
 {
-  "data": {
-    "id": "123",
-    "name": "John Doe",
-    "email": "john@example.com"
-  },
-  "message": "User retrieved successfully"
+	"data": {
+		"id": "123",
+		"name": "John Doe",
+		"email": "john@example.com"
+	},
+	"message": "User retrieved successfully"
 }
 ```
 
 ### Validation Error Response
+
 ```json
 {
-  "data": null,
-  "message": "Validation failed",
-  "error": {
-    "code": "VALIDATION_FAILED",
-    "details": {
-      "validation_errors": [
-        {
-          "field": "email",
-          "message": "email is required"
-        },
-        {
-          "field": "name",
-          "message": "name must be at least 2 characters long"
-        }
-      ]
-    }
-  }
+	"data": null,
+	"message": "Validation failed",
+	"error": {
+		"code": "VALIDATION_FAILED",
+		"details": {
+			"validation_errors": [
+				{
+					"field": "email",
+					"message": "email is required"
+				},
+				{
+					"field": "name",
+					"message": "name must be at least 2 characters long"
+				}
+			]
+		}
+	}
 }
 ```
 
 ### Domain Error Response
+
 ```json
 {
-  "data": null,
-  "message": "User not found",
-  "error": {
-    "code": "NOT_FOUND",
-    "details": {}
-  }
+	"data": null,
+	"message": "User not found",
+	"error": {
+		"code": "NOT_FOUND",
+		"details": {}
+	}
 }
 ```
 
 ### Paginated Response
+
 ```json
 {
-  "data": [
-    {"id": "123", "name": "John Doe"},
-    {"id": "124", "name": "Jane Doe"}
-  ],
-  "message": "Users retrieved successfully",
-  "meta": {
-    "pagination": {
-      "total": 100,
-      "limit": 10,
-      "offset": 0,
-      "pages": 10
-    }
-  }
+	"data": [
+		{ "id": "123", "name": "John Doe" },
+		{ "id": "124", "name": "Jane Doe" }
+	],
+	"message": "Users retrieved successfully",
+	"meta": {
+		"pagination": {
+			"total": 100,
+			"limit": 10,
+			"offset": 0,
+			"pages": 10
+		}
+	}
 }
 ```
 
@@ -296,10 +312,10 @@ The response system can be easily tested:
 func TestHandler(t *testing.T) {
     w := httptest.NewRecorder()
     handler.ServeHTTP(w, req)
-    
+
     var resp response.Response
     json.Unmarshal(w.Body.Bytes(), &resp)
-    
+
     assert.Equal(t, "User retrieved successfully", resp.Message)
     assert.NotNil(t, resp.Data)
 }

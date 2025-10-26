@@ -6,6 +6,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
+	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
@@ -15,9 +16,10 @@ import (
 )
 
 type Handler struct {
-	UserHandler    user.Handler
-	WebhookHandler webhook.Handler
-	Config         *config.Config
+	Config          *config.Config
+	UserHandler     user.Handler
+	CustomerHandler customer.Handler
+	WebhookHandler  webhook.Handler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -56,17 +58,19 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			users.Delete("/{id}", handler.UserHandler.Delete)
 		})
 
-	})
+		api.Route("/customers", func(users chi.Router) {
+			users.Get("/", handler.CustomerHandler.GetCustomers)
+		})
 
-	// Webhook endpoints with middleware
-	r.Route("/api/v1/webhook", func(webhook chi.Router) {
-		// Create webhook middleware
-		webhookMiddleware := middleware.NewWebhookMiddleware(config)
+		api.Route("/webhooks", func(webhooks chi.Router) {
+			// Create webhook middleware
+			webhookMiddleware := middleware.NewWebhookMiddleware(config)
 
-		// Apply webhook-specific middleware
-		webhook.Use(webhookMiddleware.ExtractAndValidateHeaders)
+			// Apply webhook-specific middleware
+			webhooks.Use(webhookMiddleware.ExtractAndValidateHeaders)
 
-		webhook.Post("/test-drive-event", handler.WebhookHandler.TestDriveEvent)
+			webhooks.Post("/test-drive", handler.WebhookHandler.TestDriveEvent)
+		})
 	})
 
 	// root

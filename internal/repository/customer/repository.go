@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -18,12 +19,14 @@ type iDB interface {
 }
 
 type repository struct {
-	db iDB
+	cfg *config.Config
+	db  iDB
 }
 
 // New creates a new customer repository instance
-func New(db iDB) *repository {
+func New(cfg *config.Config, db iDB) *repository {
 	return &repository{
-		db: db,
+		db:  db,
+		cfg: cfg,
 	}
 }

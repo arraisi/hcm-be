@@ -1,17 +1,16 @@
-package customer
+package lead
 
 import (
 	"context"
 	"strings"
 
 	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/google/uuid"
-
 	"github.com/elgris/sqrl"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) error {
+func (r *repository) CreateLead(ctx context.Context, tx *sqlx.Tx, req domain.Lead) error {
 	req.IID = strings.ReplaceAll(uuid.New().String(), "-", "")
 	query, args, err := sqrl.Insert(req.TableName()).
 		Columns(req.Columns()...).

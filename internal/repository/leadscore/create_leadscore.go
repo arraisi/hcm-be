@@ -1,18 +1,14 @@
-package customer
+package leadscore
 
 import (
 	"context"
-	"strings"
 
 	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/google/uuid"
-
 	"github.com/elgris/sqrl"
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) error {
-	req.IID = strings.ReplaceAll(uuid.New().String(), "-", "")
+func (r *repository) CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error {
 	query, args, err := sqrl.Insert(req.TableName()).
 		Columns(req.Columns()...).
 		Values(req.ToValues()...).ToSql()

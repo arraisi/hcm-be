@@ -1,13 +1,17 @@
 package lead
 
-// LeadsRequest represents the leads information from the webhook
-type LeadsRequest struct {
-	LeadsID                         string  `json:"leads_ID" validate:"required"`
+import (
+	"github.com/elgris/sqrl"
+)
+
+// LeadRequest represents the leads information from the webhook
+type LeadRequest struct {
+	LeadsID                         string  `json:"leads_id" validate:"required"`
 	LeadsType                       string  `json:"leads_type" validate:"required,eq=TEST_DRIVE_REQUEST"`
 	LeadsFollowUpStatus             string  `json:"leads_follow_up_status" validate:"required"`
 	LeadsPreferenceContactTimeStart string  `json:"leads_preference_contact_time_start" validate:"required"`
 	LeadsPreferenceContactTimeEnd   string  `json:"leads_preference_contact_time_end" validate:"required"`
-	LeadsSource                     string  `json:"leads_source" validate:"required"`
+	LeadSource                      string  `json:"leads_source" validate:"required"`
 	AdditionalNotes                 *string `json:"additional_notes"`
 }
 
@@ -24,7 +28,33 @@ type ScoreParameter struct {
 
 // Score represents the score information from the webhook
 type Score struct {
-	IAMLeadScore    string         `json:"iam_lead_score" validate:"required"`
+	TAMLeadScore    string         `json:"tam_lead_score" validate:"required"`
 	OutletLeadScore string         `json:"outlet_lead_score" validate:"required"`
 	Parameter       ScoreParameter `json:"parameter" validate:"required"`
+}
+
+type GetLeadRequest struct {
+	IID     *string
+	LeadsID *string
+}
+
+// Apply applies the request parameters to the given SelectBuilder
+func (req GetLeadRequest) Apply(q *sqrl.SelectBuilder) {
+	if req.IID != nil {
+		q.Where(sqrl.Eq{"i_id": req.IID})
+	}
+	if req.LeadsID != nil {
+		q.Where(sqrl.Eq{"leads_id": req.LeadsID})
+	}
+}
+
+type GetLeadScoreRequest struct {
+	IID *string
+}
+
+// Apply applies the request parameters to the given SelectBuilder
+func (req GetLeadScoreRequest) Apply(q *sqrl.SelectBuilder) {
+	if req.IID != nil {
+		q.Where(sqrl.Eq{"i_id": req.IID})
+	}
 }

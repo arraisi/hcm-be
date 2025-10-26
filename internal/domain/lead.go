@@ -38,6 +38,22 @@ func (u *Lead) Columns() []string {
 	}
 }
 
+func (u *Lead) ToValues() []interface{} {
+	return []interface{}{
+		u.IID,
+		u.LeadsID,
+		u.LeadsType,
+		u.LeadsFollowUpStatus,
+		u.LeadsPreferenceContactTimeStart,
+		u.LeadsPreferenceContactTimeEnd,
+		u.LeadSource,
+		u.AdditionalNotes,
+		u.TAMLeadScore,
+		u.OutletLeadScore,
+		u.PurchasePlanCriteria,
+	}
+}
+
 // SelectColumns returns the list of columns to select in queries for the User model
 func (u *Lead) SelectColumns() []string {
 	return []string{
@@ -53,4 +69,36 @@ func (u *Lead) SelectColumns() []string {
 		"outlet_lead_score",
 		"purchase_plan_criteria",
 	}
+}
+
+func (u *Lead) ToUpdateMap() map[string]interface{} {
+	updateMap := make(map[string]interface{})
+	if u.LeadsType != "" {
+		updateMap["leads_type"] = u.LeadsType
+	}
+	if u.LeadsFollowUpStatus != "" {
+		updateMap["leads_follow_up_status"] = u.LeadsFollowUpStatus
+	}
+	if u.LeadsPreferenceContactTimeStart != "" {
+		updateMap["leads_preference_contact_time_start"] = u.LeadsPreferenceContactTimeStart
+	}
+	if u.LeadsPreferenceContactTimeEnd != "" {
+		updateMap["leads_preference_contact_time_end"] = u.LeadsPreferenceContactTimeEnd
+	}
+	if u.LeadSource != "" {
+		updateMap["lead_source"] = u.LeadSource
+	}
+	if u.AdditionalNotes != nil {
+		updateMap["additional_notes"] = u.AdditionalNotes
+	}
+	if u.TAMLeadScore != "" {
+		updateMap["tam_lead_score"] = u.TAMLeadScore
+	}
+	if u.OutletLeadScore != "" {
+		updateMap["outlet_lead_score"] = u.OutletLeadScore
+	}
+	if u.PurchasePlanCriteria != "" {
+		updateMap["purchase_plan_criteria"] = u.PurchasePlanCriteria
+	}
+	return updateMap
 }

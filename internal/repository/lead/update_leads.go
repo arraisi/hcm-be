@@ -1,0 +1,30 @@
+package lead
+
+import (
+	"context"
+
+	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/elgris/sqrl"
+	"github.com/jmoiron/sqlx"
+)
+
+func (r *repository) UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Lead) error {
+	model := domain.Lead{}
+
+	query, args, err := sqrl.Update(model.TableName()).
+		SetMap(req.ToUpdateMap()).
+		Where(sqrl.Or{
+			sqrl.Eq{"leads_id": req.LeadsID},
+			sqrl.Eq{"i_id": req.IID},
+		}).ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.ExecContext(ctx, r.db.Rebind(query), args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

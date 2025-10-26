@@ -1,9 +1,10 @@
-package transaction
+package testdrive
 
 import (
 	"context"
 	"database/sql"
 
+	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -13,27 +14,18 @@ type iDB interface {
 	Rebind(query string) string
 	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
 	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 }
 
 type repository struct {
-	db iDB
+	cfg *config.Config
+	db  iDB
 }
 
-// New creates a new transaction repository instance
-func New(db iDB) *repository {
+// New creates a new customer repository instance
+func New(cfg *config.Config, db iDB) *repository {
 	return &repository{
-		db: db,
+		db:  db,
+		cfg: cfg,
 	}
-}
-
-func (r *repository) BeginTransaction(ctx context.Context) (*sqlx.Tx, error) {
-	return r.db.BeginTxx(ctx, nil)
-}
-
-func (r *repository) CommitTransaction(tx *sqlx.Tx) error {
-	return tx.Commit()
-}
-
-func (r *repository) RollbackTransaction(tx *sqlx.Tx) error {
-	return tx.Rollback()
 }

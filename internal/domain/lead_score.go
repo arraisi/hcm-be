@@ -34,6 +34,21 @@ func (u *LeadScore) Columns() []string {
 	}
 }
 
+func (u *LeadScore) ToValues() []interface{} {
+	return []interface{}{
+		u.IID,
+		u.TAMLeadScore,
+		u.OutletLeadScore,
+		u.PurchasePlanCriteria,
+		u.PaymentPreferCriteria,
+		u.NegotiationCriteria,
+		u.TestDriveCriteria,
+		u.TradeInCriteria,
+		u.BrowsingHistoryCriteria,
+		u.VehicleAgeCriteria,
+	}
+}
+
 // SelectColumns returns the list of columns to select in queries for the User model
 func (u *LeadScore) SelectColumns() []string {
 	return []string{
@@ -48,4 +63,36 @@ func (u *LeadScore) SelectColumns() []string {
 		"browsing_history_criteria",
 		"vehicle_age_criteria",
 	}
+}
+
+func (u *LeadScore) ToUpdateMap() map[string]interface{} {
+	updateMap := make(map[string]interface{})
+	if u.TAMLeadScore != "" {
+		updateMap["tam_lead_score"] = u.TAMLeadScore
+	}
+	if u.OutletLeadScore != "" {
+		updateMap["outlet_lead_score"] = u.OutletLeadScore
+	}
+	if u.PurchasePlanCriteria != "" {
+		updateMap["purchase_plan_criteria"] = u.PurchasePlanCriteria
+	}
+	if u.PaymentPreferCriteria != "" {
+		updateMap["payment_prefer_criteria"] = u.PaymentPreferCriteria
+	}
+	if u.NegotiationCriteria != "" {
+		updateMap["negotiation_criteria"] = u.NegotiationCriteria
+	}
+	if u.TestDriveCriteria != "" {
+		updateMap["test_drive_criteria"] = u.TestDriveCriteria
+	}
+	if u.TradeInCriteria != "" {
+		updateMap["trade_in_criteria"] = u.TradeInCriteria
+	}
+	if u.BrowsingHistoryCriteria != "" {
+		updateMap["browsing_history_criteria"] = u.BrowsingHistoryCriteria
+	}
+	if u.VehicleAgeCriteria != "" {
+		updateMap["vehicle_age_criteria"] = u.VehicleAgeCriteria
+	}
+	return updateMap
 }

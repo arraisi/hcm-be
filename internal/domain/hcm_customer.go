@@ -9,9 +9,9 @@ type Customer struct {
 	Email            string `json:"email" db:"email"`
 	IID              string `json:"i_id" db:"i_id"`
 	IHasjratid       string `json:"i_hasjratid" db:"i_hasjratid"`
-	CIsNew           bool   `json:"c_isnew" db:"c_isnew"`
-	CIsMerge         bool   `json:"c_ismerge" db:"c_ismerge"`
-	PrimaryUser      bool   `json:"primary_user" db:"primary_user"`
+	CIsNew           int    `json:"c_isnew" db:"c_isnew"`
+	CIsMerge         int    `json:"c_ismerge" db:"c_ismerge"`
+	PrimaryUser      string `json:"primary_user" db:"primary_user"`
 	DealerCustomerID string `json:"dealer_customer_ID" db:"dealer_customer_ID"`
 	CIsValid         bool   `json:"c_isvalid" db:"c_isvalid"`
 	CIsOmnichannel   bool   `json:"c_isomnichannel" db:"c_isomnichannel"`
@@ -83,4 +83,24 @@ func (u *Customer) SelectColumns() []string {
 		"c_isomnichannel",
 		"CAST(i_idleadsin AS NVARCHAR(36)) as i_idleadsin",
 	}
+}
+
+func (u *Customer) ToUpdateMap() map[string]interface{} {
+	updateMap := make(map[string]interface{})
+	if u.FirstName != "" {
+		updateMap["first_name"] = u.FirstName
+	}
+	if u.LastName != "" {
+		updateMap["last_name"] = u.LastName
+	}
+	if u.Gender != "" {
+		updateMap["gender"] = u.Gender
+	}
+	if u.PhoneNumber != "" {
+		updateMap["phone_number"] = u.PhoneNumber
+	}
+	if u.Email != "" {
+		updateMap["email"] = u.Email
+	}
+	return updateMap
 }
