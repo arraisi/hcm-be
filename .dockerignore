@@ -1,0 +1,81 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+.gitmodules
+
+# Documentation
+README.md
+*.md
+docs/
+examples/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+hcm-be
+main
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+
+# Test files
+*_test.go
+coverage.out
+*.test
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.log
+
+# Docker files (no need to copy into image)
+Dockerfile*
+.dockerignore
+docker-compose*.yml
+docker-compose*.yaml
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# Go specific
+vendor/
+*.mod.bak
+*.sum.bak
+
+# Development tools
+Makefile
+scripts/
+tools/
+
+# Kubernetes manifests
+k8s/
+kubernetes/
+*.yaml
+*.yml
+!internal/config/config.yaml
