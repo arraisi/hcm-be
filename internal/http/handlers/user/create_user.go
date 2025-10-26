@@ -16,8 +16,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var req user.CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		errorResponse := errors.NewErrorResponseFromList(errors.ErrInvalidJSON, errors.ErrListUser)
-		response.ErrorResponseJSON(w, errorResponse)
+		response.BadRequest(w, "Invalid JSON payload")
 		return
 	}
 
@@ -28,10 +27,27 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Basic business logic validation
+	if req.Email == "" || req.Name == "" {
+		response.DomainError(w, errors.NewDomainError(errors.ErrValidation, "email and name are required"))
+		return
+	}
+
 	if err := h.svc.Create(ctx, req); err != nil {
-		// Use NewErrorResponseFromList to determine HTTP status code
-		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListUser)
-		response.ErrorResponseJSON(w, errorResponse)
+		// Check if it's a domain error first
+		if errors.IsDomainError(err) {
+			response.DomainError(w, err)
+			return
+		}
+
+		// Handle specific error cases
+		if err.Error() == "user already exists" {
+			response.DomainError(w, errors.NewDomainError(errors.ErrConflict, "User with this email already exists"))
+			return
+		}
+
+		// Generic server error
+		response.DomainError(w, errors.Wrap(errors.ErrInternal, err))
 		return
 	}
 

@@ -1,20 +1,21 @@
-package user
+package customer
 
 import (
 	"net/http"
 	"strconv"
 
-	"github.com/arraisi/hcm-be/internal/domain/dto/user"
+	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/response"
+	"github.com/go-chi/chi/v5"
 )
 
-// List retrieves a list of users
-func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetCustomers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	_ = chi.URLParam(r, "id")
 
 	// Parse query parameters
-	req := user.GetUserRequest{
+	req := customer.GetCustomerRequest{
 		Limit:  10, // default limit
 		Offset: 0,
 	}
@@ -43,33 +44,13 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 		req.Order = order
 	}
 
-	users, err := h.svc.List(ctx, req)
+	result, err := h.svc.GetCustomers(ctx, req)
 	if err != nil {
-		// Check if it's a domain error first
-		if errors.IsDomainError(err) {
-			response.DomainError(w, err)
-			return
-		}
-
-		// Generic server error
-		response.DomainError(w, errors.Wrap(errors.ErrInternal, err))
+		// Use NewErrorResponseFromList to determine HTTP status code
+		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListUser)
+		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
-	// Create pagination metadata
-	meta := map[string]interface{}{
-		"pagination": map[string]interface{}{
-			"limit":  req.Limit,
-			"offset": req.Offset,
-		},
-	}
-
-	// Use the new unified response with metadata
-	resp := response.Response{
-		Data:    users,
-		Message: "Users retrieved successfully",
-		Meta:    meta,
-	}
-
-	response.JSON(w, http.StatusOK, resp)
+	response.OK(w, result, "User retrieved successfully")
 }

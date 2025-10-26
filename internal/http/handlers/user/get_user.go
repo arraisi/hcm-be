@@ -15,8 +15,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	if id == "" {
-		errorResponse := errors.NewErrorResponseFromList(errors.ErrMissingRequired, errors.ErrListUser)
-		response.ErrorResponseJSON(w, errorResponse)
+		response.DomainError(w, errors.NewDomainError(errors.ErrBadRequest, "User ID is required"))
 		return
 	}
 
@@ -24,9 +23,20 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		ID: id,
 	})
 	if err != nil {
-		// Use NewErrorResponseFromList to determine HTTP status code
-		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListUser)
-		response.ErrorResponseJSON(w, errorResponse)
+		// Check if it's a domain error first
+		if errors.IsDomainError(err) {
+			response.DomainError(w, err)
+			return
+		}
+
+		// Handle specific error cases
+		if err.Error() == "user not found" {
+			response.DomainError(w, errors.NewDomainError(errors.ErrNotFound, "User not found"))
+			return
+		}
+
+		// Generic server error
+		response.DomainError(w, errors.Wrap(errors.ErrInternal, err))
 		return
 	}
 

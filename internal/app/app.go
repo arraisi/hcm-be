@@ -5,8 +5,13 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
+	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
+	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
+	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
+	leadscoreRepository "github.com/arraisi/hcm-be/internal/repository/leadscore"
+	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
@@ -28,33 +33,45 @@ func Run(cfg *config.Config) error {
 		_ = db.Close()
 	}()
 
+	// create webhook dependencies
+	//mqPublisher := mq.NewInMemoryPublisher()
+
 	// configure connection pool from config
 	db.SetMaxOpenConns(cfg.Database.MaxOpenConnections)
 	db.SetMaxIdleConns(cfg.Database.MaxIdleConnections)
 	db.SetConnMaxLifetime(cfg.Database.MaxConnectionLifetime)
 	db.SetConnMaxIdleTime(cfg.Database.MaxConnectionIdleTime)
 
-	// create repository factory and main repository
+	// init repositories
 	userRepo := userRepository.NewUserRepository(db)
 	txRepo := transactionRepository.New(db)
+	customerRepo := customerRepository.New(cfg, db)
+	leadRepo := leadsRepository.New(cfg, db)
+	leadScoreRepo := leadscoreRepository.New(cfg, db)
+	testDriveRepo := testdriveRepository.New(cfg, db)
 
-	// create services and handlers
+	// init services
 	userSvc := userService.NewUserService(userRepo, txRepo)
-	userHandler := user.NewUserHandler(userSvc)
-
-	// create webhook dependencies
-	//mqPublisher := mq.NewInMemoryPublisher()
-
-	testDriveSvc := testdrive.New(cfg)
+	testDriveSvc := testdrive.New(cfg, testdrive.ServiceContainer{
+		TransactionRepo: txRepo,
+		Repo:            testDriveRepo,
+		CustomerRepo:    customerRepo,
+		LeadRepo:        leadRepo,
+		LeadScoreRepo:   leadScoreRepo,
+	})
 
 	idempotencyStore := idempotencyService.NewInMemoryIdempotencyStore(24 * time.Hour) // 24 hour TTL
 
+	// init handlers
+	userHandler := user.NewUserHandler(userSvc)
+	customerHandler := customer.New(customerRepo)
 	webhookHandler := webhook.NewWebhookHandler(cfg, idempotencyStore, testDriveSvc)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
-		UserHandler:    userHandler,
-		WebhookHandler: webhookHandler,
-		Config:         cfg,
+		Config:          cfg,
+		UserHandler:     userHandler,
+		CustomerHandler: customerHandler,
+		WebhookHandler:  webhookHandler,
 	})
 
 	return apphttp.NewServer(cfg, router)

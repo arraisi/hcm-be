@@ -2,6 +2,7 @@ package webhook
 
 import (
 	"bytes"
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -13,7 +14,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
+	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
+	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
+	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
+	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,12 +32,12 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 	eventID := "05dbe854-74a4-4e0d-be00-da098d3569d6"
 	timestamp := time.Now().Unix()
 
-	bookingEvent := domain.BookingEvent{
+	bookingEvent := testdrive.TestDriveEvent{
 		Process:   "test drive request",
 		EventID:   eventID,
 		Timestamp: timestamp,
-		Data: domain.BookingEventData{
-			OneAccount: domain.OneAccount{
+		Data: testdrive.TestDriveEventData{
+			OneAccount: customer.OneAccountRequest{
 				OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 				FirstName:    "John",
 				LastName:     "Doe",
@@ -40,7 +45,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 				PhoneNumber:  "1234567890",
 				Email:        "john.doe@example.com",
 			},
-			TestDrive: domain.TestDrive{
+			TestDrive: testdrive.TestDriveRequest{
 				TestDriveID:             "0d5be854-74a4-4e0d-be00-da098d3529d5",
 				TestDriveNumber:         "TUT010026-02-20241107959",
 				KatashikiCode:           "NSP170R-MWYXKD",
@@ -57,19 +62,19 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 				OtherCancellationReason: nil,
 				CustomerDrivingConsent:  true,
 			},
-			Leads: domain.Leads{
+			Leads: leads.LeadsRequest{
 				LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 				LeadsType:                       "TEST_DRIVE_REQUEST",
 				LeadsFollowUpStatus:             "ON_CONSIDERATION",
 				LeadsPreferenceContactTimeStart: "09:30",
 				LeadsPreferenceContactTimeEnd:   "10:30",
-				LeadsSource:                     "OFFLINE_WALK_IN_OR_CALL_IN",
+				LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
 				AdditionalNotes:                 nil,
 			},
-			Score: domain.Score{
-				IAMLeadScore:    "HOT",
+			Score: leads.Score{
+				TAMLeadScore:    "HOT",
 				OutletLeadScore: "MEDIUM",
-				Parameter: domain.ScoreParameter{
+				Parameter: leads.ScoreParameter{
 					PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
 					PaymentPreferCriteria:   "CASH",
 					NegotiationCriteria:     "HAVE_STARTED_NEGOTIATIONS",
@@ -91,8 +96,8 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 	h.Write(body)
 	signature := hex.EncodeToString(h.Sum(nil))
 
-	// Create request
-	req := httptest.NewRequest(http.MethodPost, "/webhook/test-drive-booking", bytes.NewReader(body))
+	// Create request with correct route
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/webhook/test-drive-event", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
@@ -104,10 +109,21 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 
 	// Mock idempotency service expectations - only Store() is called in current implementation
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(nil)
-	m.mockTestDriveSvc.EXPECT().CreateTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
+	m.mockTestDriveSvc.EXPECT().InsertTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
 
-	// Execute
-	m.handler.TestDriveBooking(rr, req)
+	// Execute with middleware simulation - Add webhook headers to context manually
+	// since we're testing the handler directly, not through the router
+	webhookHeaders := webhookDto.Headers{
+		ContentType: "application/json",
+		APIKey:      m.Config.Webhook.APIKey,
+		Signature:   signature,
+		EventID:     eventID,
+		Timestamp:   strconv.FormatInt(timestamp, 10),
+	}
+	ctx := context.WithValue(req.Context(), middleware.WebhookHeadersKey{}, webhookHeaders)
+	req = req.WithContext(ctx)
+
+	m.handler.TestDriveEvent(rr, req)
 
 	// Assert
 	assert.Equal(t, http.StatusAccepted, rr.Code)
@@ -129,12 +145,12 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 	eventID := "05dbe854-74a4-4e0d-be00-da098d3569d6"
 	timestamp := time.Now().Unix()
 
-	bookingEvent := domain.BookingEvent{
+	bookingEvent := testdrive.TestDriveEvent{
 		Process:   "test drive request",
 		EventID:   eventID,
 		Timestamp: timestamp,
-		Data: domain.BookingEventData{
-			OneAccount: domain.OneAccount{
+		Data: testdrive.TestDriveEventData{
+			OneAccount: customer.OneAccountRequest{
 				OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 				FirstName:    "John",
 				LastName:     "Doe",
@@ -142,7 +158,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 				PhoneNumber:  "1234567890",
 				Email:        "john.doe@example.com",
 			},
-			TestDrive: domain.TestDrive{
+			TestDrive: testdrive.TestDriveRequest{
 				TestDriveID:             "0d5be854-74a4-4e0d-be00-da098d3529d5",
 				TestDriveNumber:         "TUT010026-02-20241107959",
 				KatashikiCode:           "NSP170R-MWYXKD",
@@ -159,19 +175,19 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 				OtherCancellationReason: nil,
 				CustomerDrivingConsent:  true,
 			},
-			Leads: domain.Leads{
+			Leads: leads.LeadsRequest{
 				LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 				LeadsType:                       "TEST_DRIVE_REQUEST",
 				LeadsFollowUpStatus:             "ON_CONSIDERATION",
 				LeadsPreferenceContactTimeStart: "09:30",
 				LeadsPreferenceContactTimeEnd:   "10:30",
-				LeadsSource:                     "OFFLINE_WALK_IN_OR_CALL_IN",
+				LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
 				AdditionalNotes:                 nil,
 			},
-			Score: domain.Score{
-				IAMLeadScore:    "HOT",
+			Score: leads.Score{
+				TAMLeadScore:    "HOT",
 				OutletLeadScore: "MEDIUM",
-				Parameter: domain.ScoreParameter{
+				Parameter: leads.ScoreParameter{
 					PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
 					PaymentPreferCriteria:   "CASH",
 					NegotiationCriteria:     "HAVE_STARTED_NEGOTIATIONS",
@@ -191,8 +207,8 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 	// Use valid hex format but wrong signature
 	invalidSignature := "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 
-	// Create request
-	req := httptest.NewRequest(http.MethodPost, "/webhook/test-drive-booking", bytes.NewReader(body))
+	// Create request with correct route
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/webhook/test-drive-event", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", invalidSignature)
@@ -205,10 +221,21 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 	// Since current implementation doesn't verify signatures, this should succeed
 	// Mock expectations for successful processing
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(nil)
-	m.mockTestDriveSvc.EXPECT().CreateTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
+	m.mockTestDriveSvc.EXPECT().InsertTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
+
+	// Add webhook headers to context manually since we're testing the handler directly
+	webhookHeaders := webhookDto.Headers{
+		ContentType: "application/json",
+		APIKey:      m.Config.Webhook.APIKey,
+		Signature:   invalidSignature,
+		EventID:     eventID,
+		Timestamp:   strconv.FormatInt(timestamp, 10),
+	}
+	ctx := context.WithValue(req.Context(), middleware.WebhookHeadersKey{}, webhookHeaders)
+	req = req.WithContext(ctx)
 
 	// Execute
-	m.handler.TestDriveBooking(rr, req)
+	m.handler.TestDriveEvent(rr, req)
 
 	// Assert - should succeed because signature verification is not implemented
 	assert.Equal(t, http.StatusAccepted, rr.Code)
@@ -229,12 +256,12 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 	timestamp := time.Now().Unix()
 
 	createRequest := func() *http.Request {
-		bookingEvent := domain.BookingEvent{
+		bookingEvent := testdrive.TestDriveEvent{
 			Process:   "test drive request",
 			EventID:   eventID,
 			Timestamp: timestamp,
-			Data: domain.BookingEventData{
-				OneAccount: domain.OneAccount{
+			Data: testdrive.TestDriveEventData{
+				OneAccount: customer.OneAccountRequest{
 					OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 					FirstName:    "John",
 					LastName:     "Doe",
@@ -242,7 +269,7 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 					PhoneNumber:  "1234567890",
 					Email:        "john.doe@example.com",
 				},
-				TestDrive: domain.TestDrive{
+				TestDrive: testdrive.TestDriveRequest{
 					TestDriveID:             "0d5be854-74a4-4e0d-be00-da098d3529d5",
 					TestDriveNumber:         "TUT010026-02-20241107959",
 					KatashikiCode:           "NSP170R-MWYXKD",
@@ -259,19 +286,19 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 					OtherCancellationReason: nil,
 					CustomerDrivingConsent:  true,
 				},
-				Leads: domain.Leads{
+				Leads: leads.LeadsRequest{
 					LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 					LeadsType:                       "TEST_DRIVE_REQUEST",
 					LeadsFollowUpStatus:             "ON_CONSIDERATION",
 					LeadsPreferenceContactTimeStart: "09:30",
 					LeadsPreferenceContactTimeEnd:   "10:30",
-					LeadsSource:                     "OFFLINE_WALK_IN_OR_CALL_IN",
+					LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
 					AdditionalNotes:                 nil,
 				},
-				Score: domain.Score{
-					IAMLeadScore:    "HOT",
+				Score: leads.Score{
+					TAMLeadScore:    "HOT",
 					OutletLeadScore: "MEDIUM",
-					Parameter: domain.ScoreParameter{
+					Parameter: leads.ScoreParameter{
 						PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
 						PaymentPreferCriteria:   "CASH",
 						NegotiationCriteria:     "HAVE_STARTED_NEGOTIATIONS",
@@ -289,12 +316,23 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 		h.Write(body)
 		signature := hex.EncodeToString(h.Sum(nil))
 
-		req := httptest.NewRequest(http.MethodPost, "/webhook/test-drive-booking", bytes.NewReader(body))
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/webhook/test-drive-event", bytes.NewReader(body))
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 		req.Header.Set("X-Signature", signature)
 		req.Header.Set("X-Event-Id", eventID)
 		req.Header.Set("X-Event-Timestamp", strconv.FormatInt(timestamp, 10))
+
+		// Add webhook headers to context manually since we're testing the handler directly
+		webhookHeaders := webhookDto.Headers{
+			ContentType: "application/json",
+			APIKey:      m.Config.Webhook.APIKey,
+			Signature:   signature,
+			EventID:     eventID,
+			Timestamp:   strconv.FormatInt(timestamp, 10),
+		}
+		ctx := context.WithValue(req.Context(), middleware.WebhookHeadersKey{}, webhookHeaders)
+		req = req.WithContext(ctx)
 
 		return req
 	}
@@ -306,7 +344,7 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 	// Mock idempotency service to return error (simulating duplicate or other store failure)
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(fmt.Errorf("duplicate key"))
 
-	m.handler.TestDriveBooking(rr, req)
+	m.handler.TestDriveEvent(rr, req)
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)
 
 	var response map[string]interface{}
