@@ -10,8 +10,7 @@ import (
 )
 
 type TestDriveService interface {
-	CreateTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error
-	UpdateTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error
+	InsertTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error
 }
 
 type IdempotencyStore interface {
