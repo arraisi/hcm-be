@@ -29,6 +29,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 	// standard middlewares
 	r.Use(chimw.RealIP)
 	r.Use(middleware.RequestID)
+	r.Use(middleware.Timeout(config.Server.RequestTimeout)) // Add request timeout
 	r.Use(chimw.NoCache)
 	r.Use(middleware.Recover)
 	r.Use(middleware.Logger)
