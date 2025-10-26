@@ -62,17 +62,17 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 				OtherCancellationReason: nil,
 				CustomerDrivingConsent:  true,
 			},
-			Leads: lead.LeadsRequest{
+			Leads: lead.LeadRequest{
 				LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 				LeadsType:                       "TEST_DRIVE_REQUEST",
 				LeadsFollowUpStatus:             "ON_CONSIDERATION",
 				LeadsPreferenceContactTimeStart: "09:30",
 				LeadsPreferenceContactTimeEnd:   "10:30",
-				LeadsSource:                     "OFFLINE_WALK_IN_OR_CALL_IN",
+				LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
 				AdditionalNotes:                 nil,
 			},
 			Score: lead.Score{
-				IAMLeadScore:    "HOT",
+				TAMLeadScore:    "HOT",
 				OutletLeadScore: "MEDIUM",
 				Parameter: lead.ScoreParameter{
 					PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
@@ -109,7 +109,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 
 	// Mock idempotency service expectations - only Store() is called in current implementation
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(nil)
-	m.mockTestDriveSvc.EXPECT().CreateTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
+	m.mockTestDriveSvc.EXPECT().InsertTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
 
 	// Execute with middleware simulation - Add webhook headers to context manually
 	// since we're testing the handler directly, not through the router
@@ -175,17 +175,17 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 				OtherCancellationReason: nil,
 				CustomerDrivingConsent:  true,
 			},
-			Leads: lead.LeadsRequest{
+			Leads: lead.LeadRequest{
 				LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 				LeadsType:                       "TEST_DRIVE_REQUEST",
 				LeadsFollowUpStatus:             "ON_CONSIDERATION",
 				LeadsPreferenceContactTimeStart: "09:30",
 				LeadsPreferenceContactTimeEnd:   "10:30",
-				LeadsSource:                     "OFFLINE_WALK_IN_OR_CALL_IN",
+				LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
 				AdditionalNotes:                 nil,
 			},
 			Score: lead.Score{
-				IAMLeadScore:    "HOT",
+				TAMLeadScore:    "HOT",
 				OutletLeadScore: "MEDIUM",
 				Parameter: lead.ScoreParameter{
 					PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
@@ -221,7 +221,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 	// Since current implementation doesn't verify signatures, this should succeed
 	// Mock expectations for successful processing
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(nil)
-	m.mockTestDriveSvc.EXPECT().CreateTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
+	m.mockTestDriveSvc.EXPECT().InsertTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
 
 	// Add webhook headers to context manually since we're testing the handler directly
 	webhookHeaders := webhookDto.Headers{
@@ -286,17 +286,17 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 					OtherCancellationReason: nil,
 					CustomerDrivingConsent:  true,
 				},
-				Leads: lead.LeadsRequest{
+				Leads: lead.LeadRequest{
 					LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 					LeadsType:                       "TEST_DRIVE_REQUEST",
 					LeadsFollowUpStatus:             "ON_CONSIDERATION",
 					LeadsPreferenceContactTimeStart: "09:30",
 					LeadsPreferenceContactTimeEnd:   "10:30",
-					LeadsSource:                     "OFFLINE_WALK_IN_OR_CALL_IN",
+					LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
 					AdditionalNotes:                 nil,
 				},
 				Score: lead.Score{
-					IAMLeadScore:    "HOT",
+					TAMLeadScore:    "HOT",
 					OutletLeadScore: "MEDIUM",
 					Parameter: lead.ScoreParameter{
 						PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
