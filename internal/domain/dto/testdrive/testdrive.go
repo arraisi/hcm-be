@@ -34,7 +34,7 @@ type TestDriveRequest struct {
 type TestDriveEventData struct {
 	OneAccount customer.OneAccountRequest `json:"one_account" validate:"required"`
 	TestDrive  TestDriveRequest           `json:"test_drive" validate:"required"`
-	Leads      leads.LeadRequest          `json:"leads" validate:"required"`
+	Leads      leads.LeadsRequest         `json:"leads" validate:"required"`
 	Score      leads.Score                `json:"score" validate:"required"`
 }
 
@@ -93,9 +93,9 @@ func (be *TestDriveEvent) ToCustomerModel() domain.Customer {
 	}
 }
 
-// ToLeadModel converts the TestDriveEvent to the internal Lead model
-func (be *TestDriveEvent) ToLeadModel() domain.Lead {
-	return domain.Lead{
+// ToLeadsModel converts the TestDriveEvent to the internal Leads model
+func (be *TestDriveEvent) ToLeadsModel() domain.Leads {
+	return domain.Leads{
 		LeadsID:                         strings.ReplaceAll(be.Data.Leads.LeadsID, "-", ""),
 		LeadsType:                       be.Data.Leads.LeadsType,
 		LeadsFollowUpStatus:             be.Data.Leads.LeadsFollowUpStatus,

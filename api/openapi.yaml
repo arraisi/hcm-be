@@ -1,18 +1,672 @@
 openapi: 3.1.0
 info:
-  title: hcm-be API
+  title: HCM Backend API
+  description: Human Capital Management Backend API for test drive bookings and customer management
   version: 0.1.0
+  contact:
+    name: API Support
+    email: support@example.com
+servers:
+  - url: /api/v1
+    description: API v1 base path
+
 paths:
-  /api/v1/users:
+  /users:
     get:
       summary: List users
-      responses: { "200": { description: OK } }
+      description: Retrieve a list of users with optional pagination and filtering
+      tags:
+        - Users
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  message:
+                    type: string
+                    example: 'success'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
     post:
       summary: Create user
+      description: Create a new user
+      tags:
+        - Users
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-      responses: { "201": { description: Created } }
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+                  message:
+                    type: string
+                    example: 'user created successfully'
+        '400':
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      description: Retrieve a specific user by their ID
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+                  message:
+                    type: string
+                    example: 'success'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update user
+      description: Update an existing user
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+                  message:
+                    type: string
+                    example: 'user updated successfully'
+        '400':
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete user
+      description: Delete a user by ID
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'user deleted successfully'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /customers:
+    get:
+      summary: List customers
+      description: Retrieve a list of customers with optional filtering
+      tags:
+        - Customers
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search term for customer names or details
+        - name: oneAccountId
+          in: query
+          schema:
+            type: string
+          description: Filter by One Account ID
+      responses:
+        '200':
+          description: List of customers retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Customer'
+                  message:
+                    type: string
+                    example: 'success'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /webhooks/test-drive:
+    post:
+      summary: Test Drive Event Webhook
+      description: Webhook endpoint to receive test drive booking events from external systems
+      tags:
+        - Webhooks
+      parameters:
+        - name: X-API-Key
+          in: header
+          required: true
+          schema:
+            type: string
+          description: API key for webhook authentication
+        - name: X-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+          description: HMAC signature for payload verification
+        - name: X-Event-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Unique event identifier for idempotency
+        - name: X-Event-Timestamp
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Unix timestamp of the event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestDriveEvent'
+      responses:
+        '202':
+          description: Test drive event accepted for processing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                        format: uuid
+                        description: The event ID that was processed
+                      status:
+                        type: string
+                        enum: [RECEIVED]
+                        description: Status of the event processing
+                  message:
+                    type: string
+                    example: 'accepted'
+        '400':
+          description: Bad request - invalid payload or headers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - duplicate event ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: User ID
+        name:
+          type: string
+          description: User name
+        email:
+          type: string
+          format: email
+          description: User email
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    CreateUserRequest:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: User name
+        email:
+          type: string
+          format: email
+          description: User email address
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: User name
+        email:
+          type: string
+          format: email
+          description: User email address
+
+    Customer:
+      type: object
+      properties:
+        oneAccountId:
+          type: string
+          description: One Account ID
+        firstName:
+          type: string
+          description: Customer first name
+        lastName:
+          type: string
+          description: Customer last name
+        gender:
+          type: string
+          enum: [MALE, FEMALE]
+          description: Customer gender
+        phoneNumber:
+          type: string
+          description: Customer phone number
+        email:
+          type: string
+          format: email
+          description: Customer email address
+
+    TestDriveEvent:
+      type: object
+      required:
+        - process
+        - event_ID
+        - timestamp
+        - data
+      properties:
+        process:
+          type: string
+          enum: ['test drive request']
+          description: Process type identifier
+        event_ID:
+          type: string
+          format: uuid
+          description: Unique event identifier
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp of the event
+        data:
+          $ref: '#/components/schemas/TestDriveEventData'
+
+    TestDriveEventData:
+      type: object
+      required:
+        - one_account
+        - test_drive
+        - leads
+        - score
+      properties:
+        one_account:
+          $ref: '#/components/schemas/OneAccountRequest'
+        test_drive:
+          $ref: '#/components/schemas/TestDriveRequest'
+        leads:
+          $ref: '#/components/schemas/LeadsRequest'
+        score:
+          $ref: '#/components/schemas/Score'
+
+    OneAccountRequest:
+      type: object
+      required:
+        - one_account_ID
+        - first_name
+        - last_name
+        - gender
+        - phone_number
+      properties:
+        one_account_ID:
+          type: string
+          description: One Account unique identifier
+        first_name:
+          type: string
+          description: Customer first name
+        last_name:
+          type: string
+          description: Customer last name
+        gender:
+          type: string
+          enum: [MALE, FEMALE]
+          description: Customer gender
+        phone_number:
+          type: string
+          description: Customer phone number
+        email:
+          type: string
+          format: email
+          description: Customer email address
+
+    TestDriveRequest:
+      type: object
+      required:
+        - test_drive_ID
+        - test_drive_number
+        - katashiki_code
+        - model
+        - variant
+        - created_datetime
+        - test_drive_datetime_start
+        - test_drive_datetime_end
+        - location
+        - outlet_ID
+        - outlet_name
+        - test_drive_status
+        - customer_driving_consent
+      properties:
+        test_drive_ID:
+          type: string
+          description: Test drive unique identifier
+        test_drive_number:
+          type: string
+          description: Test drive booking number
+        katashiki_code:
+          type: string
+          description: Vehicle katashiki code
+        model:
+          type: string
+          description: Vehicle model
+        variant:
+          type: string
+          description: Vehicle variant
+        created_datetime:
+          type: integer
+          format: int64
+          description: Creation timestamp
+        test_drive_datetime_start:
+          type: integer
+          format: int64
+          description: Test drive start time
+        test_drive_datetime_end:
+          type: integer
+          format: int64
+          description: Test drive end time
+        location:
+          type: string
+          description: Test drive location
+        outlet_ID:
+          type: string
+          description: Outlet identifier
+        outlet_name:
+          type: string
+          description: Outlet name
+        test_drive_status:
+          type: string
+          enum: [SUBMITTED, CHANGE_REQUEST, CANCEL_SUBMITTED]
+          description: Test drive status
+        cancellation_reason:
+          type: string
+          nullable: true
+          description: Reason for cancellation
+        other_cancellation_reason:
+          type: string
+          nullable: true
+          description: Other cancellation reason
+        customer_driving_consent:
+          type: boolean
+          description: Customer driving consent flag
+
+    LeadsRequest:
+      type: object
+      required:
+        - leads_id
+        - leads_type
+        - leads_follow_up_status
+        - leads_preference_contact_time_start
+        - leads_preference_contact_time_end
+        - leads_source
+      properties:
+        leads_id:
+          type: string
+          description: Lead unique identifier
+        leads_type:
+          type: string
+          description: Type of lead
+        leads_follow_up_status:
+          type: string
+          description: Lead follow-up status
+        leads_preference_contact_time_start:
+          type: string
+          description: Preferred contact time start
+        leads_preference_contact_time_end:
+          type: string
+          description: Preferred contact time end
+        leads_source:
+          type: string
+          description: Source of the lead
+        additional_notes:
+          type: string
+          nullable: true
+          description: Additional notes for the lead
+
+    Score:
+      type: object
+      required:
+        - tam_lead_score
+        - outlet_lead_score
+        - parameter
+      properties:
+        tam_lead_score:
+          type: string
+          description: TAM lead score
+        outlet_lead_score:
+          type: string
+          description: Outlet lead score
+        parameter:
+          $ref: '#/components/schemas/ScoreParameter'
+
+    ScoreParameter:
+      type: object
+      required:
+        - purchase_plan_criteria
+        - payment_prefer_criteria
+        - negotiation_criteria
+        - test_drive_criteria
+        - trade_in_criteria
+        - browsing_history_criteria
+        - vehicle_age_criteria
+      properties:
+        purchase_plan_criteria:
+          type: string
+          description: Purchase plan criteria
+        payment_prefer_criteria:
+          type: string
+          description: Payment preference criteria
+        negotiation_criteria:
+          type: string
+          description: Negotiation criteria
+        test_drive_criteria:
+          type: string
+          description: Test drive criteria
+        trade_in_criteria:
+          type: string
+          description: Trade-in criteria
+        browsing_history_criteria:
+          type: string
+          description: Browsing history criteria
+        vehicle_age_criteria:
+          type: string
+          description: Vehicle age criteria
+
+    ErrorResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+          description: Error details and context
+        message:
+          type: string
+          description: Error message
+
+  securitySchemes:
+    WebhookApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for webhook authentication
+
+security:
+  - WebhookApiKey: []

@@ -9,7 +9,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
-	leadRepository "github.com/arraisi/hcm-be/internal/repository/lead"
+	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
 	leadscoreRepository "github.com/arraisi/hcm-be/internal/repository/leadscore"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
@@ -46,7 +46,7 @@ func Run(cfg *config.Config) error {
 	userRepo := userRepository.NewUserRepository(db)
 	txRepo := transactionRepository.New(db)
 	customerRepo := customerRepository.New(cfg, db)
-	leadRepo := leadRepository.New(cfg, db)
+	leadRepo := leadsRepository.New(cfg, db)
 	leadScoreRepo := leadscoreRepository.New(cfg, db)
 	testDriveRepo := testdriveRepository.New(cfg, db)
 

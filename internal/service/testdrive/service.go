@@ -24,9 +24,9 @@ type CustomerRepository interface {
 }
 
 type LeadRepository interface {
-	CreateLead(ctx context.Context, tx *sqlx.Tx, req domain.Lead) error
-	UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Lead) error
-	GetLeads(ctx context.Context, req leads.GetLeadRequest) (domain.Lead, error)
+	CreateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error
+	UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error
+	GetLeads(ctx context.Context, req leads.GetLeadsRequest) (domain.Leads, error)
 }
 
 type LeadScoreRepository interface {

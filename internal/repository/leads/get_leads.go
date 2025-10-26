@@ -1,4 +1,4 @@
-package lead
+package leads
 
 import (
 	"context"
@@ -8,8 +8,8 @@ import (
 	"github.com/elgris/sqrl"
 )
 
-func (r *repository) GetLeads(ctx context.Context, req leads.GetLeadRequest) (domain.Lead, error) {
-	var model domain.Lead
+func (r *repository) GetLeads(ctx context.Context, req leads.GetLeadsRequest) (domain.Leads, error) {
+	var model domain.Leads
 
 	query := sqrl.Select(model.SelectColumns()...).
 		From(model.TableName())

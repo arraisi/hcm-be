@@ -1,6 +1,6 @@
 package domain
 
-type Lead struct {
+type Leads struct {
 	IID                             string  `json:"i_id" db:"i_id"`
 	LeadsID                         string  `json:"leads_ID" db:"leads_id"`
 	LeadsType                       string  `json:"leads_type" db:"leads_type"`
@@ -17,12 +17,12 @@ type Lead struct {
 }
 
 // TableName returns the database table name for the User model
-func (u *Lead) TableName() string {
+func (u *Leads) TableName() string {
 	return "dbo.tm_leads"
 }
 
 // Columns returns the list of database columns for the User model
-func (u *Lead) Columns() []string {
+func (u *Leads) Columns() []string {
 	return []string{
 		"i_id",
 		"leads_id",
@@ -38,7 +38,7 @@ func (u *Lead) Columns() []string {
 	}
 }
 
-func (u *Lead) ToValues() []interface{} {
+func (u *Leads) ToValues() []interface{} {
 	return []interface{}{
 		u.IID,
 		u.LeadsID,
@@ -55,7 +55,7 @@ func (u *Lead) ToValues() []interface{} {
 }
 
 // SelectColumns returns the list of columns to select in queries for the User model
-func (u *Lead) SelectColumns() []string {
+func (u *Leads) SelectColumns() []string {
 	return []string{
 		"CAST(i_id AS NVARCHAR(36)) as i_id",
 		"CAST(leads_id AS NVARCHAR(36)) as leads_id",
@@ -71,7 +71,7 @@ func (u *Lead) SelectColumns() []string {
 	}
 }
 
-func (u *Lead) ToUpdateMap() map[string]interface{} {
+func (u *Leads) ToUpdateMap() map[string]interface{} {
 	updateMap := make(map[string]interface{})
 	if u.LeadsType != "" {
 		updateMap["leads_type"] = u.LeadsType

@@ -109,12 +109,12 @@ func (s *service) upsertTestDrive(ctx context.Context, tx *sqlx.Tx, ev testdrive
 func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent) error {
 	leadsID := strings.ReplaceAll(ev.Data.Leads.LeadsID, "-", "")
 
-	_, err := s.leadRepo.GetLeads(ctx, leads.GetLeadRequest{
+	_, err := s.leadRepo.GetLeads(ctx, leads.GetLeadsRequest{
 		LeadsID: utils.ToPointer(leadsID),
 	})
 	if err == nil {
 		// Found → update
-		err := s.leadRepo.UpdateLeads(ctx, tx, ev.ToLeadModel())
+		err := s.leadRepo.UpdateLeads(ctx, tx, ev.ToLeadsModel())
 		if err != nil {
 			return err
 		}
@@ -123,7 +123,7 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, ev testdrive.Tes
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		if err := s.leadRepo.CreateLead(ctx, tx, ev.ToLeadModel()); err != nil {
+		if err := s.leadRepo.CreateLeads(ctx, tx, ev.ToLeadsModel()); err != nil {
 			return err
 		}
 		return nil

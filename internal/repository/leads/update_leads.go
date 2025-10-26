@@ -1,4 +1,4 @@
-package lead
+package leads
 
 import (
 	"context"
@@ -8,8 +8,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Lead) error {
-	model := domain.Lead{}
+func (r *repository) UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error {
+	model := domain.Leads{}
 
 	query, args, err := sqrl.Update(model.TableName()).
 		SetMap(req.ToUpdateMap()).

@@ -62,7 +62,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 				OtherCancellationReason: nil,
 				CustomerDrivingConsent:  true,
 			},
-			Leads: leads.LeadRequest{
+			Leads: leads.LeadsRequest{
 				LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 				LeadsType:                       "TEST_DRIVE_REQUEST",
 				LeadsFollowUpStatus:             "ON_CONSIDERATION",
@@ -175,7 +175,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 				OtherCancellationReason: nil,
 				CustomerDrivingConsent:  true,
 			},
-			Leads: leads.LeadRequest{
+			Leads: leads.LeadsRequest{
 				LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 				LeadsType:                       "TEST_DRIVE_REQUEST",
 				LeadsFollowUpStatus:             "ON_CONSIDERATION",
@@ -286,7 +286,7 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 					OtherCancellationReason: nil,
 					CustomerDrivingConsent:  true,
 				},
-				Leads: leads.LeadRequest{
+				Leads: leads.LeadsRequest{
 					LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 					LeadsType:                       "TEST_DRIVE_REQUEST",
 					LeadsFollowUpStatus:             "ON_CONSIDERATION",

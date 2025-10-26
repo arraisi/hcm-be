@@ -1,4 +1,4 @@
-package lead
+package leads
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateLead(ctx context.Context, tx *sqlx.Tx, req domain.Lead) error {
+func (r *repository) CreateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error {
 	req.IID = strings.ReplaceAll(uuid.New().String(), "-", "")
 	query, args, err := sqrl.Insert(req.TableName()).
 		Columns(req.Columns()...).
