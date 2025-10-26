@@ -3,11 +3,13 @@
 ## Build Instructions
 
 ### Build the Docker image:
+
 ```bash
 docker build -t hcm-be:latest .
 ```
 
 ### Build with custom tag:
+
 ```bash
 docker build -t hcm-be:v1.0.0 .
 ```
@@ -15,6 +17,7 @@ docker build -t hcm-be:v1.0.0 .
 ## Run Instructions
 
 ### Basic run (requires external database):
+
 ```bash
 docker run -d \
   --name hcm-backend \
@@ -23,6 +26,7 @@ docker run -d \
 ```
 
 ### Run with environment variables for database connection:
+
 ```bash
 docker run -d \
   --name hcm-backend \
@@ -32,6 +36,7 @@ docker run -d \
 ```
 
 ### Run with custom config (mount external config file):
+
 ```bash
 docker run -d \
   --name hcm-backend \
@@ -41,6 +46,7 @@ docker run -d \
 ```
 
 ### Run with networking to existing database container:
+
 ```bash
 docker run -d \
   --name hcm-backend \
@@ -80,6 +86,7 @@ docker inspect --format='{{json .State.Health}}' hcm-backend
 5. **Resource Limits**: Set appropriate CPU and memory limits in production
 
 ### Example with resource limits:
+
 ```bash
 docker run -d \
   --name hcm-backend \
