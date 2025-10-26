@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
-	"github.com/arraisi/hcm-be/internal/domain/dto/lead"
+	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/jmoiron/sqlx"
@@ -109,7 +109,7 @@ func (s *service) upsertTestDrive(ctx context.Context, tx *sqlx.Tx, ev testdrive
 func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent) error {
 	leadsID := strings.ReplaceAll(ev.Data.Leads.LeadsID, "-", "")
 
-	_, err := s.leadRepo.GetLeads(ctx, lead.GetLeadRequest{
+	_, err := s.leadRepo.GetLeads(ctx, leads.GetLeadRequest{
 		LeadsID: utils.ToPointer(leadsID),
 	})
 	if err == nil {
@@ -137,7 +137,7 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, ev testdrive.Tes
 func (s *service) upsertLeadScore(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent) error {
 	leadsID := strings.ReplaceAll(ev.Data.Leads.LeadsID, "-", "")
 
-	_, err := s.leadScoreRepo.GetLeadScore(ctx, lead.GetLeadScoreRequest{
+	_, err := s.leadScoreRepo.GetLeadScore(ctx, leads.GetLeadScoreRequest{
 		IID: utils.ToPointer(leadsID),
 	})
 	if err == nil {

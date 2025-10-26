@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
-	"github.com/arraisi/hcm-be/internal/domain/dto/lead"
+	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
@@ -62,7 +62,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 				OtherCancellationReason: nil,
 				CustomerDrivingConsent:  true,
 			},
-			Leads: lead.LeadRequest{
+			Leads: leads.LeadRequest{
 				LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 				LeadsType:                       "TEST_DRIVE_REQUEST",
 				LeadsFollowUpStatus:             "ON_CONSIDERATION",
@@ -71,10 +71,10 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 				LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
 				AdditionalNotes:                 nil,
 			},
-			Score: lead.Score{
+			Score: leads.Score{
 				TAMLeadScore:    "HOT",
 				OutletLeadScore: "MEDIUM",
-				Parameter: lead.ScoreParameter{
+				Parameter: leads.ScoreParameter{
 					PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
 					PaymentPreferCriteria:   "CASH",
 					NegotiationCriteria:     "HAVE_STARTED_NEGOTIATIONS",
@@ -175,7 +175,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 				OtherCancellationReason: nil,
 				CustomerDrivingConsent:  true,
 			},
-			Leads: lead.LeadRequest{
+			Leads: leads.LeadRequest{
 				LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 				LeadsType:                       "TEST_DRIVE_REQUEST",
 				LeadsFollowUpStatus:             "ON_CONSIDERATION",
@@ -184,10 +184,10 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 				LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
 				AdditionalNotes:                 nil,
 			},
-			Score: lead.Score{
+			Score: leads.Score{
 				TAMLeadScore:    "HOT",
 				OutletLeadScore: "MEDIUM",
-				Parameter: lead.ScoreParameter{
+				Parameter: leads.ScoreParameter{
 					PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
 					PaymentPreferCriteria:   "CASH",
 					NegotiationCriteria:     "HAVE_STARTED_NEGOTIATIONS",
@@ -286,7 +286,7 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 					OtherCancellationReason: nil,
 					CustomerDrivingConsent:  true,
 				},
-				Leads: lead.LeadRequest{
+				Leads: leads.LeadRequest{
 					LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
 					LeadsType:                       "TEST_DRIVE_REQUEST",
 					LeadsFollowUpStatus:             "ON_CONSIDERATION",
@@ -295,10 +295,10 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 					LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
 					AdditionalNotes:                 nil,
 				},
-				Score: lead.Score{
+				Score: leads.Score{
 					TAMLeadScore:    "HOT",
 					OutletLeadScore: "MEDIUM",
-					Parameter: lead.ScoreParameter{
+					Parameter: leads.ScoreParameter{
 						PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
 						PaymentPreferCriteria:   "CASH",
 						NegotiationCriteria:     "HAVE_STARTED_NEGOTIATIONS",

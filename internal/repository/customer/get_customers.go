@@ -2,7 +2,6 @@ package customer
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"

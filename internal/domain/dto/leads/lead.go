@@ -1,4 +1,4 @@
-package lead
+package leads
 
 import (
 	"github.com/elgris/sqrl"

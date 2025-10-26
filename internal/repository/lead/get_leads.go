@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/domain/dto/lead"
+	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/elgris/sqrl"
 )
 
-func (r *repository) GetLeads(ctx context.Context, req lead.GetLeadRequest) (domain.Lead, error) {
+func (r *repository) GetLeads(ctx context.Context, req leads.GetLeadRequest) (domain.Lead, error) {
 	var model domain.Lead
 
 	query := sqrl.Select(model.SelectColumns()...).

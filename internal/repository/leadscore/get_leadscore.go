@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/domain/dto/lead"
+	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/elgris/sqrl"
 )
 
-func (r *repository) GetLeadScore(ctx context.Context, req lead.GetLeadScoreRequest) (domain.LeadScore, error) {
+func (r *repository) GetLeadScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadScore, error) {
 	var model domain.LeadScore
 
 	query := sqrl.Select(model.SelectColumns()...).

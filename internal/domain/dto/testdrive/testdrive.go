@@ -6,7 +6,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
-	"github.com/arraisi/hcm-be/internal/domain/dto/lead"
+	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
 )
@@ -34,8 +34,8 @@ type TestDriveRequest struct {
 type TestDriveEventData struct {
 	OneAccount customer.OneAccountRequest `json:"one_account" validate:"required"`
 	TestDrive  TestDriveRequest           `json:"test_drive" validate:"required"`
-	Leads      lead.LeadRequest           `json:"leads" validate:"required"`
-	Score      lead.Score                 `json:"score" validate:"required"`
+	Leads      leads.LeadRequest          `json:"leads" validate:"required"`
+	Score      leads.Score                `json:"score" validate:"required"`
 }
 
 // TestDriveEvent represents the complete webhook payload for test drive booking

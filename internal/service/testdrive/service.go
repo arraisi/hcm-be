@@ -6,7 +6,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
-	"github.com/arraisi/hcm-be/internal/domain/dto/lead"
+	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/jmoiron/sqlx"
 )
@@ -26,12 +26,12 @@ type CustomerRepository interface {
 type LeadRepository interface {
 	CreateLead(ctx context.Context, tx *sqlx.Tx, req domain.Lead) error
 	UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Lead) error
-	GetLeads(ctx context.Context, req lead.GetLeadRequest) (domain.Lead, error)
+	GetLeads(ctx context.Context, req leads.GetLeadRequest) (domain.Lead, error)
 }
 
 type LeadScoreRepository interface {
 	CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error
-	GetLeadScore(ctx context.Context, req lead.GetLeadScoreRequest) (domain.LeadScore, error)
+	GetLeadScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadScore, error)
 	UpdateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error
 }
 
