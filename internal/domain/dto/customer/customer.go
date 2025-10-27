@@ -11,7 +11,7 @@ type OneAccountRequest struct {
 	OneAccountID string `json:"one_account_ID" validate:"required"`
 	FirstName    string `json:"first_name" validate:"required"`
 	LastName     string `json:"last_name" validate:"required"`
-	Gender       string `json:"gender" validate:"required,oneof=MALE FEMALE"`
+	Gender       string `json:"gender" validate:"required,oneof=MALE FEMALE OTHER"`
 	PhoneNumber  string `json:"phone_number" validate:"required"`
 	Email        string `json:"email" validate:"omitempty,email"`
 }

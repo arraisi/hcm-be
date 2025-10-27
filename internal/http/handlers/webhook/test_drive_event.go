@@ -42,7 +42,7 @@ func (h *Handler) TestDriveEvent(w http.ResponseWriter, r *http.Request) {
 
 	// Validate payload structure
 	if err := validator.ValidateStruct(bookingEvent); err != nil {
-		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookInvalidPayload, errors.ErrListWebhook)
+		errorResponse := errors.NewErrorResponse(http.StatusBadRequest, err)
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}

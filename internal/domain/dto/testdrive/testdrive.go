@@ -1,7 +1,6 @@
 package testdrive
 
 import (
-	"strings"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
@@ -40,7 +39,7 @@ type TestDriveEventData struct {
 
 // TestDriveEvent represents the complete webhook payload for test drive booking
 type TestDriveEvent struct {
-	Process   string             `json:"process" validate:"required,eq=test drive request"`
+	Process   string             `json:"process" validate:"required"`
 	EventID   string             `json:"event_ID" validate:"required,uuid4"`
 	Timestamp int64              `json:"timestamp" validate:"required"`
 	Data      TestDriveEventData `json:"data" validate:"required"`
@@ -90,13 +89,14 @@ func (be *TestDriveEvent) ToCustomerModel() domain.Customer {
 		LastName:     be.Data.OneAccount.LastName,
 		Email:        be.Data.OneAccount.Email,
 		PhoneNumber:  be.Data.OneAccount.PhoneNumber,
+		Gender:       be.Data.OneAccount.Gender,
 	}
 }
 
 // ToLeadsModel converts the TestDriveEvent to the internal Leads model
 func (be *TestDriveEvent) ToLeadsModel() domain.Leads {
 	return domain.Leads{
-		LeadsID:                         strings.ReplaceAll(be.Data.Leads.LeadsID, "-", ""),
+		LeadsID:                         be.Data.Leads.LeadsID,
 		LeadsType:                       be.Data.Leads.LeadsType,
 		LeadsFollowUpStatus:             be.Data.Leads.LeadsFollowUpStatus,
 		LeadsPreferenceContactTimeStart: be.Data.Leads.LeadsPreferenceContactTimeStart,
@@ -109,7 +109,7 @@ func (be *TestDriveEvent) ToLeadsModel() domain.Leads {
 // ToLeadScoreModel converts the TestDriveEvent to the internal LeadScore model
 func (be *TestDriveEvent) ToLeadScoreModel() domain.LeadScore {
 	return domain.LeadScore{
-		IID:                     strings.ReplaceAll(be.Data.Leads.LeadsID, "-", ""),
+		IID:                     be.Data.Leads.LeadsID,
 		TAMLeadScore:            be.Data.Score.TAMLeadScore,
 		OutletLeadScore:         be.Data.Score.OutletLeadScore,
 		PurchasePlanCriteria:    be.Data.Score.Parameter.PurchasePlanCriteria,

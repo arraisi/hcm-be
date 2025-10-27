@@ -3,6 +3,7 @@ package errors
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"net/http"
 )
 
@@ -14,6 +15,8 @@ type ErrorResponse struct {
 
 // NewErrorResponse creates a new ErrorResponse with the given status code and error
 func NewErrorResponse(code int, err error) *ErrorResponse {
+	log.Printf("error: %v", err)
+
 	// Handle common database errors
 	if errors.Is(err, sql.ErrNoRows) {
 		code = http.StatusNotFound
@@ -28,6 +31,8 @@ func NewErrorResponse(code int, err error) *ErrorResponse {
 
 // NewErrorResponseFromList creates an ErrorResponse by matching the error against a list of known errors
 func NewErrorResponseFromList(err error, errList ErrList) *ErrorResponse {
+	log.Printf("error: %v", err)
+
 	var (
 		code    = http.StatusInternalServerError
 		respErr = err
