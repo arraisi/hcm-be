@@ -4,12 +4,12 @@ import (
 	"net/http"
 	stdprof "net/http/pprof"
 
-	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/http/handlers"
-	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
-	"github.com/arraisi/hcm-be/internal/http/handlers/user"
-	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
-	"github.com/arraisi/hcm-be/internal/http/middleware"
+	"tabeldata.com/hcm-be/internal/config"
+	"tabeldata.com/hcm-be/internal/http/handlers"
+	"tabeldata.com/hcm-be/internal/http/handlers/customer"
+	"tabeldata.com/hcm-be/internal/http/handlers/user"
+	"tabeldata.com/hcm-be/internal/http/handlers/webhook"
+	"tabeldata.com/hcm-be/internal/http/middleware"
 
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"

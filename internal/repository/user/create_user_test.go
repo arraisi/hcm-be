@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/arraisi/hcm-be/internal/domain/dto/user"
+	"tabeldata.com/hcm-be/internal/domain/dto/user"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"

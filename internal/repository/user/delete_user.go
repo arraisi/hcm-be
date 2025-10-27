@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/arraisi/hcm-be/internal/domain"
+	"tabeldata.com/hcm-be/internal/domain"
 
 	"github.com/elgris/sqrl"
 	"github.com/jmoiron/sqlx"

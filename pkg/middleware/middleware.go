@@ -10,7 +10,7 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/arraisi/hcm-be/pkg/response"
+	"tabeldata.com/hcm-be/pkg/response"
 )
 
 // requestIDKey is the context key for request ID

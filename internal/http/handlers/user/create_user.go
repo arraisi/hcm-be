@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/arraisi/hcm-be/internal/domain/dto/user"
-	"github.com/arraisi/hcm-be/pkg/errors"
-	"github.com/arraisi/hcm-be/pkg/response"
-	"github.com/arraisi/hcm-be/pkg/utils/validator"
+	"tabeldata.com/hcm-be/internal/domain/dto/user"
+	"tabeldata.com/hcm-be/pkg/errors"
+	"tabeldata.com/hcm-be/pkg/response"
+	"tabeldata.com/hcm-be/pkg/utils/validator"
 )
 
 // Create creates a new user

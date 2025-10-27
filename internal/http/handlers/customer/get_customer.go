@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
-	"github.com/arraisi/hcm-be/pkg/errors"
-	"github.com/arraisi/hcm-be/pkg/response"
 	"github.com/go-chi/chi/v5"
+	"tabeldata.com/hcm-be/internal/domain/dto/customer"
+	"tabeldata.com/hcm-be/pkg/errors"
+	"tabeldata.com/hcm-be/pkg/response"
 )
 
 func (h *Handler) GetCustomers(w http.ResponseWriter, r *http.Request) {

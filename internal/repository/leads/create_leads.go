@@ -4,10 +4,10 @@ import (
 	"context"
 	"strings"
 
-	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/elgris/sqrl"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"tabeldata.com/hcm-be/internal/domain"
 )
 
 func (r *repository) CreateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error {

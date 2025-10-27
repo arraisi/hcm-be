@@ -3,9 +3,9 @@ package leadscore
 import (
 	"context"
 
-	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/elgris/sqrl"
+	"tabeldata.com/hcm-be/internal/domain"
+	"tabeldata.com/hcm-be/internal/domain/dto/leads"
 )
 
 func (r *repository) GetLeadScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadScore, error) {

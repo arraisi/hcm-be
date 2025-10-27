@@ -14,14 +14,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
-	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
-	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
-	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
-	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"tabeldata.com/hcm-be/internal/domain/dto/customer"
+	"tabeldata.com/hcm-be/internal/domain/dto/leads"
+	"tabeldata.com/hcm-be/internal/domain/dto/testdrive"
+	webhookDto "tabeldata.com/hcm-be/internal/domain/dto/webhook"
+	"tabeldata.com/hcm-be/internal/http/middleware"
 )
 
 func TestWebhookHandler_TestDriveBooking(t *testing.T) {

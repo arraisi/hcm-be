@@ -8,8 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	testdrive "github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	gomock "github.com/golang/mock/gomock"
+	testdrive "tabeldata.com/hcm-be/internal/domain/dto/testdrive"
 )
 
 // MockTestDriveService is a mock of TestDriveService interface.

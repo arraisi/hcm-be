@@ -3,9 +3,9 @@ package customer
 import (
 	"context"
 
-	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/elgris/sqrl"
+	"tabeldata.com/hcm-be/internal/domain"
+	"tabeldata.com/hcm-be/internal/domain/dto/customer"
 )
 
 func (r *repository) GetCustomer(ctx context.Context, req customer.GetCustomerRequest) (domain.Customer, error) {

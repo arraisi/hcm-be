@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/domain/dto/user"
+	"tabeldata.com/hcm-be/internal/domain"
+	"tabeldata.com/hcm-be/internal/domain/dto/user"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"

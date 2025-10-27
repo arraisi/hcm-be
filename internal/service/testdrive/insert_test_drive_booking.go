@@ -6,11 +6,11 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
-	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
-	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
-	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/jmoiron/sqlx"
+	"tabeldata.com/hcm-be/internal/domain/dto/customer"
+	"tabeldata.com/hcm-be/internal/domain/dto/leads"
+	"tabeldata.com/hcm-be/internal/domain/dto/testdrive"
+	"tabeldata.com/hcm-be/pkg/utils"
 )
 
 func (s *service) InsertTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error {

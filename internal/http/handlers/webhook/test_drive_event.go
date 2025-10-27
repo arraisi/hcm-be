@@ -5,12 +5,12 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
-	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
-	"github.com/arraisi/hcm-be/internal/http/middleware"
-	"github.com/arraisi/hcm-be/pkg/errors"
-	"github.com/arraisi/hcm-be/pkg/response"
-	"github.com/arraisi/hcm-be/pkg/utils/validator"
+	"tabeldata.com/hcm-be/internal/domain/dto/testdrive"
+	webhookDto "tabeldata.com/hcm-be/internal/domain/dto/webhook"
+	"tabeldata.com/hcm-be/internal/http/middleware"
+	"tabeldata.com/hcm-be/pkg/errors"
+	"tabeldata.com/hcm-be/pkg/response"
+	"tabeldata.com/hcm-be/pkg/utils/validator"
 )
 
 // TestDriveEvent handles POST /webhook/test-drive-booking

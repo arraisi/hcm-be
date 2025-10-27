@@ -1,7 +1,7 @@
 package user
 
 import (
-	userService "github.com/arraisi/hcm-be/internal/service/user"
+	userService "tabeldata.com/hcm-be/internal/service/user"
 )
 
 // Handler handles HTTP requests for user operations

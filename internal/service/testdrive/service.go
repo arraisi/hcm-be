@@ -3,12 +3,12 @@ package testdrive
 import (
 	"context"
 
-	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
-	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
-	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/jmoiron/sqlx"
+	"tabeldata.com/hcm-be/internal/config"
+	"tabeldata.com/hcm-be/internal/domain"
+	"tabeldata.com/hcm-be/internal/domain/dto/customer"
+	"tabeldata.com/hcm-be/internal/domain/dto/leads"
+	"tabeldata.com/hcm-be/internal/domain/dto/testdrive"
 )
 
 type transactionRepository interface {

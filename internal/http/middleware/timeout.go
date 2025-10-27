@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/arraisi/hcm-be/pkg/errors"
-	"github.com/arraisi/hcm-be/pkg/response"
+	"tabeldata.com/hcm-be/pkg/errors"
+	"tabeldata.com/hcm-be/pkg/response"
 )
 
 // Timeout is a middleware that enforces a timeout on request processing

@@ -3,8 +3,8 @@ package customer
 import (
 	"context"
 
-	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
+	"tabeldata.com/hcm-be/internal/domain"
+	"tabeldata.com/hcm-be/internal/domain/dto/customer"
 )
 
 type Service interface {

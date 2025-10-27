@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/arraisi/hcm-be/internal/domain/dto/user"
-	"github.com/arraisi/hcm-be/pkg/errors"
-	"github.com/arraisi/hcm-be/pkg/response"
+	"tabeldata.com/hcm-be/internal/domain/dto/user"
+	"tabeldata.com/hcm-be/pkg/errors"
+	"tabeldata.com/hcm-be/pkg/response"
 )
 
 // List retrieves a list of users

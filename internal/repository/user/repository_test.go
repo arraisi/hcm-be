@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/arraisi/hcm-be/internal/config"
+	"tabeldata.com/hcm-be/internal/config"
 
 	"github.com/golang/mock/gomock"
 	"github.com/jmoiron/sqlx"

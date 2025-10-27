@@ -4,9 +4,9 @@ package webhook
 import (
 	"context"
 
-	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
-	"github.com/arraisi/hcm-be/pkg/webhook"
+	"tabeldata.com/hcm-be/internal/config"
+	"tabeldata.com/hcm-be/internal/domain/dto/testdrive"
+	"tabeldata.com/hcm-be/pkg/webhook"
 )
 
 type TestDriveService interface {

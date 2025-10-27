@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/pkg/webhook"
 	"github.com/golang/mock/gomock"
+	"tabeldata.com/hcm-be/internal/config"
+	"tabeldata.com/hcm-be/pkg/webhook"
 )
 
 type mock struct {

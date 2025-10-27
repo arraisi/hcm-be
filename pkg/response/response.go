@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/go-playground/validator/v10"
+	"tabeldata.com/hcm-be/pkg/errors"
 )
 
 // Response represents the unified JSON response envelope

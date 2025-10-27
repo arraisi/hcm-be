@@ -4,11 +4,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
-	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
-	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
+	"tabeldata.com/hcm-be/internal/domain"
+	"tabeldata.com/hcm-be/internal/domain/dto/customer"
+	"tabeldata.com/hcm-be/internal/domain/dto/leads"
+	"tabeldata.com/hcm-be/pkg/utils"
 )
 
 // TestDriveRequest represents the test drive information from the webhook

@@ -3,9 +3,9 @@ package testdrive
 import (
 	"context"
 
-	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/elgris/sqrl"
+	"tabeldata.com/hcm-be/internal/domain"
+	"tabeldata.com/hcm-be/internal/domain/dto/testdrive"
 )
 
 func (r *repository) GetTestDrive(ctx context.Context, req testdrive.GetTestDriveRequest) (domain.TestDrive, error) {

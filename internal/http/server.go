@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/arraisi/hcm-be/internal/config"
+	"tabeldata.com/hcm-be/internal/config"
 )
 
 // Server represents an HTTP server.

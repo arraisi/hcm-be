@@ -3,9 +3,9 @@ package customer
 import (
 	"context"
 
-	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/elgris/sqrl"
 	"github.com/jmoiron/sqlx"
+	"tabeldata.com/hcm-be/internal/domain"
 )
 
 func (r *repository) UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) error {

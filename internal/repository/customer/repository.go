@@ -5,8 +5,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/jmoiron/sqlx"
+	"tabeldata.com/hcm-be/internal/config"
 )
 
 type iDB interface {

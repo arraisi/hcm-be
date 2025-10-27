@@ -7,11 +7,11 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/arraisi/hcm-be/internal/config"
-	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
-	"github.com/arraisi/hcm-be/pkg/errors"
-	"github.com/arraisi/hcm-be/pkg/response"
 	"github.com/google/uuid"
+	"tabeldata.com/hcm-be/internal/config"
+	webhookDto "tabeldata.com/hcm-be/internal/domain/dto/webhook"
+	"tabeldata.com/hcm-be/pkg/errors"
+	"tabeldata.com/hcm-be/pkg/response"
 )
 
 // WebhookHeadersKey is the context key for storing webhook headers
