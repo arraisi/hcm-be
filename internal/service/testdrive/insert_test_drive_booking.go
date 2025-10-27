@@ -32,7 +32,7 @@ func (s *service) InsertTestDriveBooking(ctx context.Context, request testdrive.
 	}()
 
 	// Upsert Customer
-	err = s.upsertCustomer(ctx, tx, request)
+	customerID, err := s.upsertCustomer(ctx, tx, request)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (s *service) InsertTestDriveBooking(ctx context.Context, request testdrive.
 	}
 
 	// Upsert Test Drive
-	err = s.upsertTestDrive(ctx, tx, request)
+	err = s.upsertTestDrive(ctx, tx, request, customerID)
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (s *service) InsertTestDriveBooking(ctx context.Context, request testdrive.
 }
 
 // upsertCustomer checks if a customer exists by OneAccountID. If found, it updates the customer; if not found, it creates a new customer.
-func (s *service) upsertCustomer(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent) error {
+func (s *service) upsertCustomer(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent) (string, error) {
 	oneAccountID := ev.Data.OneAccount.OneAccountID
 
 	_, err := s.customerRepo.GetCustomer(ctx, customer.GetCustomerRequest{
@@ -67,51 +67,49 @@ func (s *service) upsertCustomer(ctx context.Context, tx *sqlx.Tx, ev testdrive.
 	})
 	if err == nil {
 		// Found → update
-		err := s.customerRepo.UpdateCustomer(ctx, tx, ev.ToCustomerModel())
+		customerID, err := s.customerRepo.UpdateCustomer(ctx, tx, ev.ToCustomerModel())
 		if err != nil {
-			return err
+			return customerID, err
 		}
-		return nil
+		return customerID, nil
 	}
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		if err := s.customerRepo.CreateCustomer(ctx, tx, ev.ToCustomerModel()); err != nil {
-			return err
+		customerID, err := s.customerRepo.CreateCustomer(ctx, tx, ev.ToCustomerModel())
+		if err != nil {
+			return customerID, err
 		}
-		return nil
+		return customerID, nil
 	}
 
 	// other error
-	return err
+	return "", err
 }
 
 // upsertTestDrive checks if a test drive exists by TestDriveID. If found, it updates the test drive; if not found, it creates a new test drive.
-func (s *service) upsertTestDrive(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent) error {
+func (s *service) upsertTestDrive(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent, customerID string) error {
 	testDriveID := ev.Data.TestDrive.TestDriveID
 
-	_, err := s.repo.GetTestDrive(ctx, testdrive.GetTestDriveRequest{
-		TestDriveID: utils.ToPointer(testDriveID),
+	testDrives, err := s.repo.GetTestDrives(ctx, testdrive.GetTestDriveRequest{
+		CustomerID: utils.ToPointer(customerID),
 	})
-	if err == nil {
-		// Found → update
-		err := s.repo.UpdateTestDrive(ctx, tx, ev.ToTestDriveModel())
-		if err != nil {
-			return err
-		}
-		return nil
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return err
 	}
 
-	// Not found → create
-	if errors.Is(err, sql.ErrNoRows) {
-		if err := s.repo.CreateTestDrive(ctx, tx, ev.ToTestDriveModel()); err != nil {
-			return err
-		}
-		return nil
+	// Ensure only one active test drive per customer
+	if len(testDrives) > 1 {
+		return errorx.ErrTestDriveCustomerHasBooking
 	}
 
-	// other error
-	return err
+	// Update existing test drive if found
+	if len(testDrives) == 1 && testDrives[0].TestDriveID == testDriveID {
+		return s.repo.UpdateTestDrive(ctx, tx, ev.ToTestDriveModel(customerID))
+	}
+
+	// Create new test drive if not found
+	return s.repo.CreateTestDrive(ctx, tx, ev.ToTestDriveModel(customerID))
 }
 
 // upsertLeads checks if a lead exists by LeadsID. If found, it updates the lead; if not found, it creates a new lead.

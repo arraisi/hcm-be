@@ -8,23 +8,26 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) error {
+func (r *repository) UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error) {
 	model := domain.Customer{}
 
 	query, args, err := sqrl.Update(model.TableName()).
 		SetMap(req.ToUpdateMap()).
-		Where(sqrl.Or{
-			sqrl.Eq{"one_account_ID": req.OneAccountID},
-			sqrl.Eq{"i_id": req.IID},
-		}).ToSql()
+		Suffix("OUTPUT INSERTED.i_id").
+		ToSql()
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	_, err = tx.ExecContext(ctx, r.db.Rebind(query), args...)
+	// Add WHERE clause to identify the record to update
+	query += " WHERE one_account_ID = ? OR i_id = ?"
+	args = append(args, req.OneAccountID, req.IID)
+
+	var iID string
+	err = tx.QueryRowxContext(ctx, r.db.Rebind(query), args...).Scan(&iID)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return iID, nil
 }

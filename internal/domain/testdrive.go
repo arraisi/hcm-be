@@ -3,21 +3,23 @@ package domain
 import "time"
 
 type TestDrive struct {
-	IID         string    `json:"i_id" db:"i_id"`
-	TestDriveID string    `json:"test_drive_ID" db:"test_drive_ID"`
-	Katashiki   string    `json:"katashiki_code" db:"katashiki_code"`
-	Model       string    `json:"model" db:"model"`
-	Variant     string    `json:"variant" db:"variant"`
-	StartTime   time.Time `json:"test_drive_datetime_start" db:"test_drive_datetime_start"`
-	EndTime     time.Time `json:"test_drive_datetime_end" db:"test_drive_datetime_end"`
-	Location    string    `json:"location" db:"location"`
-	OutletID    string    `json:"outlet_ID" db:"outled_ID"`
-	OutletName  string    `json:"outlet_name" db:"outlet_name"`
-	Status      string    `json:"test_drive_status" db:"test_drive_status"`
-	Reason      string    `json:"cancellation_reason" db:"cancellation_reason"`
-	OtherReason string    `json:"other_cancellation_reason" db:"other_cancellation_reason"`
-	CreatedAt   time.Time `json:"created_datetime" db:"created_datetime"`
-	Consent     bool      `json:"customer_driving_consent" db:"customer_driving_consent"`
+	IID          string    `json:"i_id" db:"i_id"`
+	TestDriveID  string    `json:"test_drive_ID" db:"test_drive_ID"`
+	Katashiki    string    `json:"katashiki_code" db:"katashiki_code"`
+	Model        string    `json:"model" db:"model"`
+	Variant      string    `json:"variant" db:"variant"`
+	StartTime    time.Time `json:"test_drive_datetime_start" db:"test_drive_datetime_start"`
+	EndTime      time.Time `json:"test_drive_datetime_end" db:"test_drive_datetime_end"`
+	Location     string    `json:"location" db:"location"`
+	OutletID     string    `json:"outlet_ID" db:"outled_ID"`
+	OutletName   string    `json:"outlet_name" db:"outlet_name"`
+	Status       string    `json:"test_drive_status" db:"test_drive_status"`
+	Reason       string    `json:"cancellation_reason" db:"cancellation_reason"`
+	OtherReason  string    `json:"other_cancellation_reason" db:"other_cancellation_reason"`
+	CreatedAt    time.Time `json:"created_datetime" db:"created_datetime"`
+	Consent      bool      `json:"customer_driving_consent" db:"customer_driving_consent"`
+	CustomerID   string    `json:"customer_id" db:"customer_id"`
+	OneAccountID string    `json:"one_account_ID" db:"one_account_ID"`
 }
 
 // TableName returns the database table name for the User model
@@ -43,6 +45,8 @@ func (u *TestDrive) Columns() []string {
 		"other_cancellation_reason",
 		"created_datetime",
 		"customer_driving_consent",
+		"customer_id",
+		"one_account_ID",
 	}
 }
 
@@ -63,6 +67,8 @@ func (u *TestDrive) ToValues() []interface{} {
 		u.OtherReason,
 		u.CreatedAt,
 		u.Consent,
+		u.CustomerID,
+		u.OneAccountID,
 	}
 }
 

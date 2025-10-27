@@ -63,13 +63,14 @@ var (
 		{Error: ErrWebhookInvalidEventID, Code: http.StatusBadRequest},
 	}
 
-	ErrTestDriveNotFound          = errors.New("test drive booking not found")
-	ErrTestDriveInvalidData       = errors.New("invalid test drive data")
-	ErrTestDriveCreateFailed      = errors.New("failed to create test drive booking")
-	ErrTestDriveUpdateFailed      = errors.New("failed to update test drive booking")
-	ErrTestDriveInvalidStatus     = errors.New("invalid test drive status")
-	ErrTestDriveStatusInvalid     = errors.New("test drive status is invalid")
-	ErrLeadsFollowUpStatusInvalid = errors.New("leads follow-up status is invalid")
+	ErrTestDriveNotFound           = errors.New("test drive booking not found")
+	ErrTestDriveInvalidData        = errors.New("invalid test drive data")
+	ErrTestDriveCreateFailed       = errors.New("failed to create test drive booking")
+	ErrTestDriveUpdateFailed       = errors.New("failed to update test drive booking")
+	ErrTestDriveInvalidStatus      = errors.New("invalid test drive status")
+	ErrTestDriveStatusInvalid      = errors.New("test drive status is invalid")
+	ErrLeadsFollowUpStatusInvalid  = errors.New("leads follow-up status is invalid")
+	ErrTestDriveCustomerHasBooking = errors.New("customer already has a test drive booking")
 	// Test Drive-specific error list
 	ErrListTestDrive = ErrList{
 		{Error: ErrTestDriveNotFound, Code: http.StatusNotFound},
@@ -79,6 +80,7 @@ var (
 		{Error: ErrTestDriveInvalidStatus, Code: http.StatusBadRequest},
 		{Error: ErrTestDriveStatusInvalid, Code: http.StatusBadRequest},
 		{Error: ErrLeadsFollowUpStatusInvalid, Code: http.StatusBadRequest},
+		{Error: ErrTestDriveCustomerHasBooking, Code: http.StatusConflict},
 	}
 
 	// Service errors

@@ -63,21 +63,23 @@ func (td *TestDriveRequest) GetEndTime() time.Time {
 }
 
 // ToTestDriveModel converts the TestDriveEvent to the internal TestDrive model
-func (be *TestDriveEvent) ToTestDriveModel() domain.TestDrive {
+func (be *TestDriveEvent) ToTestDriveModel(customerID string) domain.TestDrive {
 	return domain.TestDrive{
-		TestDriveID: be.Data.TestDrive.TestDriveID,
-		Model:       be.Data.TestDrive.Model,
-		Variant:     be.Data.TestDrive.Variant,
-		CreatedAt:   be.Data.TestDrive.GetCreatedTime(),
-		StartTime:   be.Data.TestDrive.GetStartTime(),
-		EndTime:     be.Data.TestDrive.GetEndTime(),
-		Location:    be.Data.TestDrive.Location,
-		OutletID:    be.Data.TestDrive.OutletID,
-		OutletName:  be.Data.TestDrive.OutletName,
-		Status:      be.Data.TestDrive.TestDriveStatus,
-		Reason:      utils.ToValue(be.Data.TestDrive.CancellationReason),
-		OtherReason: utils.ToValue(be.Data.TestDrive.OtherCancellationReason),
-		Consent:     be.Data.TestDrive.CustomerDrivingConsent,
+		TestDriveID:  be.Data.TestDrive.TestDriveID,
+		Model:        be.Data.TestDrive.Model,
+		Variant:      be.Data.TestDrive.Variant,
+		CreatedAt:    be.Data.TestDrive.GetCreatedTime(),
+		StartTime:    be.Data.TestDrive.GetStartTime(),
+		EndTime:      be.Data.TestDrive.GetEndTime(),
+		Location:     be.Data.TestDrive.Location,
+		OutletID:     be.Data.TestDrive.OutletID,
+		OutletName:   be.Data.TestDrive.OutletName,
+		Status:       be.Data.TestDrive.TestDriveStatus,
+		Reason:       utils.ToValue(be.Data.TestDrive.CancellationReason),
+		OtherReason:  utils.ToValue(be.Data.TestDrive.OtherCancellationReason),
+		Consent:      be.Data.TestDrive.CustomerDrivingConsent,
+		OneAccountID: be.Data.OneAccount.OneAccountID,
+		CustomerID:   customerID,
 	}
 }
 
@@ -123,8 +125,10 @@ func (be *TestDriveEvent) ToLeadScoreModel() domain.LeadScore {
 }
 
 type GetTestDriveRequest struct {
-	IID         *string
-	TestDriveID *string
+	IID          *string
+	TestDriveID  *string
+	CustomerID   *string
+	OneAccountID *string
 }
 
 // Apply applies the request parameters to the given SelectBuilder
@@ -134,5 +138,11 @@ func (req GetTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
 	}
 	if req.TestDriveID != nil {
 		q.Where(sqrl.Eq{"test_drive_ID": req.TestDriveID})
+	}
+	if req.CustomerID != nil {
+		q.Where(sqrl.Eq{"customer_ID": req.CustomerID})
+	}
+	if req.OneAccountID != nil {
+		q.Where(sqrl.Eq{"one_account_ID": req.OneAccountID})
 	}
 }
