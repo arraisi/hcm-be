@@ -80,6 +80,7 @@ func (be *TestDriveEvent) ToTestDriveModel(customerID string) domain.TestDrive {
 		Consent:      be.Data.TestDrive.CustomerDrivingConsent,
 		OneAccountID: be.Data.OneAccount.OneAccountID,
 		CustomerID:   customerID,
+		LeadsID:      be.Data.Leads.LeadsID,
 	}
 }
 

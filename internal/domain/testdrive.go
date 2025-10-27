@@ -20,6 +20,7 @@ type TestDrive struct {
 	Consent      bool      `json:"customer_driving_consent" db:"customer_driving_consent"`
 	CustomerID   string    `json:"customer_id" db:"customer_id"`
 	OneAccountID string    `json:"one_account_ID" db:"one_account_ID"`
+	LeadsID      string    `json:"leads_id" db:"leads_id"`
 }
 
 // TableName returns the database table name for the User model
@@ -47,6 +48,7 @@ func (u *TestDrive) Columns() []string {
 		"customer_driving_consent",
 		"customer_id",
 		"one_account_ID",
+		"leads_id",
 	}
 }
 
@@ -69,6 +71,7 @@ func (u *TestDrive) ToValues() []interface{} {
 		u.Consent,
 		u.CustomerID,
 		u.OneAccountID,
+		u.LeadsID,
 	}
 }
 
@@ -90,6 +93,9 @@ func (u *TestDrive) SelectColumns() []string {
 		"other_cancellation_reason",
 		"created_datetime",
 		"customer_driving_consent",
+		"CAST(customer_id AS NVARCHAR(36)) as customer_id",
+		"CAST(one_account_ID AS NVARCHAR(36)) as one_account_ID",
+		"CAST(leads_id AS NVARCHAR(36)) as leads_id",
 	}
 }
 
@@ -130,6 +136,15 @@ func (u *TestDrive) ToUpdateMap() map[string]interface{} {
 	}
 	if !u.CreatedAt.IsZero() {
 		updateMap["created_datetime"] = u.CreatedAt
+	}
+	if u.CustomerID != "" {
+		updateMap["customer_id"] = u.CustomerID
+	}
+	if u.OneAccountID != "" {
+		updateMap["one_account_ID"] = u.OneAccountID
+	}
+	if u.LeadsID != "" {
+		updateMap["leads_id"] = u.LeadsID
 	}
 	updateMap["customer_driving_consent"] = u.Consent
 	return updateMap
