@@ -14,6 +14,7 @@ import (
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
+	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	"github.com/arraisi/hcm-be/internal/service/testdrive"
 	userService "github.com/arraisi/hcm-be/internal/service/user"
@@ -59,12 +60,15 @@ func Run(cfg *config.Config) error {
 		LeadRepo:        leadRepo,
 		LeadScoreRepo:   leadScoreRepo,
 	})
-
 	idempotencyStore := idempotencyService.NewInMemoryIdempotencyStore(24 * time.Hour) // 24 hour TTL
+	customerSvc := customerService.New(cfg, customerService.ServiceContainer{
+		TransactionRepo: txRepo,
+		Repo:            customerRepo,
+	})
 
 	// init handlers
 	userHandler := user.NewUserHandler(userSvc)
-	customerHandler := customer.New(customerRepo)
+	customerHandler := customer.New(customerSvc)
 	webhookHandler := webhook.NewWebhookHandler(cfg, idempotencyStore, testDriveSvc)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{

@@ -6,7 +6,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
-	"github.com/arraisi/hcm-be/pkg/webhook"
+	"github.com/arraisi/hcm-be/internal/http/middleware"
 )
 
 type TestDriveService interface {
@@ -23,7 +23,7 @@ type IdempotencyStore interface {
 // Handler handles webhook requests
 type Handler struct {
 	config            *config.Config
-	signatureVerifier *webhook.SignatureVerifier
+	signatureVerifier *middleware.SignatureVerifier
 	idempotencySvc    IdempotencyStore
 	testDriveSvc      TestDriveService
 }
@@ -32,7 +32,7 @@ type Handler struct {
 func NewWebhookHandler(cfg *config.Config, idempotencySvc IdempotencyStore, testDriveSvc TestDriveService) Handler {
 	return Handler{
 		config:            cfg,
-		signatureVerifier: webhook.NewSignatureVerifier(cfg.Webhook.HMACSecret),
+		signatureVerifier: middleware.NewSignatureVerifier(cfg.Webhook.HMACSecret),
 		idempotencySvc:    idempotencySvc,
 		testDriveSvc:      testDriveSvc,
 	}

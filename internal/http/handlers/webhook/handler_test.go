@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/pkg/webhook"
+	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/golang/mock/gomock"
 )
 
@@ -42,7 +42,7 @@ func setupMock(t *testing.T) mock {
 
 	m.handler = &Handler{
 		config:            m.Config,
-		signatureVerifier: webhook.NewSignatureVerifier(m.Config.Webhook.HMACSecret),
+		signatureVerifier: middleware.NewSignatureVerifier(m.Config.Webhook.HMACSecret),
 		idempotencySvc:    m.mockIdempotencySvc,
 		testDriveSvc:      m.mockTestDriveSvc,
 	}
