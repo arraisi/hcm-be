@@ -2,7 +2,6 @@ package leads
 
 import (
 	"context"
-	"strings"
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/elgris/sqrl"
@@ -11,7 +10,7 @@ import (
 )
 
 func (r *repository) CreateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error {
-	req.IID = strings.ReplaceAll(uuid.New().String(), "-", "")
+	req.IID = uuid.NewString()
 	query, args, err := sqrl.Insert(req.TableName()).
 		Columns(req.Columns()...).
 		Values(req.ToValues()...).ToSql()

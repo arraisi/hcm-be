@@ -18,8 +18,8 @@ type transactionRepository interface {
 }
 
 type CustomerRepository interface {
-	CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) error
-	UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) error
+	CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error)
+	UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error)
 	GetCustomer(ctx context.Context, req customer.GetCustomerRequest) (domain.Customer, error)
 }
 
@@ -39,6 +39,7 @@ type Repository interface {
 	CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req domain.TestDrive) error
 	GetTestDrive(ctx context.Context, req testdrive.GetTestDriveRequest) (domain.TestDrive, error)
 	UpdateTestDrive(ctx context.Context, tx *sqlx.Tx, req domain.TestDrive) error
+	GetTestDrives(ctx context.Context, req testdrive.GetTestDriveRequest) ([]domain.TestDrive, error)
 }
 
 type ServiceContainer struct {

@@ -50,7 +50,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 	}
 
 	// API v1
-	r.Route("/api/v1", func(api chi.Router) {
+	r.Route("/api/v1/hcm", func(api chi.Router) {
 		api.Route("/users", func(users chi.Router) {
 			users.Get("/", handler.UserHandler.List)
 			users.Post("/", handler.UserHandler.Create)

@@ -1,6 +1,6 @@
 package customer
 
-//go:generate mockgen -source=repository.go -package=user -destination=repository_mock_test.go
+//go:generate mockgen -source=repository.go -package=customer -destination=repository_mock_test.go
 import (
 	"context"
 	"database/sql"

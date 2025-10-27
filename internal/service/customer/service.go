@@ -16,7 +16,7 @@ type transactionRepository interface {
 }
 
 type Repository interface {
-	CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) error
+	CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error)
 	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) ([]domain.Customer, error)
 }
 
