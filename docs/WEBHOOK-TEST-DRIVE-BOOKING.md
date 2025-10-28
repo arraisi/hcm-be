@@ -42,12 +42,12 @@ signature = hex(HMAC_SHA256(hmacSecret, rawRequestBody))
       "email": "john.doe@example.com"
     },
     "test_drive": {
-      "test_drive_ID": "0d5be854-74a4-4e0d-be00-da098d3529d5",
+      "test_drive_id": "0d5be854-74a4-4e0d-be00-da098d3529d5",
       "test_drive_number": "TUT010026-02-20241107959",
       "katashiki_code": "NSP170R-MWYXKD",
       "model": "Innova Zenix",
       "variant": "2.0 Q A/T",
-      "created_datetime": 1709096400,
+      "request_at": 1709096400,
       "test_drive_datetime_start": 1709085600,
       "test_drive_datetime_end": 1709388000,
       "location": "DEALER",

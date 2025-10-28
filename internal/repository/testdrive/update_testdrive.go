@@ -14,8 +14,8 @@ func (r *repository) UpdateTestDrive(ctx context.Context, tx *sqlx.Tx, req domai
 	query, args, err := sqrl.Update(model.TableName()).
 		SetMap(req.ToUpdateMap()).
 		Where(sqrl.Or{
-			sqrl.Eq{"test_drive_ID": req.TestDriveID},
-			sqrl.Eq{"i_id": req.IID},
+			sqrl.Eq{"test_drive_id": req.TestDriveID},
+			sqrl.Eq{"id": req.ID},
 		}).ToSql()
 	if err != nil {
 		return err

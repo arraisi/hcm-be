@@ -6,6 +6,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/config"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
+	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
@@ -16,7 +17,7 @@ import (
 	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
-	"github.com/arraisi/hcm-be/internal/service/testdrive"
+	testdriveService "github.com/arraisi/hcm-be/internal/service/testdrive"
 	userService "github.com/arraisi/hcm-be/internal/service/user"
 
 	"github.com/jmoiron/sqlx"
@@ -53,7 +54,7 @@ func Run(cfg *config.Config) error {
 
 	// init services
 	userSvc := userService.NewUserService(userRepo, txRepo)
-	testDriveSvc := testdrive.New(cfg, testdrive.ServiceContainer{
+	testDriveSvc := testdriveService.New(cfg, testdriveService.ServiceContainer{
 		TransactionRepo: txRepo,
 		Repo:            testDriveRepo,
 		CustomerRepo:    customerRepo,
@@ -70,12 +71,14 @@ func Run(cfg *config.Config) error {
 	userHandler := user.NewUserHandler(userSvc)
 	customerHandler := customer.New(customerSvc)
 	webhookHandler := webhook.NewWebhookHandler(cfg, idempotencyStore, testDriveSvc)
+	testdriveHandler := testdrive.New(testDriveSvc)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
-		Config:          cfg,
-		UserHandler:     userHandler,
-		CustomerHandler: customerHandler,
-		WebhookHandler:  webhookHandler,
+		Config:           cfg,
+		UserHandler:      userHandler,
+		CustomerHandler:  customerHandler,
+		WebhookHandler:   webhookHandler,
+		TestDriveHandler: testdriveHandler,
 	})
 
 	return apphttp.NewServer(cfg, router)

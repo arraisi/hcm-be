@@ -7,6 +7,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
+	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
@@ -16,10 +17,11 @@ import (
 )
 
 type Handler struct {
-	Config          *config.Config
-	UserHandler     user.Handler
-	CustomerHandler customer.Handler
-	WebhookHandler  webhook.Handler
+	Config           *config.Config
+	UserHandler      user.Handler
+	CustomerHandler  customer.Handler
+	WebhookHandler   webhook.Handler
+	TestDriveHandler testdrive.Handler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -61,6 +63,10 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 
 		api.Route("/customers", func(users chi.Router) {
 			users.Get("/", handler.CustomerHandler.GetCustomers)
+		})
+
+		api.Route("/test-drives", func(users chi.Router) {
+			users.Put("/confirm", handler.TestDriveHandler.ConfirmDriveEvent)
 		})
 
 		api.Route("/webhooks", func(webhooks chi.Router) {

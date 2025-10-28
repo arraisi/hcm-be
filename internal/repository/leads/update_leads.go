@@ -15,7 +15,7 @@ func (r *repository) UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Le
 		SetMap(req.ToUpdateMap()).
 		Where(sqrl.Or{
 			sqrl.Eq{"leads_id": req.LeadsID},
-			sqrl.Eq{"i_id": req.IID},
+			sqrl.Eq{"id": req.ID},
 		}).ToSql()
 	if err != nil {
 		return err

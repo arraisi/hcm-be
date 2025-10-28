@@ -13,7 +13,7 @@ func (r *repository) UpdateLeadScore(ctx context.Context, tx *sqlx.Tx, req domai
 
 	query, args, err := sqrl.Update(model.TableName()).
 		SetMap(req.ToUpdateMap()).
-		Where(sqrl.Eq{"i_id": req.IID}).ToSql()
+		Where(sqrl.Eq{"id": req.ID}).ToSql()
 	if err != nil {
 		return err
 	}

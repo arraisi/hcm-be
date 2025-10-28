@@ -12,7 +12,7 @@ import (
 
 // TestDriveRequest represents the test drive information from the webhook
 type TestDriveRequest struct {
-	TestDriveID             string  `json:"test_drive_ID" validate:"required"`
+	TestDriveID             string  `json:"test_drive_id" validate:"required"`
 	TestDriveNumber         string  `json:"test_drive_number" validate:"required"`
 	KatashikiCode           string  `json:"katashiki_code" validate:"required"`
 	Model                   string  `json:"model" validate:"required"`
@@ -29,12 +29,46 @@ type TestDriveRequest struct {
 	CustomerDrivingConsent  bool    `json:"customer_driving_consent"`
 }
 
+func NewTestDriveRequest(td domain.TestDrive) TestDriveRequest {
+	return TestDriveRequest{
+		TestDriveID:            td.TestDriveID,
+		TestDriveNumber:        td.TestDriveNumber,
+		KatashikiCode:          td.KatashikiCode,
+		Model:                  td.Model,
+		Variant:                td.Variant,
+		CreatedDatetime:        td.RequestAt.Unix(),
+		TestDriveDatetimeStart: td.StartTime.Unix(),
+		TestDriveDatetimeEnd:   td.EndTime.Unix(),
+		Location:               td.Location,
+		OutletID:               td.OutletID,
+		OutletName:             td.OutletName,
+		TestDriveStatus:        td.Status,
+		CancellationReason:     utils.ToPointer(td.Reason),
+		OtherCancellationReason: func() *string {
+			if td.OtherReason != "" {
+				return &td.OtherReason
+			}
+			return nil
+		}(),
+		CustomerDrivingConsent: td.Consent,
+	}
+
+}
+
 // TestDriveEventData represents the data payload of the booking event
 type TestDriveEventData struct {
-	OneAccount customer.OneAccountRequest `json:"one_account" validate:"required"`
-	TestDrive  TestDriveRequest           `json:"test_drive" validate:"required"`
-	Leads      leads.LeadsRequest         `json:"leads" validate:"required"`
-	Score      leads.Score                `json:"score" validate:"required"`
+	OneAccount    customer.OneAccountRequest `json:"one_account" validate:"required"`
+	TestDrive     TestDriveRequest           `json:"test_drive" validate:"required"`
+	Leads         leads.LeadsRequest         `json:"leads" validate:"required"`
+	Score         leads.Score                `json:"score" validate:"required"`
+	PICAssignment *PICAssignmentRequest      `json:"pic_assignment,omitempty"`
+}
+
+// PICAssignmentRequest represents the PIC assignment information from the webhook
+type PICAssignmentRequest struct {
+	EmployeeID string `json:"employee_id" validate:"required"`
+	FirstName  string `json:"first_name" validate:"required"`
+	LastName   string `json:"last_name" validate:"required"`
 }
 
 // TestDriveEvent represents the complete webhook payload for test drive booking
@@ -65,22 +99,28 @@ func (td *TestDriveRequest) GetEndTime() time.Time {
 // ToTestDriveModel converts the TestDriveEvent to the internal TestDrive model
 func (be *TestDriveEvent) ToTestDriveModel(customerID string) domain.TestDrive {
 	return domain.TestDrive{
-		TestDriveID:  be.Data.TestDrive.TestDriveID,
-		Model:        be.Data.TestDrive.Model,
-		Variant:      be.Data.TestDrive.Variant,
-		CreatedAt:    be.Data.TestDrive.GetCreatedTime(),
-		StartTime:    be.Data.TestDrive.GetStartTime(),
-		EndTime:      be.Data.TestDrive.GetEndTime(),
-		Location:     be.Data.TestDrive.Location,
-		OutletID:     be.Data.TestDrive.OutletID,
-		OutletName:   be.Data.TestDrive.OutletName,
-		Status:       be.Data.TestDrive.TestDriveStatus,
-		Reason:       utils.ToValue(be.Data.TestDrive.CancellationReason),
-		OtherReason:  utils.ToValue(be.Data.TestDrive.OtherCancellationReason),
-		Consent:      be.Data.TestDrive.CustomerDrivingConsent,
-		OneAccountID: be.Data.OneAccount.OneAccountID,
-		CustomerID:   customerID,
-		LeadsID:      be.Data.Leads.LeadsID,
+		TestDriveID:     be.Data.TestDrive.TestDriveID,
+		TestDriveNumber: be.Data.TestDrive.TestDriveNumber,
+		KatashikiCode:   be.Data.TestDrive.KatashikiCode,
+		Model:           be.Data.TestDrive.Model,
+		Variant:         be.Data.TestDrive.Variant,
+		RequestAt:       be.Data.TestDrive.GetCreatedTime(),
+		StartTime:       be.Data.TestDrive.GetStartTime(),
+		EndTime:         be.Data.TestDrive.GetEndTime(),
+		Location:        be.Data.TestDrive.Location,
+		OutletID:        be.Data.TestDrive.OutletID,
+		OutletName:      be.Data.TestDrive.OutletName,
+		Status:          be.Data.TestDrive.TestDriveStatus,
+		Reason:          utils.ToValue(be.Data.TestDrive.CancellationReason),
+		OtherReason:     utils.ToValue(be.Data.TestDrive.OtherCancellationReason),
+		Consent:         be.Data.TestDrive.CustomerDrivingConsent,
+		CustomerID:      customerID,
+		LeadsID:         be.Data.Leads.LeadsID,
+		EventID:         be.EventID,
+		CreatedAt:       time.Now(),
+		CreatedBy:       "mToyota", // or fetch from context if available
+		UpdatedAt:       time.Now(),
+		UpdatedBy:       utils.ToPointer("mToyota"), // or fetch from context if available
 	}
 }
 
@@ -93,6 +133,10 @@ func (be *TestDriveEvent) ToCustomerModel() domain.Customer {
 		Email:        be.Data.OneAccount.Email,
 		PhoneNumber:  be.Data.OneAccount.PhoneNumber,
 		Gender:       be.Data.OneAccount.Gender,
+		CreatedAt:    time.Now(),
+		CreatedBy:    "mToyota", // or fetch from context if available
+		UpdatedAt:    time.Now(),
+		UpdatedBy:    utils.ToPointer("mToyota"), // or fetch from context if available
 	}
 }
 
@@ -106,13 +150,17 @@ func (be *TestDriveEvent) ToLeadsModel() domain.Leads {
 		LeadsPreferenceContactTimeEnd:   be.Data.Leads.LeadsPreferenceContactTimeEnd,
 		LeadSource:                      be.Data.Leads.LeadSource,
 		AdditionalNotes:                 be.Data.Leads.AdditionalNotes,
+		CreatedAt:                       time.Now(),
+		CreatedBy:                       "mToyota", // or fetch from context if available
+		UpdatedAt:                       time.Now(),
+		UpdatedBy:                       utils.ToPointer("mToyota"), // or fetch from context if available
 	}
 }
 
 // ToLeadScoreModel converts the TestDriveEvent to the internal LeadScore model
 func (be *TestDriveEvent) ToLeadScoreModel() domain.LeadScore {
 	return domain.LeadScore{
-		IID:                     be.Data.Leads.LeadsID,
+		ID:                      be.Data.Leads.LeadsID,
 		TAMLeadScore:            be.Data.Score.TAMLeadScore,
 		OutletLeadScore:         be.Data.Score.OutletLeadScore,
 		PurchasePlanCriteria:    be.Data.Score.Parameter.PurchasePlanCriteria,
@@ -122,11 +170,15 @@ func (be *TestDriveEvent) ToLeadScoreModel() domain.LeadScore {
 		TradeInCriteria:         be.Data.Score.Parameter.TradeInCriteria,
 		BrowsingHistoryCriteria: be.Data.Score.Parameter.BrowsingHistoryCriteria,
 		VehicleAgeCriteria:      be.Data.Score.Parameter.VehicleAgeCriteria,
+		CreatedAt:               time.Now(),
+		CreatedBy:               "mToyota", // or fetch from context if available
+		UpdatedAt:               time.Now(),
+		UpdatedBy:               utils.ToPointer("mToyota"), // or fetch from context if available
 	}
 }
 
 type GetTestDriveRequest struct {
-	IID          *string
+	ID           *string
 	TestDriveID  *string
 	CustomerID   *string
 	OneAccountID *string
@@ -134,16 +186,23 @@ type GetTestDriveRequest struct {
 
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
-	if req.IID != nil {
-		q.Where(sqrl.Eq{"i_id": req.IID})
+	if req.ID != nil {
+		q.Where(sqrl.Eq{"id": req.ID})
 	}
 	if req.TestDriveID != nil {
-		q.Where(sqrl.Eq{"test_drive_ID": req.TestDriveID})
+		q.Where(sqrl.Eq{"test_drive_id": req.TestDriveID})
 	}
 	if req.CustomerID != nil {
-		q.Where(sqrl.Eq{"customer_ID": req.CustomerID})
+		q.Where(sqrl.Eq{"customer_id": req.CustomerID})
 	}
 	if req.OneAccountID != nil {
-		q.Where(sqrl.Eq{"one_account_ID": req.OneAccountID})
+		q.Where(sqrl.Eq{"one_account_id": req.OneAccountID})
 	}
+}
+
+type ConfirmTestDriveBookingRequest struct {
+	TestDriveID  string `json:"test_drive_id"`
+	PICID        string `json:"employee_id"`
+	PICFirstName string `json:"first_name"`
+	PICLastName  string `json:"last_name"`
 }

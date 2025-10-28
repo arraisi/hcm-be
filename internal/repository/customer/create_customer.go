@@ -11,19 +11,19 @@ import (
 )
 
 func (r *repository) CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error) {
-	req.IID = uuid.NewString()
+	req.ID = uuid.NewString()
 	query, args, err := sqrl.Insert(req.TableName()).
 		Columns(req.Columns()...).
 		Values(req.ToValues()...).ToSql()
 	if err != nil {
-		return req.IID, err
+		return req.ID, err
 	}
 
 	query = r.db.Rebind(query)
 	_, err = tx.ExecContext(ctx, query, args...)
 	if err != nil {
-		return req.IID, err
+		return req.ID, err
 	}
 
-	return req.IID, nil
+	return req.ID, nil
 }

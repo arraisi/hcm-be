@@ -10,7 +10,7 @@ import (
 )
 
 func (r *repository) CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req domain.TestDrive) error {
-	req.IID = uuid.NewString()
+	req.ID = uuid.NewString()
 	query, args, err := sqrl.Insert(req.TableName()).
 		Columns(req.Columns()...).
 		Values(req.ToValues()...).ToSql()

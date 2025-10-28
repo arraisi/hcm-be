@@ -13,15 +13,15 @@ func (r *repository) UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain
 
 	query, args, err := sqrl.Update(model.TableName()).
 		SetMap(req.ToUpdateMap()).
-		Suffix("OUTPUT INSERTED.i_id").
+		Suffix("OUTPUT INSERTED.id").
 		ToSql()
 	if err != nil {
 		return "", err
 	}
 
 	// Add WHERE clause to identify the record to update
-	query += " WHERE one_account_ID = ? OR i_id = ?"
-	args = append(args, req.OneAccountID, req.IID)
+	query += " WHERE one_account_id = ? OR id = ?"
+	args = append(args, req.OneAccountID, req.ID)
 
 	var iID string
 	err = tx.QueryRowxContext(ctx, r.db.Rebind(query), args...).Scan(&iID)
