@@ -1,6 +1,8 @@
 package config
 
-import "time"
+import (
+	"time"
+)
 
 type App struct {
 	Name string `yaml:"name"`
@@ -48,4 +50,16 @@ type Config struct {
 	Database      Database      `yaml:"database"`
 	Webhook       Webhook       `yaml:"webhook"`
 	FeatureFlag   FeatureFlag   `yaml:"featureFlag"`
+	Http          HttpConfig    `yaml:"http"`
+}
+
+type HttpConfig struct {
+	MockApi HttpClientConfig `yaml:"mockapi"`
+}
+
+type HttpClientConfig struct {
+	BaseUrl    string        `yaml:"baseUrl"`
+	APIKey     string        `yaml:"apiKey"`
+	Timeout    time.Duration `yaml:"timeout"`
+	RetryCount int           `yaml:"retryCount"`
 }

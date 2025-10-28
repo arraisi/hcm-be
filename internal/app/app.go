@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
+	"github.com/arraisi/hcm-be/internal/ext/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
@@ -44,6 +45,8 @@ func Run(cfg *config.Config) error {
 	db.SetConnMaxLifetime(cfg.Database.MaxConnectionLifetime)
 	db.SetConnMaxIdleTime(cfg.Database.MaxConnectionIdleTime)
 
+	mockApiClient := mockapi.New(&cfg.Http.MockApi)
+
 	// init repositories
 	userRepo := userRepository.NewUserRepository(db)
 	txRepo := transactionRepository.New(db)
@@ -53,7 +56,7 @@ func Run(cfg *config.Config) error {
 	testDriveRepo := testdriveRepository.New(cfg, db)
 
 	// init services
-	userSvc := userService.NewUserService(userRepo, txRepo)
+	userSvc := userService.NewUserService(userRepo, txRepo, mockApiClient)
 	testDriveSvc := testdriveService.New(cfg, testdriveService.ServiceContainer{
 		TransactionRepo: txRepo,
 		Repo:            testDriveRepo,

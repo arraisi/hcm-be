@@ -2,10 +2,12 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/user"
+	"github.com/arraisi/hcm-be/internal/ext/mockapi"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -13,8 +15,9 @@ import (
 
 // UserService provides user-related operations
 type UserService struct {
-	repo    UserRepository
-	trxRepo TransactionRepository
+	repo          UserRepository
+	trxRepo       TransactionRepository
+	mockApiClient *mockapi.Client
 }
 
 // UserRepository defines the interface for user-related database operations
@@ -34,12 +37,17 @@ type TransactionRepository interface {
 }
 
 // NewUserService creates a new instance of UserService
-func NewUserService(r UserRepository, trxRepo TransactionRepository) *UserService {
-	return &UserService{repo: r, trxRepo: trxRepo}
+func NewUserService(r UserRepository, trxRepo TransactionRepository, mockApiClient *mockapi.Client) *UserService {
+	return &UserService{repo: r, trxRepo: trxRepo, mockApiClient: mockApiClient}
 }
 
 // List retrieves a list of users based on the provided request filters
 func (s *UserService) List(ctx context.Context, req user.GetUserRequest) ([]domain.User, error) {
+	extUsers, err := s.mockApiClient.GetUsers(ctx)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(extUsers)
 	return s.repo.GetUsers(ctx, req)
 }
 
