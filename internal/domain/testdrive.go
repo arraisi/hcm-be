@@ -3,24 +3,29 @@ package domain
 import "time"
 
 type TestDrive struct {
-	IID          string    `json:"i_id" db:"i_id"`
-	TestDriveID  string    `json:"test_drive_ID" db:"test_drive_ID"`
-	Katashiki    string    `json:"katashiki_code" db:"katashiki_code"`
-	Model        string    `json:"model" db:"model"`
-	Variant      string    `json:"variant" db:"variant"`
-	StartTime    time.Time `json:"test_drive_datetime_start" db:"test_drive_datetime_start"`
-	EndTime      time.Time `json:"test_drive_datetime_end" db:"test_drive_datetime_end"`
-	Location     string    `json:"location" db:"location"`
-	OutletID     string    `json:"outlet_ID" db:"outled_ID"`
-	OutletName   string    `json:"outlet_name" db:"outlet_name"`
-	Status       string    `json:"test_drive_status" db:"test_drive_status"`
-	Reason       string    `json:"cancellation_reason" db:"cancellation_reason"`
-	OtherReason  string    `json:"other_cancellation_reason" db:"other_cancellation_reason"`
-	CreatedAt    time.Time `json:"created_datetime" db:"created_datetime"`
-	Consent      bool      `json:"customer_driving_consent" db:"customer_driving_consent"`
-	CustomerID   string    `json:"customer_id" db:"customer_id"`
-	OneAccountID string    `json:"one_account_ID" db:"one_account_ID"`
-	LeadsID      string    `json:"leads_id" db:"leads_id"`
+	ID              string    `json:"id" db:"id"`
+	TestDriveID     string    `json:"test_drive_ID" db:"test_drive_id"`
+	TestDriveNumber string    `json:"test_drive_number" db:"test_drive_number"`
+	KatashikiCode   string    `json:"katashiki_code" db:"katashiki_code"`
+	Model           string    `json:"model" db:"model"`
+	Variant         string    `json:"variant" db:"variant"`
+	RequestAt       time.Time `json:"created_datetime" db:"request_at"`
+	StartTime       time.Time `json:"test_drive_datetime_start" db:"test_drive_datetime_start"`
+	EndTime         time.Time `json:"test_drive_datetime_end" db:"test_drive_datetime_end"`
+	Location        string    `json:"location" db:"location"`
+	OutletID        string    `json:"outlet_ID" db:"outlet_id"`
+	OutletName      string    `json:"outlet_name" db:"outlet_name"`
+	Status          string    `json:"test_drive_status" db:"test_drive_status"`
+	Reason          string    `json:"cancellation_reason" db:"cancellation_reason"`
+	OtherReason     string    `json:"other_cancellation_reason" db:"other_cancellation_reason"`
+	Consent         bool      `json:"customer_driving_consent" db:"customer_driving_consent"`
+	CustomerID      string    `json:"customer_id" db:"customer_id"`
+	LeadsID         string    `json:"leads_id" db:"leads_id"`
+	EventID         string    `json:"event_id" db:"event_id"`
+	CreatedAt       time.Time `json:"created_at" db:"created_at"`
+	CreatedBy       string    `json:"created_by" db:"created_by"`
+	UpdatedAt       time.Time `json:"updated_at" db:"updated_at"`
+	UpdatedBy       *string   `json:"updated_by" db:"updated_by"`
 }
 
 // TableName returns the database table name for the User model
@@ -31,32 +36,38 @@ func (u *TestDrive) TableName() string {
 // Columns returns the list of database columns for the User model
 func (u *TestDrive) Columns() []string {
 	return []string{
-		"i_id",
-		"test_drive_ID",
+		"id",
+		"test_drive_id",
+		"test_drive_number",
 		"katashiki_code",
 		"model",
 		"variant",
 		"test_drive_datetime_start",
 		"test_drive_datetime_end",
 		"location",
-		"outled_ID",
+		"outlet_id",
 		"outlet_name",
 		"test_drive_status",
 		"cancellation_reason",
 		"other_cancellation_reason",
-		"created_datetime",
+		"request_at",
 		"customer_driving_consent",
 		"customer_id",
-		"one_account_ID",
 		"leads_id",
+		"event_id",
+		"created_at",
+		"created_by",
+		"updated_at",
+		"updated_by",
 	}
 }
 
 func (u *TestDrive) ToValues() []interface{} {
 	return []interface{}{
-		u.IID,
+		u.ID,
 		u.TestDriveID,
-		u.Katashiki,
+		u.TestDriveNumber,
+		u.KatashikiCode,
 		u.Model,
 		u.Variant,
 		u.StartTime,
@@ -67,42 +78,51 @@ func (u *TestDrive) ToValues() []interface{} {
 		u.Status,
 		u.Reason,
 		u.OtherReason,
-		u.CreatedAt,
+		u.RequestAt,
 		u.Consent,
 		u.CustomerID,
-		u.OneAccountID,
 		u.LeadsID,
+		u.EventID,
+		u.CreatedAt,
+		u.CreatedBy,
+		u.UpdatedAt,
+		u.UpdatedBy,
 	}
 }
 
 // SelectColumns returns the list of columns to select in queries for the User model
 func (u *TestDrive) SelectColumns() []string {
 	return []string{
-		"CAST(i_id AS NVARCHAR(36)) as i_id",
-		"CAST(test_drive_ID AS NVARCHAR(36)) as test_drive_ID",
+		"CAST(id AS NVARCHAR(36)) as id",
+		"CAST(test_drive_id AS NVARCHAR(36)) as test_drive_id",
 		"katashiki_code",
 		"model",
 		"variant",
 		"test_drive_datetime_start",
 		"test_drive_datetime_end",
 		"location",
-		"outled_ID",
+		"outlet_id",
 		"outlet_name",
 		"test_drive_status",
 		"cancellation_reason",
 		"other_cancellation_reason",
-		"created_datetime",
 		"customer_driving_consent",
+		"test_drive_number",
 		"CAST(customer_id AS NVARCHAR(36)) as customer_id",
-		"CAST(one_account_ID AS NVARCHAR(36)) as one_account_ID",
 		"CAST(leads_id AS NVARCHAR(36)) as leads_id",
+		"CAST(event_id AS NVARCHAR(36)) as event_id",
+		"created_at",
+		"created_by",
+		"updated_at",
+		"updated_by",
+		"request_at",
 	}
 }
 
 func (u *TestDrive) ToUpdateMap() map[string]interface{} {
 	updateMap := make(map[string]interface{})
-	if u.Katashiki != "" {
-		updateMap["katashiki_code"] = u.Katashiki
+	if u.KatashikiCode != "" {
+		updateMap["katashiki_code"] = u.KatashikiCode
 	}
 	if u.Model != "" {
 		updateMap["model"] = u.Model
@@ -120,7 +140,7 @@ func (u *TestDrive) ToUpdateMap() map[string]interface{} {
 		updateMap["location"] = u.Location
 	}
 	if u.OutletID != "" {
-		updateMap["outled_ID"] = u.OutletID
+		updateMap["outlet_id"] = u.OutletID
 	}
 	if u.OutletName != "" {
 		updateMap["outlet_name"] = u.OutletName
@@ -134,18 +154,20 @@ func (u *TestDrive) ToUpdateMap() map[string]interface{} {
 	if u.OtherReason != "" {
 		updateMap["other_cancellation_reason"] = u.OtherReason
 	}
-	if !u.CreatedAt.IsZero() {
-		updateMap["created_datetime"] = u.CreatedAt
-	}
 	if u.CustomerID != "" {
 		updateMap["customer_id"] = u.CustomerID
-	}
-	if u.OneAccountID != "" {
-		updateMap["one_account_ID"] = u.OneAccountID
 	}
 	if u.LeadsID != "" {
 		updateMap["leads_id"] = u.LeadsID
 	}
+	if !u.RequestAt.IsZero() {
+		updateMap["request_at"] = u.RequestAt
+	}
+	if u.TestDriveNumber != "" {
+		updateMap["test_drive_number"] = u.TestDriveNumber
+	}
 	updateMap["customer_driving_consent"] = u.Consent
+	updateMap["update_at"] = u.UpdatedAt
+	updateMap["updated_by"] = u.UpdatedBy
 	return updateMap
 }

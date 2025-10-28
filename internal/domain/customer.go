@@ -1,46 +1,56 @@
 package domain
 
+import "time"
+
 type Customer struct {
-	OneAccountID     string `json:"one_account_ID" db:"one_account_ID"`
-	FirstName        string `json:"first_name" db:"first_name"`
-	LastName         string `json:"last_name" db:"last_name"`
-	Gender           string `json:"gender" db:"gender"`
-	PhoneNumber      string `json:"phone_number" db:"phone_number"`
-	Email            string `json:"email" db:"email"`
-	IID              string `json:"i_id" db:"i_id"`
-	IHasjratid       string `json:"i_hasjratid" db:"i_hasjratid"`
-	CIsNew           int    `json:"c_isnew" db:"c_isnew"`
-	CIsMerge         int    `json:"c_ismerge" db:"c_ismerge"`
-	PrimaryUser      string `json:"primary_user" db:"primary_user"`
-	DealerCustomerID string `json:"dealer_customer_ID" db:"dealer_customer_ID"`
-	CIsValid         bool   `json:"c_isvalid" db:"c_isvalid"`
-	CIsOmnichannel   bool   `json:"c_isomnichannel" db:"c_isomnichannel"`
-	IIdleadsin       string `json:"i_idleadsin" db:"i_idleadsin"`
+	OneAccountID     string    `json:"one_account_ID" db:"one_account_id"`
+	FirstName        string    `json:"first_name" db:"first_name"`
+	LastName         string    `json:"last_name" db:"last_name"`
+	Gender           string    `json:"gender" db:"gender"`
+	PhoneNumber      string    `json:"phone_number" db:"phone_number"`
+	Email            string    `json:"email" db:"email"`
+	ID               string    `json:"id" db:"id"`
+	HasjratID        string    `json:"hasjrat_id" db:"hasjrat_id"`
+	IsNew            bool      `json:"is_new" db:"is_new"`
+	IsMerge          bool      `json:"is_merge" db:"is_merge"`
+	PrimaryUser      string    `json:"primary_user" db:"primary_user"`
+	DealerCustomerID string    `json:"dealer_customer_ID" db:"dealer_customer_id"`
+	IsValid          bool      `json:"is_valid" db:"is_valid"`
+	IsOmnichannel    bool      `json:"is_omnichannel" db:"is_omnichannel"`
+	LeadsInID        string    `json:"leads_in_id" db:"leads_in_id"`
+	CreatedAt        time.Time `json:"created_at" db:"created_at"`
+	CreatedBy        string    `json:"created_by" db:"created_by"`
+	UpdatedAt        time.Time `json:"updated_at" db:"updated_at"`
+	UpdatedBy        *string   `json:"updated_by" db:"updated_by"`
 }
 
 // TableName returns the database table name for the User model
 func (u *Customer) TableName() string {
-	return "dbo.tr_hcmcustomer"
+	return "dbo.tr_customer"
 }
 
 // Columns returns the list of database columns for the User model
 func (u *Customer) Columns() []string {
 	return []string{
-		"one_account_ID",
+		"one_account_id",
 		"first_name",
 		"last_name",
 		"gender",
 		"phone_number",
 		"email",
-		"i_id",
-		"i_hasjratid",
-		"c_isnew",
-		"c_ismerge",
+		"id",
+		"hasjrat_id",
+		"is_new",
+		"is_merge",
 		"primary_user",
-		"dealer_customer_ID",
-		"c_isvalid",
-		"c_isomnichannel",
-		"i_idleadsin",
+		"dealer_customer_id",
+		"is_valid",
+		"is_omnichannel",
+		"leads_in_id",
+		"created_at",
+		"created_by",
+		"updated_at",
+		"updated_by",
 	}
 }
 
@@ -52,36 +62,44 @@ func (u *Customer) ToValues() []interface{} {
 		u.Gender,
 		u.PhoneNumber,
 		u.Email,
-		u.IID,
-		u.IHasjratid,
-		u.CIsNew,
-		u.CIsMerge,
+		u.ID,
+		u.HasjratID,
+		u.IsNew,
+		u.IsMerge,
 		u.PrimaryUser,
 		u.DealerCustomerID,
-		u.CIsValid,
-		u.CIsOmnichannel,
-		u.IIdleadsin,
+		u.IsValid,
+		u.IsOmnichannel,
+		u.LeadsInID,
+		u.CreatedAt,
+		u.CreatedBy,
+		u.UpdatedAt,
+		u.UpdatedBy,
 	}
 }
 
 // SelectColumns returns the list of columns to select in queries for the User model
 func (u *Customer) SelectColumns() []string {
 	return []string{
-		"CAST(one_account_ID AS NVARCHAR(36)) as one_account_ID",
+		"CAST(one_account_id AS NVARCHAR(36)) as one_account_id",
 		"first_name",
 		"last_name",
 		"gender",
 		"phone_number",
 		"email",
-		"CAST(i_id AS NVARCHAR(36)) as i_id",
-		"CAST(i_hasjratid AS NVARCHAR(36)) as i_hasjratid",
-		"c_isnew",
-		"c_ismerge",
+		"CAST(id AS NVARCHAR(36)) as id",
+		"CAST(hasjrat_id AS NVARCHAR(36)) as hasjrat_id",
+		"is_new",
+		"is_merge",
 		"primary_user",
-		"CAST(dealer_customer_ID AS NVARCHAR(36)) as dealer_customer_ID",
-		"c_isvalid",
-		"c_isomnichannel",
-		"CAST(i_idleadsin AS NVARCHAR(36)) as i_idleadsin",
+		"CAST(dealer_customer_id AS NVARCHAR(36)) as dealer_customer_id",
+		"is_valid",
+		"is_omnichannel",
+		"CAST(leads_in_id AS NVARCHAR(36)) as leads_in_id",
+		"created_at",
+		"created_by",
+		"updated_at",
+		"updated_by",
 	}
 }
 

@@ -140,12 +140,12 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, ev testdrive.Tes
 	return err
 }
 
-// upsertLeadScore checks if a lead score exists by IID. If found, it updates the lead score; if not found, it creates a new lead score.
+// upsertLeadScore checks if a lead score exists by ID. If found, it updates the lead score; if not found, it creates a new lead score.
 func (s *service) upsertLeadScore(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent) error {
 	leadsID := ev.Data.Leads.LeadsID
 
 	_, err := s.leadScoreRepo.GetLeadScore(ctx, leads.GetLeadScoreRequest{
-		IID: utils.ToPointer(leadsID),
+		ID: utils.ToPointer(leadsID),
 	})
 	if err == nil {
 		// Found → update

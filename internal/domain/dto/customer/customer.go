@@ -3,6 +3,7 @@ package customer
 import (
 	"fmt"
 
+	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/elgris/sqrl"
 )
 
@@ -16,6 +17,17 @@ type OneAccountRequest struct {
 	Email        string `json:"email" validate:"omitempty,email"`
 }
 
+func NewOneAccountRequest(customer domain.Customer) OneAccountRequest {
+	return OneAccountRequest{
+		OneAccountID: customer.OneAccountID,
+		FirstName:    customer.FirstName,
+		LastName:     customer.LastName,
+		Gender:       customer.Gender,
+		PhoneNumber:  customer.PhoneNumber,
+		Email:        customer.Email,
+	}
+}
+
 // GetCustomerRequest represents the request parameters for getting users
 type GetCustomerRequest struct {
 	Limit        int
@@ -24,6 +36,7 @@ type GetCustomerRequest struct {
 	SortBy       string
 	Order        string
 	OneAccountID string
+	CustomerID   string
 }
 
 // Apply applies the request parameters to the given SelectBuilder
@@ -38,7 +51,7 @@ func (req GetCustomerRequest) Apply(q *sqrl.SelectBuilder) {
 }
 
 type UpdateCustomerRequest struct {
-	IID          string
+	ID           string
 	OneAccountID string
 	FirstName    *string
 	LastName     *string

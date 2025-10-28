@@ -7,10 +7,71 @@ info:
     name: API Support
     email: support@example.com
 servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
   - url: /api/v1
     description: API v1 base path
 
 paths:
+  /healthz:
+    get:
+      summary: Health Check
+      description: Check if the service is healthy and running
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "OK"
+        '503':
+          description: Service is unhealthy
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Service Unavailable"
+
+  /readyz:
+    get:
+      summary: Readiness Check
+      description: Check if the service is ready to accept requests
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "OK"
+        '503':
+          description: Service is not ready
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Service Not Ready"
+
+  /metrics:
+    get:
+      summary: Prometheus Metrics
+      description: Expose application metrics in Prometheus format
+      tags:
+        - Observability
+      responses:
+        '200':
+          description: Metrics data
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "# HELP go_info Information about the Go environment..."
+
   /users:
     get:
       summary: List users
@@ -64,6 +125,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateUserRequest'
+            example:
+              name: "John Doe"
+              email: "john.doe@example.com"
       responses:
         '201':
           description: User created successfully
@@ -273,6 +337,8 @@ paths:
       description: Webhook endpoint to receive test drive booking events from external systems
       tags:
         - Webhooks
+      security:
+        - WebhookApiKey: []
       parameters:
         - name: X-API-Key
           in: header
@@ -305,6 +371,53 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TestDriveEvent'
+            example:
+              process: "test drive request"
+              event_ID: "05dbe854-74a4-4e0d-be00-da098d3569d6"
+              timestamp: 1698345600
+              data:
+                one_account:
+                  one_account_ID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y"
+                  first_name: "John"
+                  last_name: "Doe"
+                  gender: "MALE"
+                  phone_number: "1234567890"
+                  email: "john.doe@example.com"
+                test_drive:
+                  test_drive_id: "0d5be854-74a4-4e0d-be00-da098d3529d5"
+                  test_drive_number: "TUT010026-02-20241107959"
+                  katashiki_code: "NSP170R-MWYXKD"
+                  model: "Innova Zenix"
+                  variant: "2.0 Q A/T"
+                  created_datetime: 1698345600
+                  test_drive_datetime_start: 1698349200
+                  test_drive_datetime_end: 1698352800
+                  location: "DEALER"
+                  outlet_ID: "AST01329"
+                  outlet_name: "Astrido Toyota Bitung"
+                  test_drive_status: "SUBMITTED"
+                  cancellation_reason: null
+                  other_cancellation_reason: null
+                  customer_driving_consent: true
+                leads:
+                  leads_id: "44ae2529-98e4-41f4-bae8-f305f609932d"
+                  leads_type: "TEST_DRIVE_REQUEST"
+                  leads_follow_up_status: "ON_CONSIDERATION"
+                  leads_preference_contact_time_start: "09:30"
+                  leads_preference_contact_time_end: "10:30"
+                  leads_source: "OFFLINE_WALK_IN_OR_CALL_IN"
+                  additional_notes: null
+                score:
+                  tam_lead_score: "HOT"
+                  outlet_lead_score: "MEDIUM"
+                  parameter:
+                    purchase_plan_criteria: "31_DAYS_TO_INFINITE"
+                    payment_prefer_criteria: "CASH"
+                    negotiation_criteria: "HAVE_STARTED_NEGOTIATIONS"
+                    test_drive_criteria: "COMPLETED"
+                    trade_in_criteria: "DELIVERY"
+                    browsing_history_criteria: "MORE_THAN_5_PAGES"
+                    vehicle_age_criteria: "MORE_THAN_2.5_YEARS"
       responses:
         '202':
           description: Test drive event accepted for processing
@@ -439,7 +552,7 @@ components:
       properties:
         process:
           type: string
-          enum: ['test drive request']
+          enum: ["test drive request"]
           description: Process type identifier
         event_ID:
           type: string
@@ -502,7 +615,7 @@ components:
     TestDriveRequest:
       type: object
       required:
-        - test_drive_ID
+        - test_drive_id
         - test_drive_number
         - katashiki_code
         - model
@@ -516,7 +629,7 @@ components:
         - test_drive_status
         - customer_driving_consent
       properties:
-        test_drive_ID:
+        test_drive_id:
           type: string
           description: Test drive unique identifier
         test_drive_number:
@@ -667,6 +780,3 @@ components:
       in: header
       name: X-API-Key
       description: API key for webhook authentication
-
-security:
-  - WebhookApiKey: []
