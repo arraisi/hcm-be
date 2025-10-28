@@ -14,3 +14,11 @@ var (
 		TestDriveBookingStatusCancelSubmitted: "Cancel Submitted",
 	}
 )
+
+var (
+	TestDriveStatusMap = map[string]string{
+		TestDriveBookingStatusSubmitted:       "Submitted",
+		TestDriveBookingStatusChangeRequest:   "Change Request",
+		TestDriveBookingStatusCancelSubmitted: "Cancel Submitted",
+	}
+)
