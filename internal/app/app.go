@@ -45,7 +45,8 @@ func Run(cfg *config.Config) error {
 	db.SetConnMaxLifetime(cfg.Database.MaxConnectionLifetime)
 	db.SetConnMaxIdleTime(cfg.Database.MaxConnectionIdleTime)
 
-	mockApiClient := mockapi.New(&cfg.Http.MockApi)
+	// init external clients
+	mockApiClient := mockapi.New(cfg.Http.MockApi)
 
 	// init repositories
 	userRepo := userRepository.NewUserRepository(db)

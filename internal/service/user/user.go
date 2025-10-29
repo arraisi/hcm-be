@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
@@ -42,18 +41,31 @@ func NewUserService(r UserRepository, trxRepo TransactionRepository, mockApiClie
 }
 
 // List retrieves a list of users based on the provided request filters
-func (s *UserService) List(ctx context.Context, req user.GetUserRequest) ([]domain.User, error) {
+func (s *UserService) List(ctx context.Context, _ user.GetUserRequest) ([]domain.User, error) {
 	extUsers, err := s.mockApiClient.GetUsers(ctx)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(extUsers)
-	return s.repo.GetUsers(ctx, req)
+
+	//users, err := s.repo.GetUsers(ctx, req)
+	//if err != nil {
+	//	return nil, err
+	//}
+
+	return extUsers, nil
 }
 
 // Get retrieves a single user by ID
-func (s *UserService) Get(ctx context.Context, req user.GetUserRequest) (domain.User, error) {
-	return s.repo.GetUser(ctx, req)
+func (s *UserService) Get(ctx context.Context, _ user.GetUserRequest) (domain.User, error) {
+	getUser, err := s.mockApiClient.GetUser(ctx)
+	if err != nil {
+		return domain.User{}, err
+	}
+	//getUser, err := s.repo.GetUser(ctx, req)
+	//if err != nil {
+	//	return domain.User{}, err
+	//}
+	return getUser, nil
 }
 
 // Create creates a new user within a transaction
