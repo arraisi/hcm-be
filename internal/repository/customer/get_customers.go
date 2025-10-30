@@ -15,7 +15,7 @@ func (r *repository) GetCustomers(ctx context.Context, req customer.GetCustomerR
 	// Base query
 	query := sqrl.Select(model.SelectColumns()...).
 		From(model.TableName()).
-		OrderBy("one_account_ID DESC")
+		OrderBy("d_updated_at DESC")
 
 	// Add search filter if provided
 	req.Apply(query)

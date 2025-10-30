@@ -42,7 +42,7 @@ type GetCustomerRequest struct {
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetCustomerRequest) Apply(q *sqrl.SelectBuilder) {
 	if req.OneAccountID != "" {
-		q.Where(sqrl.Eq{"one_account_ID": req.OneAccountID})
+		q.Where(sqrl.Eq{"i_one_account_id": req.OneAccountID})
 	}
 
 	if req.Limit > 0 {

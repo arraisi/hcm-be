@@ -70,10 +70,10 @@ type GetLeadsRequest struct {
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetLeadsRequest) Apply(q *sqrl.SelectBuilder) {
 	if req.ID != nil {
-		q.Where(sqrl.Eq{"id": req.ID})
+		q.Where(sqrl.Eq{"i_id": req.ID})
 	}
 	if req.LeadsID != nil {
-		q.Where(sqrl.Eq{"leads_id": req.LeadsID})
+		q.Where(sqrl.Eq{"i_leads_id": req.LeadsID})
 	}
 }
 
@@ -84,6 +84,6 @@ type GetLeadScoreRequest struct {
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetLeadScoreRequest) Apply(q *sqrl.SelectBuilder) {
 	if req.ID != nil {
-		q.Where(sqrl.Eq{"id": req.ID})
+		q.Where(sqrl.Eq{"i_id": req.ID})
 	}
 }

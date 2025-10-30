@@ -5,15 +5,14 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/elgris/sqrl"
-	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
 func (r *repository) CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req domain.TestDrive) error {
-	req.ID = uuid.NewString()
+	columns, values := req.ToCreateMap()
 	query, args, err := sqrl.Insert(req.TableName()).
-		Columns(req.Columns()...).
-		Values(req.ToValues()...).ToSql()
+		Columns(columns...).
+		Values(values...).ToSql()
 	if err != nil {
 		return err
 	}

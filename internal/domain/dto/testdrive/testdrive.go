@@ -50,7 +50,7 @@ func NewTestDriveRequest(td domain.TestDrive) TestDriveRequest {
 			}
 			return nil
 		}(),
-		CustomerDrivingConsent: td.Consent,
+		CustomerDrivingConsent: td.CustomerDrivingConsent,
 	}
 
 }
@@ -99,28 +99,28 @@ func (td *TestDriveRequest) GetEndTime() time.Time {
 // ToTestDriveModel converts the TestDriveEvent to the internal TestDrive model
 func (be *TestDriveEvent) ToTestDriveModel(customerID string) domain.TestDrive {
 	return domain.TestDrive{
-		TestDriveID:     be.Data.TestDrive.TestDriveID,
-		TestDriveNumber: be.Data.TestDrive.TestDriveNumber,
-		KatashikiCode:   be.Data.TestDrive.KatashikiCode,
-		Model:           be.Data.TestDrive.Model,
-		Variant:         be.Data.TestDrive.Variant,
-		RequestAt:       be.Data.TestDrive.GetCreatedTime(),
-		StartTime:       be.Data.TestDrive.GetStartTime(),
-		EndTime:         be.Data.TestDrive.GetEndTime(),
-		Location:        be.Data.TestDrive.Location,
-		OutletID:        be.Data.TestDrive.OutletID,
-		OutletName:      be.Data.TestDrive.OutletName,
-		Status:          be.Data.TestDrive.TestDriveStatus,
-		Reason:          utils.ToValue(be.Data.TestDrive.CancellationReason),
-		OtherReason:     utils.ToValue(be.Data.TestDrive.OtherCancellationReason),
-		Consent:         be.Data.TestDrive.CustomerDrivingConsent,
-		CustomerID:      customerID,
-		LeadsID:         be.Data.Leads.LeadsID,
-		EventID:         be.EventID,
-		CreatedAt:       time.Now(),
-		CreatedBy:       "mToyota", // or fetch from context if available
-		UpdatedAt:       time.Now(),
-		UpdatedBy:       utils.ToPointer("mToyota"), // or fetch from context if available
+		TestDriveID:            be.Data.TestDrive.TestDriveID,
+		TestDriveNumber:        be.Data.TestDrive.TestDriveNumber,
+		KatashikiCode:          be.Data.TestDrive.KatashikiCode,
+		Model:                  be.Data.TestDrive.Model,
+		Variant:                be.Data.TestDrive.Variant,
+		RequestAt:              be.Data.TestDrive.GetCreatedTime(),
+		StartTime:              be.Data.TestDrive.GetStartTime(),
+		EndTime:                be.Data.TestDrive.GetEndTime(),
+		Location:               be.Data.TestDrive.Location,
+		OutletID:               be.Data.TestDrive.OutletID,
+		OutletName:             be.Data.TestDrive.OutletName,
+		Status:                 be.Data.TestDrive.TestDriveStatus,
+		Reason:                 utils.ToValue(be.Data.TestDrive.CancellationReason),
+		OtherReason:            utils.ToValue(be.Data.TestDrive.OtherCancellationReason),
+		CustomerDrivingConsent: be.Data.TestDrive.CustomerDrivingConsent,
+		CustomerID:             customerID,
+		LeadsID:                be.Data.Leads.LeadsID,
+		EventID:                be.EventID,
+		CreatedAt:              time.Now(),
+		CreatedBy:              "mToyota", // or fetch from context if available
+		UpdatedAt:              time.Now(),
+		UpdatedBy:              "mToyota", // or fetch from context if available
 	}
 }
 
@@ -173,7 +173,7 @@ func (be *TestDriveEvent) ToLeadScoreModel() domain.LeadScore {
 		CreatedAt:               time.Now(),
 		CreatedBy:               "mToyota", // or fetch from context if available
 		UpdatedAt:               time.Now(),
-		UpdatedBy:               utils.ToPointer("mToyota"), // or fetch from context if available
+		UpdatedBy:               "mToyota", // or fetch from context if available
 	}
 }
 
@@ -193,10 +193,10 @@ func (req GetTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
 		q.Where(sqrl.Eq{"test_drive_id": req.TestDriveID})
 	}
 	if req.CustomerID != nil {
-		q.Where(sqrl.Eq{"customer_id": req.CustomerID})
+		q.Where(sqrl.Eq{"i_customer_id": req.CustomerID})
 	}
 	if req.OneAccountID != nil {
-		q.Where(sqrl.Eq{"one_account_id": req.OneAccountID})
+		q.Where(sqrl.Eq{"i_one_account_id": req.OneAccountID})
 	}
 }
 

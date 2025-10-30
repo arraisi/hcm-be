@@ -20,7 +20,7 @@ func (r *repository) UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain
 	}
 
 	// Add WHERE clause to identify the record to update
-	query += " WHERE one_account_id = ? OR id = ?"
+	query += " WHERE i_one_account_id = ? OR i_id = ?"
 	args = append(args, req.OneAccountID, req.ID)
 
 	var iID string

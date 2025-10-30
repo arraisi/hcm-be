@@ -12,9 +12,10 @@ import (
 
 func (r *repository) CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error) {
 	req.ID = uuid.NewString()
+	columns, values := req.ToCreateMap()
 	query, args, err := sqrl.Insert(req.TableName()).
-		Columns(req.Columns()...).
-		Values(req.ToValues()...).ToSql()
+		Columns(columns...).
+		Values(values...).ToSql()
 	if err != nil {
 		return req.ID, err
 	}

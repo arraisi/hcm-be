@@ -65,17 +65,25 @@ func (c *Client) DoJSON(ctx context.Context, method, url string, reqBody any, re
 		bodyBytes = b
 	}
 
+	shouldRetryStatus := func(code int) bool {
+		return code == http.StatusRequestTimeout || // 408
+			code == http.StatusTooManyRequests || // 429
+			(code >= 500 && code <= 599) // 5xx
+	}
+
 	var lastErr error
+
 	for attempt := 0; attempt <= c.retries; attempt++ {
 		if attempt > 0 {
 			time.Sleep(time.Duration(attempt) * c.backoff)
 		}
 
-		ctx, cancel := context.WithTimeout(ctx, c.timeout)
-		defer cancel()
+		// new context per attempt; do NOT defer cancel in a loop
+		attemptCtx, cancel := context.WithTimeout(ctx, c.timeout)
 
-		req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader(bodyBytes))
+		req, err := http.NewRequestWithContext(attemptCtx, method, url, bytes.NewReader(bodyBytes))
 		if err != nil {
+			cancel()
 			return fmt.Errorf("build request: %w", err)
 		}
 		req.Header.Set("Content-Type", "application/json")
@@ -85,21 +93,35 @@ func (c *Client) DoJSON(ctx context.Context, method, url string, reqBody any, re
 
 		res, err := c.httpClient.Do(req)
 		if err != nil {
+			cancel()
 			if isTransient(err) {
 				lastErr = err
 				continue
 			}
 			return fmt.Errorf("http call: %w", err)
 		}
-		defer res.Body.Close()
 
-		respBytes, err := io.ReadAll(io.LimitReader(res.Body, 1<<20)) // 1MB cap
-		if err != nil {
-			return fmt.Errorf("read body: %w", err)
+		// Always close body in this iteration; no defer in loop
+		respBytes, readErr := io.ReadAll(io.LimitReader(res.Body, 1<<20)) // 1MB cap
+		_ = res.Body.Close()
+		cancel()
+
+		if readErr != nil {
+			// reading body failed; consider retry if transient I/O
+			if isTransient(readErr) {
+				lastErr = readErr
+				continue
+			}
+			return fmt.Errorf("read body: %w", readErr)
 		}
 
 		if res.StatusCode < 200 || res.StatusCode >= 300 {
-			return &HTTPError{StatusCode: res.StatusCode, Body: string(respBytes)}
+			httpErr := &HTTPError{StatusCode: res.StatusCode, Body: string(respBytes)}
+			if shouldRetryStatus(res.StatusCode) {
+				lastErr = httpErr
+				continue
+			}
+			return httpErr
 		}
 
 		if respOut != nil {
@@ -115,7 +137,7 @@ func (c *Client) DoJSON(ctx context.Context, method, url string, reqBody any, re
 
 func isTransient(err error) bool {
 	var nerr net.Error
-	if errors.As(err, &nerr) && (nerr.Timeout() || nerr.Temporary()) {
+	if errors.As(err, &nerr) && nerr.Timeout() {
 		return true
 	}
 	return false

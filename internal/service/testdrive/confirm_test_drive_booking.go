@@ -60,7 +60,7 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 		},
 	}
 
-	fmt.Println(fmt.Sprintf("%+v", tdEventConfirmRequest))
+	fmt.Printf("%+v", tdEventConfirmRequest)
 
 	return nil
 }

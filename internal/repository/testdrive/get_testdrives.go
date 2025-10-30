@@ -15,7 +15,7 @@ func (r *repository) GetTestDrives(ctx context.Context, req testdrive.GetTestDri
 	// Base query
 	query := sqrl.Select(model.SelectColumns()...).
 		From(model.TableName()).
-		OrderBy("created_at DESC")
+		OrderBy("d_updated_at DESC")
 
 	// Add search filter if provided
 	req.Apply(query)
