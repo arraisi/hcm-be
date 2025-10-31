@@ -74,7 +74,7 @@ func Run(cfg *config.Config) error {
 	// init handlers
 	userHandler := user.NewUserHandler(userSvc)
 	customerHandler := customer.New(customerSvc)
-	webhookHandler := webhook.NewWebhookHandler(cfg, idempotencyStore, testDriveSvc)
+	webhookHandler := webhook.NewWebhookHandler(cfg, idempotencyStore, testDriveSvc, customerSvc)
 	testdriveHandler := testdrive.New(testDriveSvc)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
