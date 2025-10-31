@@ -43,9 +43,9 @@ type Customer struct {
 	DetailAddress        string    `json:"detail_address" db:"e_detail_address"`
 	ToyotaIDSingleStatus string    `json:"toyota_id_single_status" db:"c_toyota_id_single_status"`
 	CreatedAt            time.Time `json:"created_at" db:"d_created_at"`
-	CreatedBy            string    `json:"created_by" db:"d_created_by"`
+	CreatedBy            string    `json:"created_by" db:"c_created_by"`
 	UpdatedAt            time.Time `json:"updated_at" db:"d_updated_at"`
-	UpdatedBy            *string   `json:"updated_by" db:"d_updated_by"`
+	UpdatedBy            *string   `json:"updated_by" db:"c_updated_by"`
 }
 
 // TableName returns the database table name for the User model
@@ -92,9 +92,9 @@ func (u *Customer) Columns() []string {
 		"e_detail_address",
 		"c_toyota_id_single_status",
 		"d_created_at",
-		"d_created_by",
+		"c_created_by",
 		"d_updated_at",
-		"d_updated_by",
+		"c_updated_by",
 	}
 }
 
@@ -110,9 +110,9 @@ func (u *Customer) SelectColumns() []string {
 		"c_phone_number",
 		"e_email",
 		"d_created_at",
-		"d_created_by",
+		"c_created_by",
 		"d_updated_at",
-		"d_updated_by",
+		"c_updated_by",
 	}
 }
 
@@ -252,11 +252,11 @@ func (u *Customer) ToCreateMap() (columns []string, values []interface{}) {
 	values = append(values, u.ConsentGiven)
 	columns = append(columns, "d_created_at")
 	values = append(values, u.CreatedAt.UTC())
-	columns = append(columns, "d_created_by")
+	columns = append(columns, "c_created_by")
 	values = append(values, u.CreatedBy)
 	columns = append(columns, "d_updated_at")
 	values = append(values, u.UpdatedAt.UTC())
-	columns = append(columns, "d_updated_by")
+	columns = append(columns, "c_updated_by")
 	values = append(values, u.UpdatedBy)
 
 	return columns, values
@@ -280,6 +280,6 @@ func (u *Customer) ToUpdateMap() map[string]interface{} {
 		updateMap["e_email"] = u.Email
 	}
 	updateMap["d_updated_at"] = u.UpdatedAt.UTC()
-	updateMap["d_updated_by"] = u.UpdatedBy
+	updateMap["c_updated_by"] = u.UpdatedBy
 	return updateMap
 }

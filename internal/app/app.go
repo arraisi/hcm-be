@@ -18,7 +18,7 @@ import (
 	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
-	testdriveService "github.com/arraisi/hcm-be/internal/service/testdrive"
+	testdriveService "github.com/arraisi/hcm-be/internal/service/testdrive/testdrive_booking"
 	userService "github.com/arraisi/hcm-be/internal/service/user"
 
 	"github.com/jmoiron/sqlx"
