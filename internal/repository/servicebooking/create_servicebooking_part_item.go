@@ -5,11 +5,18 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/elgris/sqrl"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateServiceBookingPartItem(ctx context.Context, tx *sqlx.Tx, req domain.ServiceBookingPartItem) error {
+func (r *repository) CreateServiceBookingPartItem(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingPartItem) error {
 	columns, values := req.ToCreateMap()
+
+	// Generate a new UUID for the service booking part item ID
+	req.ID = uuid.NewString()
+	columns = append(columns, "i_id")
+	values = append(values, req.ID)
+
 	query, args, err := sqrl.Insert(req.TableName()).
 		Columns(columns...).
 		Values(values...).ToSql()
