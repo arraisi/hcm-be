@@ -6,6 +6,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
+	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
 )
@@ -31,26 +32,21 @@ type TestDriveRequest struct {
 
 func NewTestDriveRequest(td domain.TestDrive) TestDriveRequest {
 	return TestDriveRequest{
-		TestDriveID:            td.TestDriveID,
-		TestDriveNumber:        td.TestDriveNumber,
-		KatashikiCode:          td.KatashikiCode,
-		Model:                  td.Model,
-		Variant:                td.Variant,
-		CreatedDatetime:        td.RequestAt.Unix(),
-		TestDriveDatetimeStart: td.StartTime.Unix(),
-		TestDriveDatetimeEnd:   td.EndTime.Unix(),
-		Location:               td.Location,
-		OutletID:               td.OutletID,
-		OutletName:             td.OutletName,
-		TestDriveStatus:        td.Status,
-		CancellationReason:     utils.ToPointer(td.Reason),
-		OtherCancellationReason: func() *string {
-			if td.OtherReason != "" {
-				return &td.OtherReason
-			}
-			return nil
-		}(),
-		CustomerDrivingConsent: td.CustomerDrivingConsent,
+		TestDriveID:             td.TestDriveID,
+		TestDriveNumber:         td.TestDriveNumber,
+		KatashikiCode:           td.KatashikiCode,
+		Model:                   td.Model,
+		Variant:                 td.Variant,
+		CreatedDatetime:         td.RequestAt.Unix(),
+		TestDriveDatetimeStart:  td.StartTime.Unix(),
+		TestDriveDatetimeEnd:    td.EndTime.Unix(),
+		Location:                td.Location,
+		OutletID:                td.OutletID,
+		OutletName:              td.OutletName,
+		TestDriveStatus:         td.Status,
+		CancellationReason:      utils.ToPointer(td.Reason),
+		OtherCancellationReason: utils.ToPointer(td.OtherReason),
+		CustomerDrivingConsent:  td.CustomerDrivingConsent,
 	}
 
 }
@@ -79,23 +75,6 @@ type TestDriveEvent struct {
 	Data      TestDriveEventData `json:"data" validate:"required"`
 }
 
-// GetEventTimestamp returns the timestamp as time.Time
-func (be *TestDriveEvent) GetEventTimestamp() time.Time {
-	return time.Unix(be.Timestamp, 0)
-}
-
-func (td *TestDriveRequest) GetCreatedTime() time.Time {
-	return time.Unix(td.CreatedDatetime, 0)
-}
-
-func (td *TestDriveRequest) GetStartTime() time.Time {
-	return time.Unix(td.TestDriveDatetimeStart, 0)
-}
-
-func (td *TestDriveRequest) GetEndTime() time.Time {
-	return time.Unix(td.TestDriveDatetimeEnd, 0)
-}
-
 // ToTestDriveModel converts the TestDriveEvent to the internal TestDrive model
 func (be *TestDriveEvent) ToTestDriveModel(customerID string) domain.TestDrive {
 	return domain.TestDrive{
@@ -104,9 +83,9 @@ func (be *TestDriveEvent) ToTestDriveModel(customerID string) domain.TestDrive {
 		KatashikiCode:          be.Data.TestDrive.KatashikiCode,
 		Model:                  be.Data.TestDrive.Model,
 		Variant:                be.Data.TestDrive.Variant,
-		RequestAt:              be.Data.TestDrive.GetCreatedTime(),
-		StartTime:              be.Data.TestDrive.GetStartTime(),
-		EndTime:                be.Data.TestDrive.GetEndTime(),
+		RequestAt:              utils.GetTimeUnix(be.Data.TestDrive.CreatedDatetime),
+		StartTime:              utils.GetTimeUnix(be.Data.TestDrive.TestDriveDatetimeStart),
+		EndTime:                utils.GetTimeUnix(be.Data.TestDrive.TestDriveDatetimeEnd),
 		Location:               be.Data.TestDrive.Location,
 		OutletID:               be.Data.TestDrive.OutletID,
 		OutletName:             be.Data.TestDrive.OutletName,
@@ -118,62 +97,9 @@ func (be *TestDriveEvent) ToTestDriveModel(customerID string) domain.TestDrive {
 		LeadsID:                be.Data.Leads.LeadsID,
 		EventID:                be.EventID,
 		CreatedAt:              time.Now(),
-		CreatedBy:              "mToyota", // or fetch from context if available
+		CreatedBy:              constants.System,
 		UpdatedAt:              time.Now(),
-		UpdatedBy:              "mToyota", // or fetch from context if available
-	}
-}
-
-// ToCustomerModel converts the TestDriveEvent to the internal Customer model
-func (be *TestDriveEvent) ToCustomerModel() domain.Customer {
-	return domain.Customer{
-		OneAccountID: be.Data.OneAccount.OneAccountID,
-		FirstName:    be.Data.OneAccount.FirstName,
-		LastName:     be.Data.OneAccount.LastName,
-		Email:        be.Data.OneAccount.Email,
-		PhoneNumber:  be.Data.OneAccount.PhoneNumber,
-		Gender:       be.Data.OneAccount.Gender,
-		CreatedAt:    time.Now(),
-		CreatedBy:    "mToyota", // or fetch from context if available
-		UpdatedAt:    time.Now(),
-		UpdatedBy:    utils.ToPointer("mToyota"), // or fetch from context if available
-	}
-}
-
-// ToLeadsModel converts the TestDriveEvent to the internal Leads model
-func (be *TestDriveEvent) ToLeadsModel() domain.Leads {
-	return domain.Leads{
-		LeadsID:                         be.Data.Leads.LeadsID,
-		LeadsType:                       be.Data.Leads.LeadsType,
-		LeadsFollowUpStatus:             be.Data.Leads.LeadsFollowUpStatus,
-		LeadsPreferenceContactTimeStart: be.Data.Leads.LeadsPreferenceContactTimeStart,
-		LeadsPreferenceContactTimeEnd:   be.Data.Leads.LeadsPreferenceContactTimeEnd,
-		LeadSource:                      be.Data.Leads.LeadSource,
-		AdditionalNotes:                 be.Data.Leads.AdditionalNotes,
-		CreatedAt:                       time.Now(),
-		CreatedBy:                       "mToyota", // or fetch from context if available
-		UpdatedAt:                       time.Now(),
-		UpdatedBy:                       utils.ToPointer("mToyota"), // or fetch from context if available
-	}
-}
-
-// ToLeadScoreModel converts the TestDriveEvent to the internal LeadScore model
-func (be *TestDriveEvent) ToLeadScoreModel() domain.LeadScore {
-	return domain.LeadScore{
-		ID:                      be.Data.Leads.LeadsID,
-		TAMLeadScore:            be.Data.Score.TAMLeadScore,
-		OutletLeadScore:         be.Data.Score.OutletLeadScore,
-		PurchasePlanCriteria:    be.Data.Score.Parameter.PurchasePlanCriteria,
-		PaymentPreferCriteria:   be.Data.Score.Parameter.PaymentPreferCriteria,
-		NegotiationCriteria:     be.Data.Score.Parameter.NegotiationCriteria,
-		TestDriveCriteria:       be.Data.Score.Parameter.TestDriveCriteria,
-		TradeInCriteria:         be.Data.Score.Parameter.TradeInCriteria,
-		BrowsingHistoryCriteria: be.Data.Score.Parameter.BrowsingHistoryCriteria,
-		VehicleAgeCriteria:      be.Data.Score.Parameter.VehicleAgeCriteria,
-		CreatedAt:               time.Now(),
-		CreatedBy:               "mToyota", // or fetch from context if available
-		UpdatedAt:               time.Now(),
-		UpdatedBy:               "mToyota", // or fetch from context if available
+		UpdatedBy:              constants.System, // or fetch from context if available
 	}
 }
 

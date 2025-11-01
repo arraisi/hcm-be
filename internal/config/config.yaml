@@ -7,7 +7,7 @@ server:
   readTimeout: 10s
   writeTimeout: 15s
   idleTimeout: 60s
-  requestTimeout: 15s
+  requestTimeout: 150s
 observability:
   metricsEnabled: true
   pprofEnabled: true

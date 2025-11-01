@@ -1,4 +1,4 @@
-package leadscore
+package customervehicle
 
 import (
 	"context"
@@ -8,12 +8,14 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) UpdateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error {
-	model := domain.LeadScore{}
+func (r *repository) UpdateCustomerVehicle(ctx context.Context, tx *sqlx.Tx, req domain.CustomerVehicle) error {
+	model := domain.CustomerVehicle{}
 
 	query, args, err := sqrl.Update(model.TableName()).
 		SetMap(req.ToUpdateMap()).
-		Where(sqrl.Eq{"id": req.ID}).ToSql()
+		Where(sqrl.Or{
+			sqrl.Eq{"i_id": req.ID},
+		}).ToSql()
 	if err != nil {
 		return err
 	}

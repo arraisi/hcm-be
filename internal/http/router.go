@@ -77,6 +77,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Use(webhookMiddleware.ExtractAndValidateHeaders)
 
 			webhooks.Post("/test-drive", handler.WebhookHandler.TestDriveEvent)
+			webhooks.Post("/service-booking", handler.WebhookHandler.ServiceBookingEvent)
 		})
 	})
 

@@ -8,6 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	servicebooking "github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 	testdrive "github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -35,18 +36,55 @@ func (m *MockTestDriveService) EXPECT() *MockTestDriveServiceMockRecorder {
 	return m.recorder
 }
 
-// InsertTestDriveBooking mocks base method.
-func (m *MockTestDriveService) InsertTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error {
+// RequestTestDriveBooking mocks base method.
+func (m *MockTestDriveService) RequestTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "InsertTestDriveBooking", ctx, request)
+	ret := m.ctrl.Call(m, "RequestTestDriveBooking", ctx, request)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// InsertTestDriveBooking indicates an expected call of InsertTestDriveBooking.
-func (mr *MockTestDriveServiceMockRecorder) InsertTestDriveBooking(ctx, request interface{}) *gomock.Call {
+// RequestTestDriveBooking indicates an expected call of RequestTestDriveBooking.
+func (mr *MockTestDriveServiceMockRecorder) RequestTestDriveBooking(ctx, request interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertTestDriveBooking", reflect.TypeOf((*MockTestDriveService)(nil).InsertTestDriveBooking), ctx, request)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RequestTestDriveBooking", reflect.TypeOf((*MockTestDriveService)(nil).RequestTestDriveBooking), ctx, request)
+}
+
+// MockServiceBookingService is a mock of ServiceBookingService interface.
+type MockServiceBookingService struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceBookingServiceMockRecorder
+}
+
+// MockServiceBookingServiceMockRecorder is the mock recorder for MockServiceBookingService.
+type MockServiceBookingServiceMockRecorder struct {
+	mock *MockServiceBookingService
+}
+
+// NewMockServiceBookingService creates a new mock instance.
+func NewMockServiceBookingService(ctrl *gomock.Controller) *MockServiceBookingService {
+	mock := &MockServiceBookingService{ctrl: ctrl}
+	mock.recorder = &MockServiceBookingServiceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceBookingService) EXPECT() *MockServiceBookingServiceMockRecorder {
+	return m.recorder
+}
+
+// RequestServiceBooking mocks base method.
+func (m *MockServiceBookingService) RequestServiceBooking(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RequestServiceBooking", ctx, request)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RequestServiceBooking indicates an expected call of RequestServiceBooking.
+func (mr *MockServiceBookingServiceMockRecorder) RequestServiceBooking(ctx, request interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RequestServiceBooking", reflect.TypeOf((*MockServiceBookingService)(nil).RequestServiceBooking), ctx, request)
 }
 
 // MockIdempotencyStore is a mock of IdempotencyStore interface.
