@@ -17,7 +17,7 @@ func (s *service) UpsertServiceBooking(ctx context.Context, tx *sqlx.Tx, custome
 	})
 	if err == nil {
 		// Found → update
-		sb := sb.Data.ToServiceBookingModel(customerID, customerVehicleID)
+		sb := sb.ToServiceBookingModel(customerID, customerVehicleID)
 		sb.ID = serviceBooking.ID
 
 		err = s.repo.UpdateServiceBooking(ctx, tx, sb)
@@ -28,7 +28,7 @@ func (s *service) UpsertServiceBooking(ctx context.Context, tx *sqlx.Tx, custome
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		serviceBookingModel := sb.Data.ToServiceBookingModel(customerID, customerVehicleID)
+		serviceBookingModel := sb.ToServiceBookingModel(customerID, customerVehicleID)
 		err := s.repo.CreateServiceBooking(ctx, tx, &serviceBookingModel)
 		if err != nil {
 			return serviceBookingModel.ID, err
