@@ -54,7 +54,8 @@ type Config struct {
 }
 
 type HttpConfig struct {
-	MockApi HttpClientConfig `yaml:"mockapi"`
+	MockApi     HttpClientConfig `yaml:"mockapi"`
+	MockDIDXApi HttpClientConfig `yaml:"mockDIDXApi"`
 }
 
 type HttpClientConfig struct {

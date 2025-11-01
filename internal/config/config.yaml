@@ -32,3 +32,8 @@ http:
     apiKey: 'your-mockapi-key'
     timeout: 10
     retryCount: 2
+  mockDIDXApi:
+    baseURL: 'https://690142aeff8d792314bcf1e7.mockapi.io/api'
+    apiKey: 'your-mockapi-key'
+    timeout: 10
+    retryCount: 2

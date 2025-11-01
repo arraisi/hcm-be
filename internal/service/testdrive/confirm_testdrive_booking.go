@@ -2,7 +2,6 @@ package testdrive
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
@@ -59,7 +58,10 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 		},
 	}
 
-	fmt.Printf("%+v", tdEventConfirmRequest)
+	err = s.mockDIDXApiClient.ConfirmTestDrive(ctx, tdEventConfirmRequest)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

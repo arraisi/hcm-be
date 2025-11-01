@@ -9,6 +9,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
+	mockDIDXApi "github.com/arraisi/hcm-be/internal/ext/didx"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -53,26 +54,29 @@ type ServiceContainer struct {
 	LeadRepo        LeadRepository
 	CustomerSvc     CustomerService
 	EmployeeRepo    EmployeeRepository
+	MockDIDXApi     *mockDIDXApi.Client
 }
 
 type service struct {
-	cfg             *config.Config
-	transactionRepo transactionRepository
-	repo            Repository
-	customerRepo    CustomerRepository
-	leadRepo        LeadRepository
-	customerSvc     CustomerService
-	employeeRepo    EmployeeRepository
+	cfg               *config.Config
+	transactionRepo   transactionRepository
+	repo              Repository
+	customerRepo      CustomerRepository
+	leadRepo          LeadRepository
+	customerSvc       CustomerService
+	employeeRepo      EmployeeRepository
+	mockDIDXApiClient *mockDIDXApi.Client
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
 	return &service{
-		cfg:             cfg,
-		transactionRepo: container.TransactionRepo,
-		repo:            container.Repo,
-		customerRepo:    container.CustomerRepo,
-		leadRepo:        container.LeadRepo,
-		customerSvc:     container.CustomerSvc,
-		employeeRepo:    container.EmployeeRepo,
+		cfg:               cfg,
+		transactionRepo:   container.TransactionRepo,
+		repo:              container.Repo,
+		customerRepo:      container.CustomerRepo,
+		leadRepo:          container.LeadRepo,
+		customerSvc:       container.CustomerSvc,
+		employeeRepo:      container.EmployeeRepo,
+		mockDIDXApiClient: container.MockDIDXApi,
 	}
 }

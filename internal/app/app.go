@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
+	mockDIDXApi "github.com/arraisi/hcm-be/internal/ext/didx"
 	"github.com/arraisi/hcm-be/internal/ext/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
@@ -12,6 +13,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
+	employeeRepository "github.com/arraisi/hcm-be/internal/repository/employee"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
@@ -50,6 +52,7 @@ func Run(cfg *config.Config) error {
 
 	// init external clients
 	mockApiClient := mockapi.New(cfg.Http.MockApi)
+	mockDIDXApiClient := mockDIDXApi.New(cfg.Http.MockApi)
 
 	// init repositories
 	userRepo := userRepository.NewUserRepository(db)
@@ -59,6 +62,7 @@ func Run(cfg *config.Config) error {
 	testDriveRepo := testdriveRepository.New(cfg, db)
 	serviceBookingRepo := servicebookingRepository.New(cfg, db)
 	customerVehicleRepo := customervehicleRepository.New(cfg, db)
+	employeeRepo := employeeRepository.New(cfg, db)
 
 	// init services
 	userSvc := userService.NewUserService(userRepo, txRepo, mockApiClient)
@@ -72,6 +76,8 @@ func Run(cfg *config.Config) error {
 		CustomerRepo:    customerRepo,
 		LeadRepo:        leadRepo,
 		CustomerSvc:     customerSvc,
+		EmployeeRepo:    employeeRepo,
+		MockDIDXApi:     mockDIDXApiClient,
 	})
 	idempotencyStore := idempotencyService.NewInMemoryIdempotencyStore(24 * time.Hour) // 24 hour TTL
 	customerVehicleSvc := customervehicleService.New(cfg, customervehicleService.ServiceContainer{
