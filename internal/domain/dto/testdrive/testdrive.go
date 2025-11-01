@@ -126,8 +126,6 @@ func (req GetTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
 }
 
 type ConfirmTestDriveBookingRequest struct {
-	TestDriveID  string `json:"test_drive_id"`
-	PICID        string `json:"employee_id"`
-	PICFirstName string `json:"first_name"`
-	PICLastName  string `json:"last_name"`
+	TestDriveID string `json:"test_drive_id"`
+	EmployeeID  string `json:"employee_id"`
 }

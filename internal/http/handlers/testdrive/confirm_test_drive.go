@@ -1,9 +1,7 @@
 package testdrive
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
@@ -13,31 +11,32 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// ConfirmTestDrive handles PUT /test-drives/{test-drive-id}
+// ConfirmTestDrive handles PUT /test-drives/{test_drive_id}
 func (h *Handler) ConfirmTestDrive(w http.ResponseWriter, r *http.Request) {
 	// Extract test-drive-id from URL path
-	testDriveID := chi.URLParam(r, "test-drive-id")
+	testDriveID := chi.URLParam(r, "test_drive_id")
 	if testDriveID == "" {
 		errorResponse := errorx.NewErrorResponse(http.StatusBadRequest, errors.New("test-drive-id is required"))
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
-	// Read raw body for signature verification (if needed later)
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		errorResponse := errorx.NewErrorResponseFromList(errorx.ErrWebhookReadBodyFailed, errorx.ErrListWebhook)
+	// Extract employee_id from query parameters
+	employeeID := r.URL.Query().Get("employee_id")
+	if employeeID == "" {
+		errorResponse := errorx.NewErrorResponse(http.StatusBadRequest, errors.New("employee_id query parameter is required"))
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
 	// Parse JSON body
 	var request testdrive.ConfirmTestDriveBookingRequest
-	if err := json.Unmarshal(body, &request); err != nil {
-		errorResponse := errorx.NewErrorResponseFromList(errorx.ErrWebhookInvalidPayload, errorx.ErrListWebhook)
-		response.ErrorResponseJSON(w, errorResponse)
-		return
-	}
+
+	// Set the test drive ID from URL path (takes precedence over body)
+	request.TestDriveID = testDriveID
+
+	// Set the employee ID from query parameter (takes precedence over body)
+	request.EmployeeID = employeeID
 
 	// Validate payload structure
 	if err := validator.ValidateStruct(request); err != nil {
@@ -46,10 +45,7 @@ func (h *Handler) ConfirmTestDrive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set the test drive ID from URL path (takes precedence over body)
-	request.TestDriveID = testDriveID
-
-	err = h.svc.ConfirmTestDriveBooking(r.Context(), request)
+	err := h.svc.ConfirmTestDriveBooking(r.Context(), request)
 	if err != nil {
 		// Combine webhook and test drive error lists
 		combinedErrorList := errorx.ErrListWebhook.Extend(errorx.ErrListTestDrive)

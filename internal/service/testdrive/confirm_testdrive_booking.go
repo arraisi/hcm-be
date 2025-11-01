@@ -45,9 +45,7 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 			TestDrive:  testdrive.NewTestDriveRequest(testDrive),
 			Leads:      leads.NewLeadsRequest(leadsData),
 			PICAssignment: utils.ToPointer(testdrive.PICAssignmentRequest{
-				EmployeeID: request.PICID,
-				FirstName:  request.PICFirstName,
-				LastName:   request.PICLastName,
+				EmployeeID: request.EmployeeID,
 			}),
 		},
 	}
