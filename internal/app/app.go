@@ -13,7 +13,6 @@ import (
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
-	leadscoreRepository "github.com/arraisi/hcm-be/internal/repository/leadsscore"
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
@@ -57,7 +56,6 @@ func Run(cfg *config.Config) error {
 	txRepo := transactionRepository.New(db)
 	customerRepo := customerRepository.New(cfg, db)
 	leadRepo := leadsRepository.New(cfg, db)
-	leadScoreRepo := leadscoreRepository.New(cfg, db)
 	testDriveRepo := testdriveRepository.New(cfg, db)
 	serviceBookingRepo := servicebookingRepository.New(cfg, db)
 	customerVehicleRepo := customervehicleRepository.New(cfg, db)
@@ -73,7 +71,6 @@ func Run(cfg *config.Config) error {
 		Repo:            testDriveRepo,
 		CustomerRepo:    customerRepo,
 		LeadRepo:        leadRepo,
-		LeadScoreRepo:   leadScoreRepo,
 		CustomerSvc:     customerSvc,
 	})
 	idempotencyStore := idempotencyService.NewInMemoryIdempotencyStore(24 * time.Hour) // 24 hour TTL

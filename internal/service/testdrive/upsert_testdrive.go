@@ -2,8 +2,6 @@ package testdrive
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	errorx "github.com/arraisi/hcm-be/pkg/errors"
@@ -15,11 +13,13 @@ func (s *service) UpsertServiceTestDrive(ctx context.Context, tx *sqlx.Tx, custo
 	testDrives, err := s.repo.GetTestDrives(ctx, testdrive.GetTestDriveRequest{
 		TestDriveID: utils.ToPointer(request.Data.TestDrive.TestDriveID),
 	})
-	if err == nil && len(testDrives) > 0 {
-		if len(testDrives) > 1 {
-			return testDrives[0].ID, errorx.ErrTestDriveCustomerHasBooking
-		}
+	if err != nil {
+		return "", err
+	}
 
+	if len(testDrives) > 1 {
+		return testDrives[0].ID, errorx.ErrTestDriveCustomerHasBooking
+	} else if len(testDrives) == 1 {
 		// Found → update
 		td := request.ToTestDriveModel(customerID)
 		td.ID = testDrives[0].ID
@@ -27,10 +27,9 @@ func (s *service) UpsertServiceTestDrive(ctx context.Context, tx *sqlx.Tx, custo
 		if err != nil {
 			return td.ID, err
 		}
-	}
-
-	// Not found → create
-	if errors.Is(err, sql.ErrNoRows) {
+		return td.ID, nil
+	} else {
+		// Not found → create
 		td := request.ToTestDriveModel(customerID)
 		err := s.repo.CreateTestDrive(ctx, tx, &td)
 		if err != nil {
@@ -38,6 +37,4 @@ func (s *service) UpsertServiceTestDrive(ctx context.Context, tx *sqlx.Tx, custo
 		}
 		return td.ID, nil
 	}
-
-	return "", err
 }

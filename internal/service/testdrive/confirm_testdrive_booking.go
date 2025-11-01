@@ -36,13 +36,6 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 		return err
 	}
 
-	leadScoreData, err := s.leadScoreRepo.GetLeadsScore(ctx, leads.GetLeadScoreRequest{
-		ID: utils.ToPointer(leadsData.LeadsID),
-	})
-	if err != nil {
-		return err
-	}
-
 	tdEventConfirmRequest := testdrive.TestDriveEvent{
 		Process:   "test_drive_confirm",
 		EventID:   testDrive.EventID,
@@ -51,7 +44,6 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 			OneAccount: customer.NewOneAccountRequest(customerData),
 			TestDrive:  testdrive.NewTestDriveRequest(testDrive),
 			Leads:      leads.NewLeadsRequest(leadsData),
-			Score:      leads.NewScoreRequest(leadScoreData),
 			PICAssignment: utils.ToPointer(testdrive.PICAssignmentRequest{
 				EmployeeID: request.PICID,
 				FirstName:  request.PICFirstName,

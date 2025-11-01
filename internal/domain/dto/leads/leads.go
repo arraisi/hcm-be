@@ -18,6 +18,7 @@ type LeadsRequest struct {
 	LeadsPreferenceContactTimeEnd   string  `json:"leads_preference_contact_time_end"`
 	LeadSource                      string  `json:"leads_source" validate:"required"`
 	AdditionalNotes                 *string `json:"additional_notes"`
+	LeadsScore                      Score   `json:"score" validate:"required"`
 }
 
 func NewLeadsRequest(leads domain.Leads) LeadsRequest {
@@ -50,22 +51,6 @@ type Score struct {
 	Parameter       ScoreParameter `json:"parameter"`
 }
 
-func NewScoreRequest(leadScore domain.LeadsScore) Score {
-	return Score{
-		TAMLeadScore:    leadScore.TAMLeadScore,
-		OutletLeadScore: leadScore.OutletLeadScore,
-		Parameter: ScoreParameter{
-			PurchasePlanCriteria:    leadScore.PurchasePlanCriteria,
-			PaymentPreferCriteria:   leadScore.PaymentPreferCriteria,
-			NegotiationCriteria:     leadScore.NegotiationCriteria,
-			TestDriveCriteria:       leadScore.TestDriveCriteria,
-			TradeInCriteria:         leadScore.TradeInCriteria,
-			BrowsingHistoryCriteria: leadScore.BrowsingHistoryCriteria,
-			VehicleAgeCriteria:      leadScore.VehicleAgeCriteria,
-		},
-	}
-}
-
 type GetLeadsRequest struct {
 	ID      *string
 	LeadsID *string
@@ -81,20 +66,11 @@ func (req GetLeadsRequest) Apply(q *sqrl.SelectBuilder) {
 	}
 }
 
-type GetLeadScoreRequest struct {
-	ID *string
-}
-
-// Apply applies the request parameters to the given SelectBuilder
-func (req GetLeadScoreRequest) Apply(q *sqrl.SelectBuilder) {
-	if req.ID != nil {
-		q.Where(sqrl.Eq{"i_id": req.ID})
-	}
-}
-
 // ToDomain converts the TestDriveEvent to the internal Leads model
-func (be *LeadsRequest) ToDomain() domain.Leads {
+func (be *LeadsRequest) ToDomain(customerID, testDriveID string) domain.Leads {
 	return domain.Leads{
+		CustomerID:                      customerID,
+		TestDriveID:                     testDriveID,
 		LeadsID:                         be.LeadsID,
 		LeadsType:                       be.LeadsType,
 		LeadsFollowUpStatus:             be.LeadsFollowUpStatus,
@@ -102,29 +78,18 @@ func (be *LeadsRequest) ToDomain() domain.Leads {
 		LeadsPreferenceContactTimeEnd:   be.LeadsPreferenceContactTimeEnd,
 		LeadSource:                      be.LeadSource,
 		AdditionalNotes:                 be.AdditionalNotes,
+		TAMLeadScore:                    be.LeadsScore.TAMLeadScore,
+		OutletLeadScore:                 be.LeadsScore.OutletLeadScore,
+		PurchasePlanCriteria:            be.LeadsScore.Parameter.PurchasePlanCriteria,
+		PaymentPreferCriteria:           be.LeadsScore.Parameter.PaymentPreferCriteria,
+		TestDriveCriteria:               be.LeadsScore.Parameter.TestDriveCriteria,
+		TradeInCriteria:                 be.LeadsScore.Parameter.TradeInCriteria,
+		BrowsingHistoryCriteria:         be.LeadsScore.Parameter.BrowsingHistoryCriteria,
+		VehicleAgeCriteria:              be.LeadsScore.Parameter.VehicleAgeCriteria,
+		NegotiationCriteria:             be.LeadsScore.Parameter.NegotiationCriteria,
 		CreatedAt:                       time.Now(),
 		CreatedBy:                       constants.System,
 		UpdatedAt:                       time.Now(),
 		UpdatedBy:                       utils.ToPointer(constants.System),
-	}
-}
-
-// ToDomain converts the TestDriveEvent to the internal LeadsScore model
-func (be *Score) ToDomain(leadsID string) domain.LeadsScore {
-	return domain.LeadsScore{
-		ID:                      leadsID,
-		TAMLeadScore:            be.TAMLeadScore,
-		OutletLeadScore:         be.OutletLeadScore,
-		PurchasePlanCriteria:    be.Parameter.PurchasePlanCriteria,
-		PaymentPreferCriteria:   be.Parameter.PaymentPreferCriteria,
-		NegotiationCriteria:     be.Parameter.NegotiationCriteria,
-		TestDriveCriteria:       be.Parameter.TestDriveCriteria,
-		TradeInCriteria:         be.Parameter.TradeInCriteria,
-		BrowsingHistoryCriteria: be.Parameter.BrowsingHistoryCriteria,
-		VehicleAgeCriteria:      be.Parameter.VehicleAgeCriteria,
-		CreatedAt:               time.Now(),
-		CreatedBy:               constants.System,
-		UpdatedAt:               time.Now(),
-		UpdatedBy:               constants.System,
 	}
 }
