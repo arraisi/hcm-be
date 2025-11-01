@@ -113,10 +113,10 @@ type GetTestDriveRequest struct {
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
 	if req.ID != nil {
-		q.Where(sqrl.Eq{"id": req.ID})
+		q.Where(sqrl.Eq{"i_id": req.ID})
 	}
 	if req.TestDriveID != nil {
-		q.Where(sqrl.Eq{"test_drive_id": req.TestDriveID})
+		q.Where(sqrl.Eq{"i_test_drive_id": req.TestDriveID})
 	}
 	if req.CustomerID != nil {
 		q.Where(sqrl.Eq{"i_customer_id": req.CustomerID})

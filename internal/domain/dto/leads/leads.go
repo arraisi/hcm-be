@@ -67,8 +67,10 @@ func (req GetLeadsRequest) Apply(q *sqrl.SelectBuilder) {
 }
 
 // ToDomain converts the TestDriveEvent to the internal Leads model
-func (be *LeadsRequest) ToDomain() domain.Leads {
+func (be *LeadsRequest) ToDomain(customerID, testDriveID string) domain.Leads {
 	return domain.Leads{
+		CustomerID:                      customerID,
+		TestDriveID:                     testDriveID,
 		LeadsID:                         be.LeadsID,
 		LeadsType:                       be.LeadsType,
 		LeadsFollowUpStatus:             be.LeadsFollowUpStatus,
@@ -76,6 +78,15 @@ func (be *LeadsRequest) ToDomain() domain.Leads {
 		LeadsPreferenceContactTimeEnd:   be.LeadsPreferenceContactTimeEnd,
 		LeadSource:                      be.LeadSource,
 		AdditionalNotes:                 be.AdditionalNotes,
+		TAMLeadScore:                    be.LeadsScore.TAMLeadScore,
+		OutletLeadScore:                 be.LeadsScore.OutletLeadScore,
+		PurchasePlanCriteria:            be.LeadsScore.Parameter.PurchasePlanCriteria,
+		PaymentPreferCriteria:           be.LeadsScore.Parameter.PaymentPreferCriteria,
+		TestDriveCriteria:               be.LeadsScore.Parameter.TestDriveCriteria,
+		TradeInCriteria:                 be.LeadsScore.Parameter.TradeInCriteria,
+		BrowsingHistoryCriteria:         be.LeadsScore.Parameter.BrowsingHistoryCriteria,
+		VehicleAgeCriteria:              be.LeadsScore.Parameter.VehicleAgeCriteria,
+		NegotiationCriteria:             be.LeadsScore.Parameter.NegotiationCriteria,
 		CreatedAt:                       time.Now(),
 		CreatedBy:                       constants.System,
 		UpdatedAt:                       time.Now(),
