@@ -34,12 +34,6 @@ type LeadRepository interface {
 	GetLeads(ctx context.Context, req leads.GetLeadsRequest) (domain.Leads, error)
 }
 
-type LeadScoreRepository interface {
-	CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsScore) error
-	GetLeadsScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadsScore, error)
-	UpdateLeadsScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadsScore) error
-}
-
 type Repository interface {
 	CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req *domain.TestDrive) error
 	GetTestDrive(ctx context.Context, req testdrive.GetTestDriveRequest) (domain.TestDrive, error)
@@ -52,7 +46,6 @@ type ServiceContainer struct {
 	Repo            Repository
 	CustomerRepo    CustomerRepository
 	LeadRepo        LeadRepository
-	LeadScoreRepo   LeadScoreRepository
 	CustomerSvc     CustomerService
 }
 
@@ -62,7 +55,6 @@ type service struct {
 	repo            Repository
 	customerRepo    CustomerRepository
 	leadRepo        LeadRepository
-	leadScoreRepo   LeadScoreRepository
 	customerSvc     CustomerService
 }
 
@@ -73,7 +65,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		repo:            container.Repo,
 		customerRepo:    container.CustomerRepo,
 		leadRepo:        container.LeadRepo,
-		leadScoreRepo:   container.LeadScoreRepo,
 		customerSvc:     container.CustomerSvc,
 	}
 }
