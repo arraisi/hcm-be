@@ -9,13 +9,13 @@ import (
 )
 
 func (r *repository) GetTestDrives(ctx context.Context, req testdrive.GetTestDriveRequest) ([]domain.TestDrive, error) {
-	var testdrives []domain.TestDrive
+	var result []domain.TestDrive
 	model := domain.TestDrive{}
 
 	// Base query
 	query := sqrl.Select(model.SelectColumns()...).
 		From(model.TableName()).
-		OrderBy("created_at DESC")
+		OrderBy("d_updated_at DESC")
 
 	// Add search filter if provided
 	req.Apply(query)
@@ -26,10 +26,10 @@ func (r *repository) GetTestDrives(ctx context.Context, req testdrive.GetTestDri
 	}
 
 	sqlQuery = r.db.Rebind(sqlQuery)
-	err = r.db.SelectContext(ctx, &testdrives, sqlQuery, args...)
+	err = r.db.SelectContext(ctx, &result, sqlQuery, args...)
 	if err != nil {
 		return nil, err
 	}
 
-	return testdrives, nil
+	return result, nil
 }

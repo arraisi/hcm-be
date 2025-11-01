@@ -4,26 +4,30 @@ import (
 	"context"
 
 	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/google/uuid"
-
 	"github.com/elgris/sqrl"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error) {
+func (r *repository) CreateCustomer(ctx context.Context, tx *sqlx.Tx, req *domain.Customer) error {
+	columns, values := req.ToCreateMap()
+
+	// Generate a new UUID for the customer ID
 	req.ID = uuid.NewString()
+	columns = append(columns, "i_id")
+	values = append(values, req.ID)
+
 	query, args, err := sqrl.Insert(req.TableName()).
-		Columns(req.Columns()...).
-		Values(req.ToValues()...).ToSql()
+		Columns(columns...).
+		Values(values...).ToSql()
 	if err != nil {
-		return req.ID, err
+		return err
 	}
 
-	query = r.db.Rebind(query)
-	_, err = tx.ExecContext(ctx, query, args...)
+	_, err = tx.ExecContext(ctx, r.db.Rebind(query), args...)
 	if err != nil {
-		return req.ID, err
+		return err
 	}
 
-	return req.ID, nil
+	return nil
 }

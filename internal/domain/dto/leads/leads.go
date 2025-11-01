@@ -1,7 +1,11 @@
 package leads
 
 import (
+	"time"
+
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/constants"
+	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
 )
 
@@ -46,7 +50,7 @@ type Score struct {
 	Parameter       ScoreParameter `json:"parameter"`
 }
 
-func NewScoreRequest(leadScore domain.LeadScore) Score {
+func NewScoreRequest(leadScore domain.LeadsScore) Score {
 	return Score{
 		TAMLeadScore:    leadScore.TAMLeadScore,
 		OutletLeadScore: leadScore.OutletLeadScore,
@@ -70,10 +74,10 @@ type GetLeadsRequest struct {
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetLeadsRequest) Apply(q *sqrl.SelectBuilder) {
 	if req.ID != nil {
-		q.Where(sqrl.Eq{"id": req.ID})
+		q.Where(sqrl.Eq{"i_id": req.ID})
 	}
 	if req.LeadsID != nil {
-		q.Where(sqrl.Eq{"leads_id": req.LeadsID})
+		q.Where(sqrl.Eq{"i_leads_id": req.LeadsID})
 	}
 }
 
@@ -84,6 +88,43 @@ type GetLeadScoreRequest struct {
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetLeadScoreRequest) Apply(q *sqrl.SelectBuilder) {
 	if req.ID != nil {
-		q.Where(sqrl.Eq{"id": req.ID})
+		q.Where(sqrl.Eq{"i_id": req.ID})
+	}
+}
+
+// ToDomain converts the TestDriveEvent to the internal Leads model
+func (be *LeadsRequest) ToDomain() domain.Leads {
+	return domain.Leads{
+		LeadsID:                         be.LeadsID,
+		LeadsType:                       be.LeadsType,
+		LeadsFollowUpStatus:             be.LeadsFollowUpStatus,
+		LeadsPreferenceContactTimeStart: be.LeadsPreferenceContactTimeStart,
+		LeadsPreferenceContactTimeEnd:   be.LeadsPreferenceContactTimeEnd,
+		LeadSource:                      be.LeadSource,
+		AdditionalNotes:                 be.AdditionalNotes,
+		CreatedAt:                       time.Now(),
+		CreatedBy:                       constants.System,
+		UpdatedAt:                       time.Now(),
+		UpdatedBy:                       utils.ToPointer(constants.System),
+	}
+}
+
+// ToDomain converts the TestDriveEvent to the internal LeadsScore model
+func (be *Score) ToDomain(leadsID string) domain.LeadsScore {
+	return domain.LeadsScore{
+		ID:                      leadsID,
+		TAMLeadScore:            be.TAMLeadScore,
+		OutletLeadScore:         be.OutletLeadScore,
+		PurchasePlanCriteria:    be.Parameter.PurchasePlanCriteria,
+		PaymentPreferCriteria:   be.Parameter.PaymentPreferCriteria,
+		NegotiationCriteria:     be.Parameter.NegotiationCriteria,
+		TestDriveCriteria:       be.Parameter.TestDriveCriteria,
+		TradeInCriteria:         be.Parameter.TradeInCriteria,
+		BrowsingHistoryCriteria: be.Parameter.BrowsingHistoryCriteria,
+		VehicleAgeCriteria:      be.Parameter.VehicleAgeCriteria,
+		CreatedAt:               time.Now(),
+		CreatedBy:               constants.System,
+		UpdatedAt:               time.Now(),
+		UpdatedBy:               constants.System,
 	}
 }

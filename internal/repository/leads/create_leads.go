@@ -9,11 +9,16 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error {
+func (r *repository) CreateLeads(ctx context.Context, tx *sqlx.Tx, req *domain.Leads) error {
+	columns, values := req.ToCreateMap()
+
 	req.ID = uuid.NewString()
+	columns = append(columns, "i_id")
+	values = append(values, req.ID)
+
 	query, args, err := sqrl.Insert(req.TableName()).
-		Columns(req.Columns()...).
-		Values(req.ToValues()...).ToSql()
+		Columns(columns...).
+		Values(values...).ToSql()
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,7 @@ server:
   readTimeout: 10s
   writeTimeout: 15s
   idleTimeout: 60s
-  requestTimeout: 15s
+  requestTimeout: 150s
 observability:
   metricsEnabled: true
   pprofEnabled: true
@@ -26,3 +26,9 @@ featureFlag:
     enableSignatureValidation: false
     enableTimestampValidation: false
     enableDuplicateEventIDValidation: false
+http:
+  mockapi:
+    baseURL: 'https://690142aeff8d792314bcf1e7.mockapi.io/api'
+    apiKey: 'your-mockapi-key'
+    timeout: 10
+    retryCount: 2

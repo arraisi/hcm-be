@@ -6,6 +6,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/user"
+	"github.com/arraisi/hcm-be/internal/ext/mockapi"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -13,8 +14,9 @@ import (
 
 // UserService provides user-related operations
 type UserService struct {
-	repo    UserRepository
-	trxRepo TransactionRepository
+	repo          UserRepository
+	trxRepo       TransactionRepository
+	mockApiClient *mockapi.Client
 }
 
 // UserRepository defines the interface for user-related database operations
@@ -34,18 +36,36 @@ type TransactionRepository interface {
 }
 
 // NewUserService creates a new instance of UserService
-func NewUserService(r UserRepository, trxRepo TransactionRepository) *UserService {
-	return &UserService{repo: r, trxRepo: trxRepo}
+func NewUserService(r UserRepository, trxRepo TransactionRepository, mockApiClient *mockapi.Client) *UserService {
+	return &UserService{repo: r, trxRepo: trxRepo, mockApiClient: mockApiClient}
 }
 
 // List retrieves a list of users based on the provided request filters
-func (s *UserService) List(ctx context.Context, req user.GetUserRequest) ([]domain.User, error) {
-	return s.repo.GetUsers(ctx, req)
+func (s *UserService) List(ctx context.Context, _ user.GetUserRequest) ([]domain.User, error) {
+	extUsers, err := s.mockApiClient.GetUsers(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	//users, err := s.repo.GetUsers(ctx, req)
+	//if err != nil {
+	//	return nil, err
+	//}
+
+	return extUsers, nil
 }
 
 // Get retrieves a single user by ID
-func (s *UserService) Get(ctx context.Context, req user.GetUserRequest) (domain.User, error) {
-	return s.repo.GetUser(ctx, req)
+func (s *UserService) Get(ctx context.Context, _ user.GetUserRequest) (domain.User, error) {
+	getUser, err := s.mockApiClient.GetUser(ctx)
+	if err != nil {
+		return domain.User{}, err
+	}
+	//getUser, err := s.repo.GetUser(ctx, req)
+	//if err != nil {
+	//	return domain.User{}, err
+	//}
+	return getUser, nil
 }
 
 // Create creates a new user within a transaction

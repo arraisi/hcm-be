@@ -1,5 +1,6 @@
-package leadscore
+package customervehicle
 
+//go:generate mockgen -source=repository.go -package=customervehicle -destination=repository_mock_test.go
 import (
 	"context"
 	"database/sql"

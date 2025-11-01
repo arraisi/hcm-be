@@ -9,11 +9,17 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req domain.TestDrive) error {
+func (r *repository) CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req *domain.TestDrive) error {
+	columns, values := req.ToCreateMap()
+
+	// Generate a new UUID for the test drive ID
 	req.ID = uuid.NewString()
+	columns = append(columns, "i_id")
+	values = append(values, req.ID)
+
 	query, args, err := sqrl.Insert(req.TableName()).
-		Columns(req.Columns()...).
-		Values(req.ToValues()...).ToSql()
+		Columns(columns...).
+		Values(values...).ToSql()
 	if err != nil {
 		return err
 	}

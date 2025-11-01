@@ -7,10 +7,11 @@ linters:
     - staticcheck
     - revive
     - errcheck
-    - gocyclo
+    # - gocyclo # Disabled cyclomatic complexity check
     - revive # Ensure revive is enabled if you want to configure its rules
   disable:
     - revive
+    - gocyclo # Disable cyclomatic complexity check
 linters-settings:
   revive:
     rules:

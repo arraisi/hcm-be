@@ -2,8 +2,11 @@ package customer
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/constants"
+	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
 )
 
@@ -42,7 +45,7 @@ type GetCustomerRequest struct {
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetCustomerRequest) Apply(q *sqrl.SelectBuilder) {
 	if req.OneAccountID != "" {
-		q.Where(sqrl.Eq{"one_account_ID": req.OneAccountID})
+		q.Where(sqrl.Eq{"i_one_account_id": req.OneAccountID})
 	}
 
 	if req.Limit > 0 {
@@ -80,4 +83,19 @@ func (req UpdateCustomerRequest) ToUpdateMap() map[string]interface{} {
 	}
 
 	return updateMap
+}
+
+func (be *OneAccountRequest) ToDomain() domain.Customer {
+	return domain.Customer{
+		OneAccountID: be.OneAccountID,
+		FirstName:    be.FirstName,
+		LastName:     be.LastName,
+		Email:        be.Email,
+		PhoneNumber:  be.PhoneNumber,
+		Gender:       be.Gender,
+		CreatedAt:    time.Now(),
+		CreatedBy:    constants.System,
+		UpdatedAt:    time.Now(),
+		UpdatedBy:    utils.ToPointer(constants.System),
+	}
 }
