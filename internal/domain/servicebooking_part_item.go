@@ -49,13 +49,13 @@ func (pi *ServiceBookingPartItem) SelectColumns() []string {
 }
 
 // ToCreateMap prepares the columns and values for inserting a new ServiceBookingPartItem record
-func (pi *ServiceBookingPartItem) ToCreateMap() ([]string, []interface{}) {
+func (pi *ServiceBookingPartItem) ToCreateMap(packageID string) ([]string, []interface{}) {
 	columns := make([]string, 0, len(pi.Columns()))
 	values := make([]interface{}, 0, len(pi.Columns()))
 
-	if pi.ServiceBookingPartID != "" {
+	if packageID != "" {
 		columns = append(columns, "i_service_booking_part_id")
-		values = append(values, pi.ServiceBookingPartID)
+		values = append(values, packageID)
 	}
 
 	if pi.PartNumber != "" {

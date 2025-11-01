@@ -35,8 +35,8 @@ type ServiceBooking struct {
 	SubDistrict                  string    `db:"c_sub_district"`
 	PostalCode                   string    `db:"c_postal_code"`
 	VehicleProblem               string    `db:"e_vehicle_problem"`
-	CancellationReason           *string   `db:"c_cancellation_reason"`
-	OtherCancellationReason      *string   `db:"e_other_cancellation_reason"`
+	CancellationReason           string    `db:"c_cancellation_reason"`
+	OtherCancellationReason      string    `db:"e_other_cancellation_reason"`
 	ServicePricingCallFlag       bool      `db:"b_service_pricing_call_flag"`
 	CreatedAt                    time.Time `db:"d_created_at"`
 	CreatedBy                    string    `db:"c_created_by"`
@@ -254,11 +254,11 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "e_vehicle_problem")
 		values = append(values, sb.VehicleProblem)
 	}
-	if sb.CancellationReason != nil {
+	if sb.CancellationReason != "" {
 		columns = append(columns, "e_cancellation_reason")
 		values = append(values, sb.CancellationReason)
 	}
-	if sb.OtherCancellationReason != nil {
+	if sb.OtherCancellationReason != "" {
 		columns = append(columns, "e_other_cancellation_reason")
 		values = append(values, sb.OtherCancellationReason)
 	}
@@ -362,10 +362,10 @@ func (sb *ServiceBooking) ToUpdateMap() map[string]interface{} {
 	if sb.VehicleProblem != "" {
 		updateMap["e_vehicle_problem"] = sb.VehicleProblem
 	}
-	if sb.CancellationReason != nil {
+	if sb.CancellationReason != "" {
 		updateMap["e_cancellation_reason"] = sb.CancellationReason
 	}
-	if sb.OtherCancellationReason != nil {
+	if sb.OtherCancellationReason != "" {
 		updateMap["e_other_cancellation_reason"] = sb.OtherCancellationReason
 	}
 

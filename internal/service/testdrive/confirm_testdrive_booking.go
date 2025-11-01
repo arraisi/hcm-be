@@ -1,4 +1,4 @@
-package testdrive_booking
+package testdrive
 
 import (
 	"context"

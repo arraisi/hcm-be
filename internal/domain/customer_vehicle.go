@@ -5,21 +5,21 @@ import (
 )
 
 type CustomerVehicle struct {
-	ID              string `db:"i_id"`
-	CustomerID      string `db:"i_customer_id"`
-	OneAccountID    string `db:"i_one_account_id"`
-	Vin             string `db:"c_vin"`
-	KatashikiSuffix string `db:"c_katashiki_suffix"`
-	Model           string `db:"c_model"`
-	ColorCode       string `db:"c_color_code"`
-	Variant         string `db:"c_variant"`
-	Color           string `db:"n_color"`
-	PoliceNumber    string `db:"c_police_number"`
-	ActualMileage   int64  `db:"v_actual_mileage"`
-	CreatedAt       string `db:"d_created_at"`
-	CreatedBy       string `db:"c_created_by"`
-	UpdatedAt       string `db:"d_updated_at"`
-	UpdatedBy       string `db:"c_updated_by"`
+	ID              string    `db:"i_id"`
+	CustomerID      string    `db:"i_customer_id"`
+	OneAccountID    string    `db:"i_one_account_id"`
+	Vin             string    `db:"c_vin"`
+	KatashikiSuffix string    `db:"c_katashiki_suffix"`
+	Model           string    `db:"c_model"`
+	ColorCode       string    `db:"c_color_code"`
+	Variant         string    `db:"c_variant"`
+	Color           string    `db:"n_color"`
+	PoliceNumber    string    `db:"c_police_number"`
+	ActualMileage   int32     `db:"v_actual_mileage"`
+	CreatedAt       time.Time `db:"d_created_at"`
+	CreatedBy       string    `db:"c_created_by"`
+	UpdatedAt       time.Time `db:"d_updated_at"`
+	UpdatedBy       string    `db:"c_updated_by"`
 }
 
 // TableName returns the database table name for the CustomerVehicle model

@@ -1,11 +1,10 @@
-package testdrive_booking
+package testdrive
 
 import (
 	"context"
 	"database/sql"
 	"errors"
 
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/arraisi/hcm-be/pkg/constants"
@@ -14,7 +13,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (s *service) InsertTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error {
+func (s *service) RequestTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error {
 	if _, ok := constants.TestDriveStatusMap[request.Data.TestDrive.TestDriveStatus]; !ok {
 		return errorx.ErrTestDriveStatusInvalid
 	}
@@ -32,7 +31,7 @@ func (s *service) InsertTestDriveBooking(ctx context.Context, request testdrive.
 	}()
 
 	// Upsert Customer
-	customerID, err := s.upsertCustomer(ctx, tx, request)
+	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount)
 	if err != nil {
 		return err
 	}
@@ -56,35 +55,6 @@ func (s *service) InsertTestDriveBooking(ctx context.Context, request testdrive.
 	}
 
 	return s.transactionRepo.CommitTransaction(tx)
-}
-
-// upsertCustomer checks if a customer exists by OneAccountID. If found, it updates the customer; if not found, it creates a new customer.
-func (s *service) upsertCustomer(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent) (string, error) {
-	oneAccountID := ev.Data.OneAccount.OneAccountID
-
-	_, err := s.customerRepo.GetCustomer(ctx, customer.GetCustomerRequest{
-		OneAccountID: oneAccountID,
-	})
-	if err == nil {
-		// Found → update
-		customerID, err := s.customerRepo.UpdateCustomer(ctx, tx, ev.ToCustomerModel())
-		if err != nil {
-			return customerID, err
-		}
-		return customerID, nil
-	}
-
-	// Not found → create
-	if errors.Is(err, sql.ErrNoRows) {
-		customerID, err := s.customerRepo.CreateCustomer(ctx, tx, ev.ToCustomerModel())
-		if err != nil {
-			return customerID, err
-		}
-		return customerID, nil
-	}
-
-	// other error
-	return "", err
 }
 
 // upsertTestDrive checks if a test drive exists by TestDriveID. If found, it updates the test drive; if not found, it creates a new test drive.
@@ -121,7 +91,7 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, ev testdrive.Tes
 	})
 	if err == nil {
 		// Found → update
-		err := s.leadRepo.UpdateLeads(ctx, tx, ev.ToLeadsModel())
+		err := s.leadRepo.UpdateLeads(ctx, tx, ev.Data.Leads.ToDomain())
 		if err != nil {
 			return err
 		}
@@ -130,7 +100,7 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, ev testdrive.Tes
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		if err := s.leadRepo.CreateLeads(ctx, tx, ev.ToLeadsModel()); err != nil {
+		if err := s.leadRepo.CreateLeads(ctx, tx, ev.Data.Leads.ToDomain()); err != nil {
 			return err
 		}
 		return nil
@@ -149,7 +119,7 @@ func (s *service) upsertLeadScore(ctx context.Context, tx *sqlx.Tx, ev testdrive
 	})
 	if err == nil {
 		// Found → update
-		err := s.leadScoreRepo.UpdateLeadScore(ctx, tx, ev.ToLeadScoreModel())
+		err := s.leadScoreRepo.UpdateLeadScore(ctx, tx, ev.Data.Score.ToDomain(leadsID))
 		if err != nil {
 			return err
 		}
@@ -158,7 +128,7 @@ func (s *service) upsertLeadScore(ctx context.Context, tx *sqlx.Tx, ev testdrive
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		if err := s.leadScoreRepo.CreateLeadScore(ctx, tx, ev.ToLeadScoreModel()); err != nil {
+		if err := s.leadScoreRepo.CreateLeadScore(ctx, tx, ev.Data.Score.ToDomain(leadsID)); err != nil {
 			return err
 		}
 		return nil

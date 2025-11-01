@@ -17,7 +17,10 @@ func (s *service) UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.
 	})
 	if err == nil {
 		// Found → update
-		err = s.repo.UpdateCustomer(ctx, tx, req.ToDomain())
+		c := req.ToDomain()
+		c.ID = customerData.ID
+
+		err = s.repo.UpdateCustomer(ctx, tx, c)
 		if err != nil {
 			return customerData.ID, err
 		}
@@ -26,14 +29,14 @@ func (s *service) UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		customerModel := req.ToDomain()
-		err := s.repo.CreateCustomer(ctx, tx, &customerModel)
+		c := req.ToDomain()
+		err := s.repo.CreateCustomer(ctx, tx, &c)
 		if err != nil {
-			return customerModel.ID, err
+			return c.ID, err
 		}
-		return customerModel.ID, nil
+		return c.ID, nil
 	}
 
 	// other error
-	return "", err
+	return customerData.ID, err
 }

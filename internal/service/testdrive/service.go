@@ -1,4 +1,4 @@
-package testdrive_booking
+package testdrive
 
 import (
 	"context"
@@ -23,6 +23,10 @@ type CustomerRepository interface {
 	GetCustomer(ctx context.Context, req customer.GetCustomerRequest) (domain.Customer, error)
 }
 
+type CustomerService interface {
+	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest) (string, error)
+}
+
 type LeadRepository interface {
 	CreateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error
 	UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error
@@ -30,9 +34,9 @@ type LeadRepository interface {
 }
 
 type LeadScoreRepository interface {
-	CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error
-	GetLeadScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadScore, error)
-	UpdateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error
+	CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadsScore) error
+	GetLeadScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadsScore, error)
+	UpdateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadsScore) error
 }
 
 type Repository interface {
@@ -48,6 +52,7 @@ type ServiceContainer struct {
 	CustomerRepo    CustomerRepository
 	LeadRepo        LeadRepository
 	LeadScoreRepo   LeadScoreRepository
+	CustomerSvc     CustomerService
 }
 
 type service struct {
@@ -57,6 +62,7 @@ type service struct {
 	customerRepo    CustomerRepository
 	leadRepo        LeadRepository
 	leadScoreRepo   LeadScoreRepository
+	customerSvc     CustomerService
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -67,5 +73,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		customerRepo:    container.CustomerRepo,
 		leadRepo:        container.LeadRepo,
 		leadScoreRepo:   container.LeadScoreRepo,
+		customerSvc:     container.CustomerSvc,
 	}
 }
