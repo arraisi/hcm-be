@@ -54,7 +54,7 @@ func (h *Handler) TestDriveEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.testDriveSvc.InsertTestDriveBooking(r.Context(), bookingEvent)
+	err = h.testDriveSvc.RequestTestDriveBooking(r.Context(), bookingEvent)
 	if err != nil {
 		// Combine webhook and test drive error lists
 		combinedErrorList := errors.ErrListWebhook.Extend(errors.ErrListTestDrive)

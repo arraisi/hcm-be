@@ -5,12 +5,17 @@ import (
 	"context"
 
 	"github.com/arraisi/hcm-be/internal/config"
+	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 )
 
 type TestDriveService interface {
-	InsertTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error
+	RequestTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error
+}
+
+type ServiceBookingService interface {
+	RequestServiceBooking(ctx context.Context, request servicebooking.ServiceBookingEvent) error
 }
 
 type IdempotencyStore interface {
@@ -26,14 +31,16 @@ type Handler struct {
 	signatureVerifier *middleware.SignatureVerifier
 	idempotencySvc    IdempotencyStore
 	testDriveSvc      TestDriveService
+	ServiceBookingSvc ServiceBookingService
 }
 
 // NewWebhookHandler creates a new webhook handler
-func NewWebhookHandler(cfg *config.Config, idempotencySvc IdempotencyStore, testDriveSvc TestDriveService) Handler {
+func NewWebhookHandler(cfg *config.Config, idempotencySvc IdempotencyStore, testDriveSvc TestDriveService, serviceBookingSvc ServiceBookingService) Handler {
 	return Handler{
 		config:            cfg,
 		signatureVerifier: middleware.NewSignatureVerifier(cfg.Webhook.HMACSecret),
 		idempotencySvc:    idempotencySvc,
 		testDriveSvc:      testDriveSvc,
+		ServiceBookingSvc: serviceBookingSvc,
 	}
 }

@@ -42,6 +42,7 @@ type ServiceBooking struct {
 	CreatedBy                    string    `db:"c_created_by"`
 	UpdatedAt                    time.Time `db:"d_updated_at"`
 	UpdatedBy                    string    `db:"c_updated_by"`
+	EventID                      string    `db:"i_event_id"`
 }
 
 // TableName returns the database table name for the ServiceBooking model
@@ -53,6 +54,7 @@ func (sb *ServiceBooking) TableName() string {
 func (sb *ServiceBooking) Columns() []string {
 	return []string{
 		"i_id",
+		"i_event_id",
 		"customer_id",
 		"customer_vehicle_id",
 		"i_booking_id",
@@ -99,6 +101,7 @@ func (sb *ServiceBooking) SelectColumns() []string {
 		"CAST(customer_id AS VARCHAR) AS customer_id",
 		"CAST(customer_vehicle_id AS VARCHAR) AS customer_vehicle_id",
 		"CAST(i_booking_id AS VARCHAR) AS i_booking_id",
+		"CAST(i_event_id AS VARCHAR) AS i_event_id",
 		"c_booking_number",
 		"c_booking_source",
 		"c_booking_status",

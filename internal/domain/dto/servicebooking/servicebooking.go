@@ -171,40 +171,41 @@ type PartItemRequest struct {
 }
 
 // ToServiceBookingModel converts the DataRequest to the domain.TestDrive model
-func (sb *DataRequest) ToServiceBookingModel(customerID, customerVehicleID string) domain.ServiceBooking {
+func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicleID string) domain.ServiceBooking {
 	return domain.ServiceBooking{
+		EventID:                      sb.EventID,
 		CustomerID:                   customerID,
 		CustomerVehicleID:            customerVehicleID,
-		BookingID:                    sb.BookingId,
-		BookingNumber:                sb.BookingNumber,
-		BookingSource:                sb.BookingSource,
-		BookingStatus:                sb.BookingStatus,
-		CreatedDatetime:              utils.GetTimeUnix(sb.CreatedDatetime).UTC(),
-		ServiceCategory:              sb.ServiceCategory,
-		ServiceSequence:              sb.ServiceSequence,
-		SlotDatetimeStart:            utils.GetTimeUnix(sb.SlotDatetimeStart).UTC(),
-		SlotDatetimeEnd:              utils.GetTimeUnix(sb.SlotDatetimeEnd).UTC(),
-		SlotRequestedDatetimeStart:   utils.GetTimeUnix(sb.SlotRequestedDatetimeStart).UTC(),
-		SlotRequestedDatetimeEnd:     utils.GetTimeUnix(sb.SlotRequestedDatetimeEnd).UTC(),
-		SlotUnavailableFlag:          sb.SlotUnavailableFlag,
-		CarrierName:                  sb.CarrierName,
-		CarrierPhoneNumber:           sb.CarrierPhoneNumber,
-		PreferenceContactPhoneNumber: sb.PreferenceContactPhoneNumber,
-		PreferenceContactTimeStart:   sb.PreferenceContactTimeStart,
-		PreferenceContactTimeEnd:     sb.PreferenceContactTimeEnd,
-		ServiceLocation:              sb.ServiceLocation,
-		OutletID:                     sb.OutletID,
-		OutletName:                   sb.OutletName,
-		MobileServiceAddress:         sb.MobileServiceAddress,
-		Province:                     sb.Province,
-		City:                         sb.City,
-		District:                     sb.District,
-		SubDistrict:                  sb.SubDistrict,
-		PostalCode:                   sb.PostalCode,
-		VehicleProblem:               sb.VehicleProblem,
-		CancellationReason:           sb.CancellationReason,
-		OtherCancellationReason:      sb.OtherCancellationReason,
-		ServicePricingCallFlag:       sb.ServicePricingCallFlag,
+		BookingID:                    sb.Data.BookingId,
+		BookingNumber:                sb.Data.BookingNumber,
+		BookingSource:                sb.Data.BookingSource,
+		BookingStatus:                sb.Data.BookingStatus,
+		CreatedDatetime:              utils.GetTimeUnix(sb.Data.CreatedDatetime).UTC(),
+		ServiceCategory:              sb.Data.ServiceCategory,
+		ServiceSequence:              sb.Data.ServiceSequence,
+		SlotDatetimeStart:            utils.GetTimeUnix(sb.Data.SlotDatetimeStart).UTC(),
+		SlotDatetimeEnd:              utils.GetTimeUnix(sb.Data.SlotDatetimeEnd).UTC(),
+		SlotRequestedDatetimeStart:   utils.GetTimeUnix(sb.Data.SlotRequestedDatetimeStart).UTC(),
+		SlotRequestedDatetimeEnd:     utils.GetTimeUnix(sb.Data.SlotRequestedDatetimeEnd).UTC(),
+		SlotUnavailableFlag:          sb.Data.SlotUnavailableFlag,
+		CarrierName:                  sb.Data.CarrierName,
+		CarrierPhoneNumber:           sb.Data.CarrierPhoneNumber,
+		PreferenceContactPhoneNumber: sb.Data.PreferenceContactPhoneNumber,
+		PreferenceContactTimeStart:   sb.Data.PreferenceContactTimeStart,
+		PreferenceContactTimeEnd:     sb.Data.PreferenceContactTimeEnd,
+		ServiceLocation:              sb.Data.ServiceLocation,
+		OutletID:                     sb.Data.OutletID,
+		OutletName:                   sb.Data.OutletName,
+		MobileServiceAddress:         sb.Data.MobileServiceAddress,
+		Province:                     sb.Data.Province,
+		City:                         sb.Data.City,
+		District:                     sb.Data.District,
+		SubDistrict:                  sb.Data.SubDistrict,
+		PostalCode:                   sb.Data.PostalCode,
+		VehicleProblem:               sb.Data.VehicleProblem,
+		CancellationReason:           sb.Data.CancellationReason,
+		OtherCancellationReason:      sb.Data.OtherCancellationReason,
+		ServicePricingCallFlag:       sb.Data.ServicePricingCallFlag,
 		CreatedAt:                    time.Now().UTC(),
 		CreatedBy:                    constants.System, // or fetch from context if available
 		UpdatedAt:                    time.Now().UTC(),
@@ -217,6 +218,7 @@ type GetServiceBooking struct {
 	ServiceBookingID     *string
 	ServiceBookingNumber *string
 	ServiceBookingSource *string
+	EventID              *string
 }
 
 func (g *GetServiceBooking) Apply(q *sqrl.SelectBuilder) {
@@ -228,5 +230,8 @@ func (g *GetServiceBooking) Apply(q *sqrl.SelectBuilder) {
 	}
 	if g.ServiceBookingNumber != nil {
 		q.Where(sqrl.Eq{"c_service_booking_number": g.ServiceBookingNumber})
+	}
+	if g.EventID != nil {
+		q.Where(sqrl.Eq{"i_event_id": g.EventID})
 	}
 }
