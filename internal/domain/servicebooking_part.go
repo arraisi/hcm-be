@@ -9,16 +9,16 @@ import (
 type ServiceBookingPart struct {
 	ID                       string    `db:"i_id"`
 	ServiceBookingID         string    `db:"i_service_booking_id"`
-	PartType                 string    `db:"c_part_type"`
 	PackageID                string    `db:"i_package_id"`
+	PartType                 string    `db:"c_part_type"`
 	PartNumber               string    `db:"c_part_number"`
 	PartName                 string    `db:"n_part_name"`
-	PartQuantity             int64     `db:"n_part_quantity"`
-	PartSize                 int64     `db:"n_part_size"`
-	PartColor                string    `db:"n_part_color"`
-	PartEstPrice             string    `db:"n_part_est_price"`
-	PartInstallationEstPrice string    `db:"n_part_installation_est_price"`
-	FlagPartNeedDownPayment  bool      `db:"c_flag_part_need_down_payment"`
+	PartQuantity             int32     `db:"v_part_quantity"`
+	PartSize                 string    `db:"c_part_size"`
+	PartColor                string    `db:"c_part_color"`
+	PartEstPrice             float32   `db:"v_part_est_price"`
+	PartInstallationEstPrice float32   `db:"v_part_installation_est_price"`
+	FlagPartNeedDownPayment  bool      `db:"b_flag_part_need_down_payment"`
 	CreatedAt                time.Time `db:"d_created_at"`
 	CreatedBy                string    `db:"c_created_by"`
 	UpdatedAt                time.Time `db:"d_updated_at"`
@@ -27,24 +27,24 @@ type ServiceBookingPart struct {
 
 // TableName returns the database table name for the ServiceBookingPart model
 func (sbp *ServiceBookingPart) TableName() string {
-	return "dbo.tm_service_booking_parts"
+	return "dbo.tm_service_booking_part"
 }
 
 // Columns returns the list of database columns for the ServiceBookingPart model
 func (sbp *ServiceBookingPart) Columns() []string {
 	return []string{
 		"i_id",
-		"service_booking_id",
-		"c_part_type",
+		"i_service_booking_id",
 		"i_package_id",
+		"c_part_type",
 		"c_part_number",
 		"n_part_name",
-		"n_part_quantity",
-		"n_part_size",
-		"n_part_color",
-		"n_part_est_price",
-		"n_part_installation_est_price",
-		"c_flag_part_need_down_payment",
+		"v_part_quantity",
+		"c_part_size",
+		"c_part_color",
+		"v_part_est_price",
+		"v_part_installation_est_price",
+		"b_flag_part_need_down_payment",
 		"d_created_at",
 		"c_created_by",
 		"d_updated_at",
@@ -57,16 +57,16 @@ func (sbp *ServiceBookingPart) SelectColumns() []string {
 	return []string{
 		"CAST(i_id AS NVARCHAR(36)) as i_id",
 		"CAST(service_booking_id AS NVARCHAR(36)) as service_booking_id",
-		"c_part_type",
 		"CAST(i_package_id AS NVARCHAR(36)) as i_package_id",
+		"c_part_type",
 		"c_part_number",
 		"n_part_name",
-		"n_part_quantity",
-		"n_part_size",
-		"n_part_color",
-		"n_part_est_price",
-		"n_part_installation_est_price",
-		"c_flag_part_need_down_payment",
+		"v_part_quantity",
+		"c_part_size",
+		"c_part_color",
+		"v_part_est_price",
+		"v_part_installation_est_price",
+		"b_flag_part_need_down_payment",
 		"d_created_at",
 		"c_created_by",
 		"d_updated_at",
@@ -87,64 +87,47 @@ func (sbp *ServiceBookingPart) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "i_service_booking_id")
 		values = append(values, sbp.ServiceBookingID)
 	}
-
-	if sbp.PartType != "" {
-		columns = append(columns, "c_part_type")
-		values = append(values, sbp.PartType)
-	}
-
 	if sbp.PackageID != "" {
 		columns = append(columns, "i_package_id")
 		values = append(values, sbp.PackageID)
 	}
-
+	if sbp.PartType != "" {
+		columns = append(columns, "c_part_type")
+		values = append(values, sbp.PartType)
+	}
 	if sbp.PartNumber != "" {
 		columns = append(columns, "c_part_number")
 		values = append(values, sbp.PartNumber)
 	}
-
 	if sbp.PartName != "" {
 		columns = append(columns, "n_part_name")
 		values = append(values, sbp.PartName)
 	}
-
 	if sbp.PartQuantity != 0 {
-		columns = append(columns, "n_part_quantity")
+		columns = append(columns, "v_part_quantity")
 		values = append(values, sbp.PartQuantity)
 	}
-
-	if sbp.PartSize != 0 {
-		columns = append(columns, "n_part_size")
+	if sbp.PartSize != "" {
+		columns = append(columns, "c_part_size")
 		values = append(values, sbp.PartSize)
 	}
-
 	if sbp.PartColor != "" {
-		columns = append(columns, "n_part_color")
+		columns = append(columns, "c_part_color")
 		values = append(values, sbp.PartColor)
 	}
-
-	if sbp.PartEstPrice != "" {
-		columns = append(columns, "n_part_est_price")
+	if sbp.PartEstPrice != 0 {
+		columns = append(columns, "v_part_est_price")
 		values = append(values, sbp.PartEstPrice)
 	}
-
-	if sbp.PartInstallationEstPrice != "" {
-		columns = append(columns, "n_part_installation_est_price")
+	if sbp.PartInstallationEstPrice != 0 {
+		columns = append(columns, "v_part_installation_est_price")
 		values = append(values, sbp.PartInstallationEstPrice)
 	}
 
 	columns = append(columns, "c_flag_part_need_down_payment")
 	values = append(values, sbp.FlagPartNeedDownPayment)
-
-	columns = append(columns, "d_created_at")
-	values = append(values, sbp.CreatedAt)
-
 	columns = append(columns, "c_created_by")
 	values = append(values, sbp.CreatedBy)
-
-	columns = append(columns, "d_updated_at")
-	values = append(values, sbp.UpdatedAt)
-
 	columns = append(columns, "c_updated_by")
 	values = append(values, sbp.UpdatedBy)
 
@@ -157,46 +140,36 @@ func (sbp *ServiceBookingPart) ToUpdateMap() map[string]interface{} {
 	if sbp.ServiceBookingID != "" {
 		updateMap["i_service_booking_id"] = sbp.ServiceBookingID
 	}
-
-	if sbp.PartType != "" {
-		updateMap["c_part_type"] = sbp.PartType
-	}
-
 	if sbp.PackageID != "" {
 		updateMap["i_package_id"] = sbp.PackageID
 	}
-
+	if sbp.PartType != "" {
+		updateMap["c_part_type"] = sbp.PartType
+	}
 	if sbp.PartNumber != "" {
 		updateMap["c_part_number"] = sbp.PartNumber
 	}
-
 	if sbp.PartName != "" {
 		updateMap["n_part_name"] = sbp.PartName
 	}
-
 	if sbp.PartQuantity != 0 {
-		updateMap["n_part_quantity"] = sbp.PartQuantity
+		updateMap["v_part_quantity"] = sbp.PartQuantity
 	}
-
-	if sbp.PartSize != 0 {
-		updateMap["n_part_size"] = sbp.PartSize
+	if sbp.PartSize != "" {
+		updateMap["c_part_size"] = sbp.PartSize
 	}
-
 	if sbp.PartColor != "" {
-		updateMap["n_part_color"] = sbp.PartColor
+		updateMap["c_part_color"] = sbp.PartColor
 	}
-
-	if sbp.PartEstPrice != "" {
-		updateMap["n_part_est_price"] = sbp.PartEstPrice
+	if sbp.PartEstPrice != 0 {
+		updateMap["v_part_est_price"] = sbp.PartEstPrice
 	}
-
-	if sbp.PartInstallationEstPrice != "" {
-		updateMap["n_part_installation_est_price"] = sbp.PartInstallationEstPrice
+	if sbp.PartInstallationEstPrice != 0 {
+		updateMap["v_part_installation_est_price"] = sbp.PartInstallationEstPrice
 	}
 
 	updateMap["c_flag_part_need_down_payment"] = sbp.FlagPartNeedDownPayment
-
-	updateMap["d_updated_at"] = sbp.UpdatedAt
+	updateMap["d_updated_at"] = time.Now().UTC()
 	updateMap["c_updated_by"] = sbp.UpdatedBy
 
 	return updateMap
