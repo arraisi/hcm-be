@@ -28,3 +28,13 @@ func (req GetServiceBookingPart) Apply(q *sqrl.SelectBuilder) {
 		q.Where(sqrl.Eq{"c_part_number": req.PartNumber})
 	}
 }
+
+type DeleteServiceBookingPart struct {
+	ServiceBookingID *string
+}
+
+func (d *DeleteServiceBookingPart) Apply(q *sqrl.DeleteBuilder) {
+	if d.ServiceBookingID != nil {
+		q.Where(sqrl.Eq{"i_service_booking_id": d.ServiceBookingID})
+	}
+}

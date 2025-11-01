@@ -9,12 +9,12 @@ import (
 )
 
 func (r *repository) UpdateServiceBooking(ctx context.Context, tx *sqlx.Tx, req domain.ServiceBooking) error {
-	model := domain.Customer{}
+	model := domain.ServiceBooking{}
 
 	query, args, err := sqrl.Update(model.TableName()).
 		SetMap(req.ToUpdateMap()).
 		Where(sqrl.Or{
-			sqrl.Eq{"i_service_booking_id": req.BookingID},
+			sqrl.Eq{"i_service_booking_id": req.ServiceBookingID},
 			sqrl.Eq{"i_id": req.ID},
 		}).ToSql()
 	if err != nil {

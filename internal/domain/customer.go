@@ -15,7 +15,7 @@ type Customer struct {
 	Email                string    `json:"email" db:"e_email"`
 	IsNew                bool      `json:"is_new" db:"c_isnew"`
 	IsMerge              bool      `json:"is_merge" db:"c_ismerge"`
-	PrimaryUser          string    `json:"primary_user" db:"c_primary_user"`
+	PrimaryUser          *string   `json:"primary_user" db:"c_primary_user"`
 	DealerCustomerID     string    `json:"dealer_customer_ID" db:"i_dealer_customer_id"`
 	IsValid              bool      `json:"is_valid" db:"c_isvalid"`
 	IsOmnichannel        bool      `json:"is_omnichannel" db:"c_isomnichannel"`
@@ -101,12 +101,12 @@ func (u *Customer) SelectColumns() []string {
 	return []string{
 		"CAST(i_id AS NVARCHAR(36)) as i_id",
 		"CAST(i_one_account_id AS NVARCHAR(36)) as i_one_account_id",
-		"CAST(i_hasjrat_id AS NVARCHAR(36)) as i_hasjrat_id",
 		"n_first_name",
 		"n_last_name",
 		"n_gender",
 		"c_phone_number",
 		"e_email",
+		"c_primary_user",
 		"d_created_at",
 		"c_created_by",
 		"d_updated_at",
@@ -146,7 +146,7 @@ func (u *Customer) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "e_email")
 		values = append(values, u.Email)
 	}
-	if u.PrimaryUser != "" {
+	if u.PrimaryUser != nil {
 		columns = append(columns, "c_primary_user")
 		values = append(values, u.PrimaryUser)
 	}

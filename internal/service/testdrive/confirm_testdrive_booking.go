@@ -36,7 +36,7 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 		return err
 	}
 
-	leadScoreData, err := s.leadScoreRepo.GetLeadScore(ctx, leads.GetLeadScoreRequest{
+	leadScoreData, err := s.leadScoreRepo.GetLeadsScore(ctx, leads.GetLeadScoreRequest{
 		ID: utils.ToPointer(leadsData.LeadsID),
 	})
 	if err != nil {

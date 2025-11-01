@@ -156,8 +156,8 @@ func (cv *CustomerVehicle) ToUpdateMap() map[string]interface{} {
 	if cv.ActualMileage != 0 {
 		updateMap["v_actual_mileage"] = cv.ActualMileage
 	}
-	updateMap["updated_at"] = time.Now()
-	updateMap["updated_by"] = cv.UpdatedBy
+	updateMap["d_updated_at"] = time.Now()
+	updateMap["c_updated_by"] = cv.UpdatedBy
 
 	return updateMap
 }

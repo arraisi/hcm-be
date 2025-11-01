@@ -9,13 +9,12 @@ import (
 )
 
 func (r *repository) UpdateCustomerVehicle(ctx context.Context, tx *sqlx.Tx, req domain.CustomerVehicle) error {
-	model := domain.Customer{}
+	model := domain.CustomerVehicle{}
 
 	query, args, err := sqrl.Update(model.TableName()).
 		SetMap(req.ToUpdateMap()).
 		Where(sqrl.Or{
-			sqrl.Eq{"c_police_number": req.PoliceNumber},
-			sqrl.Eq{"c_vin": req.Vin},
+			sqrl.Eq{"i_id": req.ID},
 		}).ToSql()
 	if err != nil {
 		return err

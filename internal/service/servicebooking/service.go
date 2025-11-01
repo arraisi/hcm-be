@@ -33,22 +33,27 @@ type Repository interface {
 	CreateServiceBookingJob(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingJob) error
 	GetServiceBookingJob(ctx context.Context, req servicebooking.GetServiceBookingJob) (domain.ServiceBookingJob, error)
 	GetServiceBookingJobs(ctx context.Context, req servicebooking.GetServiceBookingJob) ([]domain.ServiceBookingJob, error)
+	DeleteServiceBookingJob(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingJob) error
 
 	CreateServiceBookingPart(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingPart) error
 	GetServiceBookingPart(ctx context.Context, req servicebooking.GetServiceBookingPart) (domain.ServiceBookingPart, error)
 	GetServiceBookingParts(ctx context.Context, req servicebooking.GetServiceBookingPart) ([]domain.ServiceBookingPart, error)
+	DeleteServiceBookingPart(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingPart) error
 
-	CreateServiceBookingPartItem(ctx context.Context, tx *sqlx.Tx, packageID string, req *domain.ServiceBookingPartItem) error
+	CreateServiceBookingPartItem(ctx context.Context, tx *sqlx.Tx, serviceBookingID, packageID string, req *domain.ServiceBookingPartItem) error
 	GetServiceBookingPartItem(ctx context.Context, req servicebooking.GetServiceBookingPartItem) (domain.ServiceBookingPartItem, error)
 	GetServiceBookingPartItems(ctx context.Context, req servicebooking.GetServiceBookingPartItem) ([]domain.ServiceBookingPartItem, error)
+	DeleteServiceBookingPartItem(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingPartItem) error
 
 	CreateServiceBookingRecall(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingRecall) error
 	GetServiceBookingRecall(ctx context.Context, req servicebooking.GetServiceBookingRecall) (domain.ServiceBookingRecall, error)
 	GetServiceBookingRecalls(ctx context.Context, req servicebooking.GetServiceBookingRecall) ([]domain.ServiceBookingRecall, error)
+	DeleteServiceBookingRecall(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingRecall) error
 
 	CreateServiceBookingWarranty(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingWarranty) error
 	GetServiceBookingWarranty(ctx context.Context, req servicebooking.GetServiceBookingWarranty) (domain.ServiceBookingWarranty, error)
 	GetServiceBookingWarranties(ctx context.Context, req servicebooking.GetServiceBookingWarranty) ([]domain.ServiceBookingWarranty, error)
+	DeleteServiceBookingWarranty(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingWarranty) error
 }
 
 type ServiceContainer struct {

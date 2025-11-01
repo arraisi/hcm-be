@@ -9,8 +9,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateServiceBookingPartItem(ctx context.Context, tx *sqlx.Tx, packageID string, req *domain.ServiceBookingPartItem) error {
-	columns, values := req.ToCreateMap(packageID)
+func (r *repository) CreateServiceBookingPartItem(ctx context.Context, tx *sqlx.Tx, serviceBookingID, packageID string, req *domain.ServiceBookingPartItem) error {
+	columns, values := req.ToCreateMap(serviceBookingID, packageID)
 
 	// Generate a new UUID for the service booking part item ID
 	req.ID = uuid.NewString()

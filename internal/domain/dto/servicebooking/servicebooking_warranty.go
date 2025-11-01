@@ -20,3 +20,13 @@ func (req GetServiceBookingWarranty) Apply(q *sqrl.SelectBuilder) {
 		q.Where(sqrl.Eq{"i_warranty_id": req.WarrantyID})
 	}
 }
+
+type DeleteServiceBookingWarranty struct {
+	ServiceBookingID *string
+}
+
+func (d *DeleteServiceBookingWarranty) Apply(q *sqrl.DeleteBuilder) {
+	if d.ServiceBookingID != nil {
+		q.Where(sqrl.Eq{"i_service_booking_id": d.ServiceBookingID})
+	}
+}

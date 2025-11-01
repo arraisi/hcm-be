@@ -2,6 +2,7 @@ package customervehicle
 
 import (
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/elgris/sqrl"
 )
 
@@ -55,5 +56,7 @@ func (req CustomerVehicleRequest) ToDomain(customerID, oneAccountID string) doma
 		Color:           req.Color,
 		PoliceNumber:    req.PoliceNumber,
 		ActualMileage:   req.ActualMileage,
+		CreatedBy:       constants.System,
+		UpdatedBy:       constants.System,
 	}
 }

@@ -6,6 +6,7 @@ import (
 
 type ServiceBookingPartItem struct {
 	ID                   string    `db:"i_id"`
+	ServiceBookingID     string    `db:"i_service_booking_id"`
 	ServiceBookingPartID string    `db:"i_service_booking_part_id"`
 	PartNumber           string    `db:"c_part_number"`
 	PartName             string    `db:"n_part_name"`
@@ -13,6 +14,7 @@ type ServiceBookingPartItem struct {
 	CreatedBy            string    `db:"c_created_by"`
 	UpdatedAt            time.Time `db:"d_updated_at"`
 	UpdatedBy            string    `db:"c_updated_by"`
+	Deleted              bool      `db:"b_deleted"`
 }
 
 // TableName returns the database table name for the ServiceBookingPartItem model
@@ -24,6 +26,7 @@ func (pi *ServiceBookingPartItem) TableName() string {
 func (pi *ServiceBookingPartItem) Columns() []string {
 	return []string{
 		"i_id",
+		"i_service_booking_id",
 		"i_service_booking_part_id",
 		"c_part_number",
 		"n_part_name",
@@ -38,6 +41,7 @@ func (pi *ServiceBookingPartItem) Columns() []string {
 func (pi *ServiceBookingPartItem) SelectColumns() []string {
 	return []string{
 		"CAST(i_id AS NVARCHAR(36)) as i_id",
+		"CAST(i_service_booking_id AS NVARCHAR(36)) as i_service_booking_id",
 		"CAST(i_service_booking_part_id AS NVARCHAR(36)) as i_service_booking_part_id",
 		"c_part_number",
 		"n_part_name",
@@ -49,9 +53,14 @@ func (pi *ServiceBookingPartItem) SelectColumns() []string {
 }
 
 // ToCreateMap prepares the columns and values for inserting a new ServiceBookingPartItem record
-func (pi *ServiceBookingPartItem) ToCreateMap(packageID string) ([]string, []interface{}) {
+func (pi *ServiceBookingPartItem) ToCreateMap(serviceBookingID, packageID string) ([]string, []interface{}) {
 	columns := make([]string, 0, len(pi.Columns()))
 	values := make([]interface{}, 0, len(pi.Columns()))
+
+	if serviceBookingID != "" {
+		columns = append(columns, "i_service_booking_id")
+		values = append(values, serviceBookingID)
+	}
 
 	if packageID != "" {
 		columns = append(columns, "i_service_booking_part_id")

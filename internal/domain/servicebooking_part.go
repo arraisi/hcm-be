@@ -21,6 +21,7 @@ type ServiceBookingPart struct {
 	CreatedBy                string    `db:"c_created_by"`
 	UpdatedAt                time.Time `db:"d_updated_at"`
 	UpdatedBy                string    `db:"c_updated_by"`
+	Deleted                  bool      `db:"b_deleted"`
 }
 
 // TableName returns the database table name for the ServiceBookingPart model
@@ -117,7 +118,7 @@ func (sbp *ServiceBookingPart) ToCreateMap() ([]string, []interface{}) {
 		values = append(values, sbp.PartInstallationEstPrice)
 	}
 
-	columns = append(columns, "c_flag_part_need_down_payment")
+	columns = append(columns, "b_flag_part_need_down_payment")
 	values = append(values, sbp.FlagPartNeedDownPayment)
 	columns = append(columns, "c_created_by")
 	values = append(values, sbp.CreatedBy)
@@ -161,7 +162,7 @@ func (sbp *ServiceBookingPart) ToUpdateMap() map[string]interface{} {
 		updateMap["v_part_installation_est_price"] = sbp.PartInstallationEstPrice
 	}
 
-	updateMap["c_flag_part_need_down_payment"] = sbp.FlagPartNeedDownPayment
+	updateMap["b_flag_part_need_down_payment"] = sbp.FlagPartNeedDownPayment
 	updateMap["d_updated_at"] = time.Now().UTC()
 	updateMap["c_updated_by"] = sbp.UpdatedBy
 

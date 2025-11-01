@@ -6,15 +6,15 @@ import (
 
 type ServiceBooking struct {
 	ID                           string    `db:"i_id"`
-	CustomerID                   string    `db:"customer_id"`
-	CustomerVehicleID            string    `db:"customer_vehicle_id"`
-	BookingID                    string    `db:"i_booking_id"`
-	BookingNumber                string    `db:"c_booking_number"`
-	BookingSource                string    `db:"c_booking_source"`
-	BookingStatus                string    `db:"c_booking_status"`
+	CustomerID                   string    `db:"i_customer_id"`
+	CustomerVehicleID            string    `db:"i_customer_vehicle_id"`
+	ServiceBookingID             string    `db:"i_service_booking_id"`
+	ServiceBookingNumber         string    `db:"c_service_booking_number"`
+	ServiceBookingSource         string    `db:"c_service_booking_source"`
+	ServiceBookingStatus         string    `db:"c_service_booking_status"`
 	CreatedDatetime              time.Time `db:"d_created_datetime"`
 	ServiceCategory              string    `db:"c_service_category"`
-	ServiceSequence              string    `db:"c_service_sequence"`
+	ServiceSequence              int32     `db:"c_service_sequence"`
 	SlotDatetimeStart            time.Time `db:"d_slot_datetime_start"`
 	SlotDatetimeEnd              time.Time `db:"d_slot_datetime_end"`
 	SlotRequestedDatetimeStart   time.Time `db:"d_slot_requested_datetime_start"`
@@ -32,10 +32,10 @@ type ServiceBooking struct {
 	Province                     string    `db:"c_province"`
 	City                         string    `db:"c_city"`
 	District                     string    `db:"c_district"`
-	SubDistrict                  string    `db:"c_sub_district"`
+	SubDistrict                  string    `db:"c_subdistrict"`
 	PostalCode                   string    `db:"c_postal_code"`
 	VehicleProblem               string    `db:"e_vehicle_problem"`
-	CancellationReason           string    `db:"c_cancellation_reason"`
+	CancellationReason           string    `db:"e_cancellation_reason"`
 	OtherCancellationReason      string    `db:"e_other_cancellation_reason"`
 	ServicePricingCallFlag       bool      `db:"b_service_pricing_call_flag"`
 	CreatedAt                    time.Time `db:"d_created_at"`
@@ -55,12 +55,12 @@ func (sb *ServiceBooking) Columns() []string {
 	return []string{
 		"i_id",
 		"i_event_id",
-		"customer_id",
-		"customer_vehicle_id",
-		"i_booking_id",
-		"c_booking_number",
-		"c_booking_source",
-		"c_booking_status",
+		"i_customer_id",
+		"i_customer_vehicle_id",
+		"i_service_booking_id",
+		"c_service_booking_number",
+		"c_service_booking_source",
+		"c_service_booking_status",
 		"d_created_datetime",
 		"c_service_category",
 		"c_service_sequence",
@@ -81,7 +81,7 @@ func (sb *ServiceBooking) Columns() []string {
 		"c_province",
 		"c_city",
 		"c_district",
-		"c_sub_district",
+		"c_subdistrict",
 		"c_postal_code",
 		"e_vehicle_problem",
 		"e_cancellation_reason",
@@ -98,13 +98,13 @@ func (sb *ServiceBooking) Columns() []string {
 func (sb *ServiceBooking) SelectColumns() []string {
 	return []string{
 		"CAST(i_id AS VARCHAR) AS i_id",
-		"CAST(customer_id AS VARCHAR) AS customer_id",
-		"CAST(customer_vehicle_id AS VARCHAR) AS customer_vehicle_id",
-		"CAST(i_booking_id AS VARCHAR) AS i_booking_id",
+		"CAST(i_customer_id AS VARCHAR) AS i_customer_id",
+		"CAST(i_customer_vehicle_id AS VARCHAR) AS i_customer_vehicle_id",
+		"CAST(i_service_booking_id AS VARCHAR) AS i_service_booking_id",
 		"CAST(i_event_id AS VARCHAR) AS i_event_id",
-		"c_booking_number",
-		"c_booking_source",
-		"c_booking_status",
+		"c_service_booking_number",
+		"c_service_booking_source",
+		"c_service_booking_status",
 		"d_created_datetime",
 		"c_service_category",
 		"c_service_sequence",
@@ -125,7 +125,7 @@ func (sb *ServiceBooking) SelectColumns() []string {
 		"c_province",
 		"c_city",
 		"c_district",
-		"c_sub_district",
+		"c_subdistrict",
 		"c_postal_code",
 		"e_vehicle_problem",
 		"e_cancellation_reason",
@@ -143,6 +143,10 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 	columns := make([]string, 0, len(sb.Columns()))
 	values := make([]interface{}, 0, len(sb.Columns()))
 
+	if sb.EventID != "" {
+		columns = append(columns, "i_event_id")
+		values = append(values, sb.EventID)
+	}
 	if sb.CustomerID != "" {
 		columns = append(columns, "i_customer_id")
 		values = append(values, sb.CustomerID)
@@ -151,21 +155,21 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "i_customer_vehicle_id")
 		values = append(values, sb.CustomerVehicleID)
 	}
-	if sb.BookingID != "" {
-		columns = append(columns, "i_booking_id")
-		values = append(values, sb.BookingID)
+	if sb.ServiceBookingID != "" {
+		columns = append(columns, "i_service_booking_id")
+		values = append(values, sb.ServiceBookingID)
 	}
-	if sb.BookingNumber != "" {
-		columns = append(columns, "c_booking_number")
-		values = append(values, sb.BookingNumber)
+	if sb.ServiceBookingNumber != "" {
+		columns = append(columns, "c_service_booking_number")
+		values = append(values, sb.ServiceBookingNumber)
 	}
-	if sb.BookingSource != "" {
-		columns = append(columns, "c_booking_source")
-		values = append(values, sb.BookingSource)
+	if sb.ServiceBookingSource != "" {
+		columns = append(columns, "c_service_booking_source")
+		values = append(values, sb.ServiceBookingSource)
 	}
-	if sb.BookingStatus != "" {
-		columns = append(columns, "c_booking_status")
-		values = append(values, sb.BookingStatus)
+	if sb.ServiceBookingStatus != "" {
+		columns = append(columns, "c_service_booking_status")
+		values = append(values, sb.ServiceBookingStatus)
 	}
 	if !sb.CreatedDatetime.IsZero() {
 		columns = append(columns, "d_created_datetime")
@@ -175,7 +179,7 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "c_service_category")
 		values = append(values, sb.ServiceCategory)
 	}
-	if sb.ServiceSequence != "" {
+	if sb.ServiceSequence != 0 {
 		columns = append(columns, "c_service_sequence")
 		values = append(values, sb.ServiceSequence)
 	}
@@ -246,7 +250,7 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 		values = append(values, sb.District)
 	}
 	if sb.SubDistrict != "" {
-		columns = append(columns, "c_sub_district")
+		columns = append(columns, "c_subdistrict")
 		values = append(values, sb.SubDistrict)
 	}
 	if sb.PostalCode != "" {
@@ -287,17 +291,17 @@ func (sb *ServiceBooking) ToUpdateMap() map[string]interface{} {
 	if sb.CustomerVehicleID != "" {
 		updateMap["i_customer_vehicle_id"] = sb.CustomerVehicleID
 	}
-	if sb.BookingID != "" {
-		updateMap["i_booking_id"] = sb.BookingID
+	if sb.ServiceBookingID != "" {
+		updateMap["i_service_booking_id"] = sb.ServiceBookingID
 	}
-	if sb.BookingNumber != "" {
-		updateMap["c_booking_number"] = sb.BookingNumber
+	if sb.ServiceBookingNumber != "" {
+		updateMap["c_service_booking_number"] = sb.ServiceBookingNumber
 	}
-	if sb.BookingSource != "" {
-		updateMap["c_booking_source"] = sb.BookingSource
+	if sb.ServiceBookingSource != "" {
+		updateMap["c_service_booking_source"] = sb.ServiceBookingSource
 	}
-	if sb.BookingStatus != "" {
-		updateMap["c_booking_status"] = sb.BookingStatus
+	if sb.ServiceBookingStatus != "" {
+		updateMap["c_service_booking_status"] = sb.ServiceBookingStatus
 	}
 	if !sb.CreatedDatetime.IsZero() {
 		updateMap["d_created_datetime"] = sb.CreatedDatetime.UTC()
@@ -305,7 +309,7 @@ func (sb *ServiceBooking) ToUpdateMap() map[string]interface{} {
 	if sb.ServiceCategory != "" {
 		updateMap["c_service_category"] = sb.ServiceCategory
 	}
-	if sb.ServiceSequence != "" {
+	if sb.ServiceSequence != 0 {
 		updateMap["c_service_sequence"] = sb.ServiceSequence
 	}
 	if !sb.SlotDatetimeStart.IsZero() {
@@ -357,7 +361,7 @@ func (sb *ServiceBooking) ToUpdateMap() map[string]interface{} {
 		updateMap["c_district"] = sb.District
 	}
 	if sb.SubDistrict != "" {
-		updateMap["c_sub_district"] = sb.SubDistrict
+		updateMap["c_subdistrict"] = sb.SubDistrict
 	}
 	if sb.PostalCode != "" {
 		updateMap["c_postal_code"] = sb.PostalCode

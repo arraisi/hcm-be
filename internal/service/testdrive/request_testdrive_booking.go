@@ -49,37 +49,12 @@ func (s *service) RequestTestDriveBooking(ctx context.Context, request testdrive
 	}
 
 	// Upsert Test Drive
-	err = s.upsertTestDrive(ctx, tx, request, customerID)
+	_, err = s.UpsertServiceTestDrive(ctx, tx, customerID, request)
 	if err != nil {
 		return err
 	}
 
 	return s.transactionRepo.CommitTransaction(tx)
-}
-
-// upsertTestDrive checks if a test drive exists by TestDriveID. If found, it updates the test drive; if not found, it creates a new test drive.
-func (s *service) upsertTestDrive(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent, customerID string) error {
-	testDriveID := ev.Data.TestDrive.TestDriveID
-
-	testDrives, err := s.repo.GetTestDrives(ctx, testdrive.GetTestDriveRequest{
-		CustomerID: utils.ToPointer(customerID),
-	})
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return err
-	}
-
-	// Ensure only one active test drive per customer
-	if len(testDrives) > 1 {
-		return errorx.ErrTestDriveCustomerHasBooking
-	}
-
-	// Update existing test drive if found
-	if len(testDrives) == 1 && testDrives[0].TestDriveID == testDriveID {
-		return s.repo.UpdateTestDrive(ctx, tx, ev.ToTestDriveModel(customerID))
-	}
-
-	// Create new test drive if not found
-	return s.repo.CreateTestDrive(ctx, tx, ev.ToTestDriveModel(customerID))
 }
 
 // upsertLeads checks if a lead exists by LeadsID. If found, it updates the lead; if not found, it creates a new lead.
@@ -100,7 +75,8 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, ev testdrive.Tes
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		if err := s.leadRepo.CreateLeads(ctx, tx, ev.Data.Leads.ToDomain()); err != nil {
+		lds := ev.Data.Leads.ToDomain()
+		if err := s.leadRepo.CreateLeads(ctx, tx, &lds); err != nil {
 			return err
 		}
 		return nil
@@ -114,12 +90,12 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, ev testdrive.Tes
 func (s *service) upsertLeadScore(ctx context.Context, tx *sqlx.Tx, ev testdrive.TestDriveEvent) error {
 	leadsID := ev.Data.Leads.LeadsID
 
-	_, err := s.leadScoreRepo.GetLeadScore(ctx, leads.GetLeadScoreRequest{
+	_, err := s.leadScoreRepo.GetLeadsScore(ctx, leads.GetLeadScoreRequest{
 		ID: utils.ToPointer(leadsID),
 	})
 	if err == nil {
 		// Found → update
-		err := s.leadScoreRepo.UpdateLeadScore(ctx, tx, ev.Data.Score.ToDomain(leadsID))
+		err := s.leadScoreRepo.UpdateLeadsScore(ctx, tx, ev.Data.Score.ToDomain(leadsID))
 		if err != nil {
 			return err
 		}
@@ -128,7 +104,8 @@ func (s *service) upsertLeadScore(ctx context.Context, tx *sqlx.Tx, ev testdrive
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		if err := s.leadScoreRepo.CreateLeadScore(ctx, tx, ev.Data.Score.ToDomain(leadsID)); err != nil {
+		lds := ev.Data.Score.ToDomain(leadsID)
+		if err := s.leadScoreRepo.CreateLeadScore(ctx, tx, &lds); err != nil {
 			return err
 		}
 		return nil

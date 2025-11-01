@@ -12,49 +12,53 @@ import (
 )
 
 type ServiceBookingEvent struct {
-	Process   string        `json:"process"`
-	EventID   string        `json:"event_id"`
-	Timestamp int           `json:"timestamp"`
-	Data      DataRequest   `json:"data"`
-	Job       []JobRequest  `json:"job"`
-	Part      []PartRequest `json:"part"`
+	Process   string      `json:"process"`
+	EventID   string      `json:"event_ID"`
+	Timestamp int         `json:"timestamp"`
+	Data      DataRequest `json:"data"`
 }
 
 type DataRequest struct {
-	OneAccount                   customer.OneAccountRequest             `json:"one_account"`
-	CustomerVehicle              customervehicle.CustomerVehicleRequest `json:"customer_vehicle"`
-	BookingId                    string                                 `json:"booking_id"`
-	BookingNumber                string                                 `json:"booking_number"`
-	BookingSource                string                                 `json:"booking_source"`
-	BookingStatus                string                                 `json:"booking_status"`
-	CreatedDatetime              int64                                  `json:"created_datetime"`
-	ServiceCategory              string                                 `json:"service_category"`
-	ServiceSequence              string                                 `json:"service_sequence"`
-	SlotDatetimeStart            int64                                  `json:"slot_datetime_start"`
-	SlotDatetimeEnd              int64                                  `json:"slot_datetime_end"`
-	SlotRequestedDatetimeStart   int64                                  `json:"slot_requested_datetime_start"`
-	SlotRequestedDatetimeEnd     int64                                  `json:"slot_requested_datetime_end"`
-	SlotUnavailableFlag          bool                                   `json:"slot_unavailable_flag"`
-	CarrierName                  string                                 `json:"carrier_name"`
-	CarrierPhoneNumber           string                                 `json:"carrier_phone_number"`
-	PreferenceContactPhoneNumber string                                 `json:"preference_contact_phone_number"`
-	PreferenceContactTimeStart   string                                 `json:"preference_contact_time_start"`
-	PreferenceContactTimeEnd     string                                 `json:"preference_contact_time_end"`
-	ServiceLocation              string                                 `json:"service_location"`
-	OutletID                     string                                 `json:"outlet_id"`
-	OutletName                   string                                 `json:"outlet_name"`
-	MobileServiceAddress         string                                 `json:"mobile_service_address"`
-	Province                     string                                 `json:"province"`
-	City                         string                                 `json:"city"`
-	District                     string                                 `json:"district"`
-	SubDistrict                  string                                 `json:"sub_district"`
-	PostalCode                   string                                 `json:"postal_code"`
-	VehicleProblem               string                                 `json:"vehicle_problem"`
-	Warranty                     []WarrantyRequest                      `json:"warranty"`
-	Recalls                      []RecallRequest                        `json:"recalls"`
-	CancellationReason           string                                 `json:"cancellation_reason"`
-	OtherCancellationReason      string                                 `json:"other_cancellation_reason"`
-	ServicePricingCallFlag       bool                                   `json:"service_pricing_call_flag"`
+	OneAccount            customer.OneAccountRequest             `json:"one_account"`
+	CustomerVehicle       customervehicle.CustomerVehicleRequest `json:"customer_vehicle"`
+	Job                   []JobRequest                           `json:"job"`
+	Part                  []PartRequest                          `json:"part"`
+	ServiceBookingRequest ServiceBookingRequest                  `json:"service_booking"`
+}
+
+type ServiceBookingRequest struct {
+	Warranty                     []WarrantyRequest `json:"warranty"`
+	Recalls                      []RecallRequest   `json:"recalls"`
+	BookingId                    string            `json:"booking_ID"`
+	BookingNumber                string            `json:"booking_number"`
+	BookingSource                string            `json:"booking_source"`
+	BookingStatus                string            `json:"booking_status"`
+	CreatedDatetime              int64             `json:"created_datetime"`
+	ServiceCategory              string            `json:"service_category"`
+	ServiceSequence              int32             `json:"service_sequence"`
+	SlotDatetimeStart            int64             `json:"slot_datetime_start"`
+	SlotDatetimeEnd              int64             `json:"slot_datetime_end"`
+	SlotRequestedDatetimeStart   int64             `json:"slot_requested_datetime_start"`
+	SlotRequestedDatetimeEnd     int64             `json:"slot_requested_datetime_end"`
+	SlotUnavailableFlag          bool              `json:"slot_unavailable_flag"`
+	CarrierName                  string            `json:"carrier_name"`
+	CarrierPhoneNumber           string            `json:"carrier_phone_number"`
+	PreferenceContactPhoneNumber string            `json:"preference_contact_phone_number"`
+	PreferenceContactTimeStart   string            `json:"preference_contact_time_start"`
+	PreferenceContactTimeEnd     string            `json:"preference_contact_time_end"`
+	ServiceLocation              string            `json:"service_location"`
+	OutletID                     string            `json:"outlet_ID"`
+	OutletName                   string            `json:"outlet_name"`
+	MobileServiceAddress         string            `json:"mobile_service_address"`
+	Province                     string            `json:"province"`
+	City                         string            `json:"city"`
+	District                     string            `json:"district"`
+	SubDistrict                  string            `json:"subdistrict"`
+	PostalCode                   string            `json:"postal_code"`
+	VehicleProblem               string            `json:"vehicle_problem"`
+	CancellationReason           string            `json:"cancellation_reason"`
+	OtherCancellationReason      string            `json:"other_cancellation_reason"`
+	ServicePricingCallFlag       bool              `json:"service_pricing_call_flag"`
 }
 
 type WarrantyRequest struct {
@@ -76,7 +80,7 @@ func (wr WarrantyRequest) ToModel(serviceBookingID string) domain.ServiceBooking
 }
 
 type RecallRequest struct {
-	RecallID          string   `json:"recall_id"`
+	RecallID          string   `json:"recall_ID"`
 	RecallDate        string   `json:"recall_date"`
 	RecallDescription string   `json:"recall_description"`
 	AffectedParts     []string `json:"affected_parts"`
@@ -98,9 +102,9 @@ func (r *RecallRequest) ToModel(bookingID, part string) domain.ServiceBookingRec
 }
 
 type JobRequest struct {
-	JobID         string `json:"job_ID"`
-	JobName       string `json:"job_name"`
-	LaborEstPrice string `json:"labor_est_price"`
+	JobID         string  `json:"job_ID"`
+	JobName       string  `json:"job_name"`
+	LaborEstPrice float32 `json:"labor_est_price"`
 }
 
 func (j *JobRequest) ToDomain(serviceBookingID string) domain.ServiceBookingJob {
@@ -176,36 +180,36 @@ func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicle
 		EventID:                      sb.EventID,
 		CustomerID:                   customerID,
 		CustomerVehicleID:            customerVehicleID,
-		BookingID:                    sb.Data.BookingId,
-		BookingNumber:                sb.Data.BookingNumber,
-		BookingSource:                sb.Data.BookingSource,
-		BookingStatus:                sb.Data.BookingStatus,
-		CreatedDatetime:              utils.GetTimeUnix(sb.Data.CreatedDatetime).UTC(),
-		ServiceCategory:              sb.Data.ServiceCategory,
-		ServiceSequence:              sb.Data.ServiceSequence,
-		SlotDatetimeStart:            utils.GetTimeUnix(sb.Data.SlotDatetimeStart).UTC(),
-		SlotDatetimeEnd:              utils.GetTimeUnix(sb.Data.SlotDatetimeEnd).UTC(),
-		SlotRequestedDatetimeStart:   utils.GetTimeUnix(sb.Data.SlotRequestedDatetimeStart).UTC(),
-		SlotRequestedDatetimeEnd:     utils.GetTimeUnix(sb.Data.SlotRequestedDatetimeEnd).UTC(),
-		SlotUnavailableFlag:          sb.Data.SlotUnavailableFlag,
-		CarrierName:                  sb.Data.CarrierName,
-		CarrierPhoneNumber:           sb.Data.CarrierPhoneNumber,
-		PreferenceContactPhoneNumber: sb.Data.PreferenceContactPhoneNumber,
-		PreferenceContactTimeStart:   sb.Data.PreferenceContactTimeStart,
-		PreferenceContactTimeEnd:     sb.Data.PreferenceContactTimeEnd,
-		ServiceLocation:              sb.Data.ServiceLocation,
-		OutletID:                     sb.Data.OutletID,
-		OutletName:                   sb.Data.OutletName,
-		MobileServiceAddress:         sb.Data.MobileServiceAddress,
-		Province:                     sb.Data.Province,
-		City:                         sb.Data.City,
-		District:                     sb.Data.District,
-		SubDistrict:                  sb.Data.SubDistrict,
-		PostalCode:                   sb.Data.PostalCode,
-		VehicleProblem:               sb.Data.VehicleProblem,
-		CancellationReason:           sb.Data.CancellationReason,
-		OtherCancellationReason:      sb.Data.OtherCancellationReason,
-		ServicePricingCallFlag:       sb.Data.ServicePricingCallFlag,
+		ServiceBookingID:             sb.Data.ServiceBookingRequest.BookingId,
+		ServiceBookingNumber:         sb.Data.ServiceBookingRequest.BookingNumber,
+		ServiceBookingSource:         sb.Data.ServiceBookingRequest.BookingSource,
+		ServiceBookingStatus:         sb.Data.ServiceBookingRequest.BookingStatus,
+		CreatedDatetime:              utils.GetTimeUnix(sb.Data.ServiceBookingRequest.CreatedDatetime).UTC(),
+		ServiceCategory:              sb.Data.ServiceBookingRequest.ServiceCategory,
+		ServiceSequence:              sb.Data.ServiceBookingRequest.ServiceSequence,
+		SlotDatetimeStart:            utils.GetTimeUnix(sb.Data.ServiceBookingRequest.SlotDatetimeStart).UTC(),
+		SlotDatetimeEnd:              utils.GetTimeUnix(sb.Data.ServiceBookingRequest.SlotDatetimeEnd).UTC(),
+		SlotRequestedDatetimeStart:   utils.GetTimeUnix(sb.Data.ServiceBookingRequest.SlotRequestedDatetimeStart).UTC(),
+		SlotRequestedDatetimeEnd:     utils.GetTimeUnix(sb.Data.ServiceBookingRequest.SlotRequestedDatetimeEnd).UTC(),
+		SlotUnavailableFlag:          sb.Data.ServiceBookingRequest.SlotUnavailableFlag,
+		CarrierName:                  sb.Data.ServiceBookingRequest.CarrierName,
+		CarrierPhoneNumber:           sb.Data.ServiceBookingRequest.CarrierPhoneNumber,
+		PreferenceContactPhoneNumber: sb.Data.ServiceBookingRequest.PreferenceContactPhoneNumber,
+		PreferenceContactTimeStart:   sb.Data.ServiceBookingRequest.PreferenceContactTimeStart,
+		PreferenceContactTimeEnd:     sb.Data.ServiceBookingRequest.PreferenceContactTimeEnd,
+		ServiceLocation:              sb.Data.ServiceBookingRequest.ServiceLocation,
+		OutletID:                     sb.Data.ServiceBookingRequest.OutletID,
+		OutletName:                   sb.Data.ServiceBookingRequest.OutletName,
+		MobileServiceAddress:         sb.Data.ServiceBookingRequest.MobileServiceAddress,
+		Province:                     sb.Data.ServiceBookingRequest.Province,
+		City:                         sb.Data.ServiceBookingRequest.City,
+		District:                     sb.Data.ServiceBookingRequest.District,
+		SubDistrict:                  sb.Data.ServiceBookingRequest.SubDistrict,
+		PostalCode:                   sb.Data.ServiceBookingRequest.PostalCode,
+		VehicleProblem:               sb.Data.ServiceBookingRequest.VehicleProblem,
+		CancellationReason:           sb.Data.ServiceBookingRequest.CancellationReason,
+		OtherCancellationReason:      sb.Data.ServiceBookingRequest.OtherCancellationReason,
+		ServicePricingCallFlag:       sb.Data.ServiceBookingRequest.ServicePricingCallFlag,
 		CreatedAt:                    time.Now().UTC(),
 		CreatedBy:                    constants.System, // or fetch from context if available
 		UpdatedAt:                    time.Now().UTC(),

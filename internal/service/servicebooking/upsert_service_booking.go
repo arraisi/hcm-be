@@ -12,8 +12,8 @@ import (
 
 func (s *service) UpsertServiceBooking(ctx context.Context, tx *sqlx.Tx, customerID, customerVehicleID string, sb servicebooking.ServiceBookingEvent) (string, error) {
 	serviceBooking, err := s.repo.GetServiceBooking(ctx, servicebooking.GetServiceBooking{
-		ServiceBookingID:     utils.ToPointer(sb.Data.BookingId),
-		ServiceBookingNumber: utils.ToPointer(sb.Data.BookingNumber),
+		ServiceBookingID:     utils.ToPointer(sb.Data.ServiceBookingRequest.BookingId),
+		ServiceBookingNumber: utils.ToPointer(sb.Data.ServiceBookingRequest.BookingNumber),
 	})
 	if err == nil {
 		// Found → update

@@ -9,16 +9,17 @@ type ServiceBookingJob struct {
 	ServiceBookingID string    `db:"i_service_booking_id"`
 	JobID            string    `db:"c_job_id"`
 	JobName          string    `db:"n_job_name"`
-	LaborEstPrice    string    `db:"v_labor_est_price"`
+	LaborEstPrice    float32   `db:"v_labor_est_price"`
 	CreatedAt        time.Time `db:"d_created_at"`
 	CreatedBy        string    `db:"c_created_by"`
 	UpdatedAt        time.Time `db:"d_updated_at"`
 	UpdatedBy        string    `db:"c_updated_by"`
+	Deleted          bool      `db:"b_deleted"`
 }
 
 // TableName returns the database table name for the ServiceBookingJob model
 func (sbj *ServiceBookingJob) TableName() string {
-	return "dbo.tr_service_booking_jobs"
+	return "dbo.tr_service_booking_job"
 }
 
 // Columns returns the list of database columns for the ServiceBookingJob model
@@ -68,7 +69,7 @@ func (sbj *ServiceBookingJob) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "n_job_name")
 		values = append(values, sbj.JobName)
 	}
-	if sbj.LaborEstPrice != "" {
+	if sbj.LaborEstPrice != 0 {
 		columns = append(columns, "v_labor_est_price")
 		values = append(values, sbj.LaborEstPrice)
 	}
@@ -93,7 +94,7 @@ func (sbj *ServiceBookingJob) ToUpdateMap() map[string]interface{} {
 	if sbj.JobName != "" {
 		updateMap["n_job_name"] = sbj.JobName
 	}
-	if sbj.LaborEstPrice != "" {
+	if sbj.LaborEstPrice != 0 {
 		updateMap["n_labor_est_price"] = sbj.LaborEstPrice
 	}
 	updateMap["d_updated_at"] = time.Now().UTC()
