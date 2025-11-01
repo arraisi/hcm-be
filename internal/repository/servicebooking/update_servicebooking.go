@@ -1,4 +1,4 @@
-package leadscore
+package servicebooking
 
 import (
 	"context"
@@ -8,12 +8,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) UpdateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error {
-	model := domain.LeadScore{}
+func (r *repository) UpdateServiceBooking(ctx context.Context, tx *sqlx.Tx, req domain.ServiceBooking) error {
+	model := domain.Customer{}
 
 	query, args, err := sqrl.Update(model.TableName()).
 		SetMap(req.ToUpdateMap()).
-		Where(sqrl.Eq{"id": req.ID}).ToSql()
+		Where(sqrl.Or{
+			sqrl.Eq{"i_service_booking_id": req.BookingID},
+			sqrl.Eq{"i_id": req.ID},
+		}).ToSql()
 	if err != nil {
 		return err
 	}

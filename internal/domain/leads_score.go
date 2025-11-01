@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type LeadScore struct {
+type LeadsScore struct {
 	ID                      string    `json:"id" db:"i_id"`
 	LeadsID                 string    `json:"leads_id" db:"i_leads_id"`
 	TAMLeadScore            string    `json:"tam_lead_score" db:"v_tam_lead_score"`
@@ -23,12 +23,12 @@ type LeadScore struct {
 }
 
 // TableName returns the database table name for the User model
-func (u *LeadScore) TableName() string {
+func (u *LeadsScore) TableName() string {
 	return "dbo.tm_leadscores"
 }
 
 // Columns returns the list of database columns for the User model
-func (u *LeadScore) Columns() []string {
+func (u *LeadsScore) Columns() []string {
 	return []string{
 		"i_id",
 		"i_leads_id",
@@ -49,7 +49,7 @@ func (u *LeadScore) Columns() []string {
 }
 
 // SelectColumns returns the list of columns to select in queries for the User model
-func (u *LeadScore) SelectColumns() []string {
+func (u *LeadsScore) SelectColumns() []string {
 	return []string{
 		"CAST(i_id AS VARCHAR) AS i_id",
 		"CAST(i_leads_id AS VARCHAR) AS i_leads_id",
@@ -69,7 +69,7 @@ func (u *LeadScore) SelectColumns() []string {
 	}
 }
 
-func (u *LeadScore) ToCreateMap() (columns []string, values []interface{}) {
+func (u *LeadsScore) ToCreateMap() (columns []string, values []interface{}) {
 	columns = make([]string, 0, len(u.Columns()))
 	values = make([]interface{}, 0, len(u.Columns()))
 
@@ -113,18 +113,14 @@ func (u *LeadScore) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "c_vehicle_age_criteria")
 		values = append(values, u.VehicleAgeCriteria)
 	}
-	columns = append(columns, "d_created_at")
-	values = append(values, u.CreatedAt.UTC())
 	columns = append(columns, "c_created_by")
 	values = append(values, u.CreatedBy)
-	columns = append(columns, "d_updated_at")
-	values = append(values, u.UpdatedAt.UTC())
 	columns = append(columns, "c_updated_by")
-	values = append(values, u.UpdatedBy)
+	values = append(values, u.CreatedBy)
 	return columns, values
 }
 
-func (u *LeadScore) ToUpdateMap() map[string]interface{} {
+func (u *LeadsScore) ToUpdateMap() map[string]interface{} {
 	updateMap := make(map[string]interface{})
 	if u.TAMLeadScore != "" {
 		updateMap["v_tam_lead_score"] = u.TAMLeadScore
@@ -153,7 +149,7 @@ func (u *LeadScore) ToUpdateMap() map[string]interface{} {
 	if u.VehicleAgeCriteria != "" {
 		updateMap["c_vehicle_age_criteria"] = u.VehicleAgeCriteria
 	}
-	updateMap["d_updated_at"] = u.UpdatedAt.UTC()
+	updateMap["d_updated_at"] = time.Now().UTC()
 	updateMap["c_updated_by"] = u.UpdatedBy
 	return updateMap
 }

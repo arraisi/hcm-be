@@ -1,4 +1,4 @@
-package leadscore
+package leadsscore
 
 import (
 	"context"

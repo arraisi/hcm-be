@@ -10,21 +10,26 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateCustomerVehicle(ctx context.Context, tx *sqlx.Tx, req domain.CustomerVehicle) (string, error) {
-	req.ID = uuid.NewString()
+func (r *repository) CreateCustomerVehicle(ctx context.Context, tx *sqlx.Tx, req *domain.CustomerVehicle) error {
 	columns, values := req.ToCreateMap()
+
+	// Generate a new UUID for the customer vehicle ID
+	req.ID = uuid.NewString()
+	columns = append(columns, "i_id")
+	values = append(values, req.ID)
+
 	query, args, err := sqrl.Insert(req.TableName()).
 		Columns(columns...).
 		Values(values...).ToSql()
 	if err != nil {
-		return req.ID, err
+		return err
 	}
 
 	query = r.db.Rebind(query)
 	_, err = tx.ExecContext(ctx, query, args...)
 	if err != nil {
-		return req.ID, err
+		return err
 	}
 
-	return req.ID, nil
+	return nil
 }

@@ -1,4 +1,4 @@
-package leadscore
+package leadsscore
 
 import (
 	"context"
@@ -8,8 +8,8 @@ import (
 	"github.com/elgris/sqrl"
 )
 
-func (r *repository) GetLeadScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadScore, error) {
-	var model domain.LeadScore
+func (r *repository) GetLeadsScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadsScore, error) {
+	var model domain.LeadsScore
 
 	query := sqrl.Select(model.SelectColumns()...).
 		From(model.TableName())

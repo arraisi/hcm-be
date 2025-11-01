@@ -50,7 +50,7 @@ type Score struct {
 	Parameter       ScoreParameter `json:"parameter"`
 }
 
-func NewScoreRequest(leadScore domain.LeadScore) Score {
+func NewScoreRequest(leadScore domain.LeadsScore) Score {
 	return Score{
 		TAMLeadScore:    leadScore.TAMLeadScore,
 		OutletLeadScore: leadScore.OutletLeadScore,
@@ -109,9 +109,9 @@ func (be *LeadsRequest) ToDomain() domain.Leads {
 	}
 }
 
-// ToDomain converts the TestDriveEvent to the internal LeadScore model
-func (be *Score) ToDomain(leadsID string) domain.LeadScore {
-	return domain.LeadScore{
+// ToDomain converts the TestDriveEvent to the internal LeadsScore model
+func (be *Score) ToDomain(leadsID string) domain.LeadsScore {
+	return domain.LeadsScore{
 		ID:                      leadsID,
 		TAMLeadScore:            be.TAMLeadScore,
 		OutletLeadScore:         be.OutletLeadScore,

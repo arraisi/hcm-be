@@ -1,4 +1,4 @@
-package testdrive
+package servicebooking
 
 import (
 	"context"
@@ -9,10 +9,10 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req *domain.TestDrive) error {
+func (r *repository) CreateServiceBooking(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBooking) error {
 	columns, values := req.ToCreateMap()
 
-	// Generate a new UUID for the test drive ID
+	// Generate a new UUID for the service booking ID
 	req.ID = uuid.NewString()
 	columns = append(columns, "i_id")
 	values = append(values, req.ID)
