@@ -56,7 +56,6 @@ type TestDriveEventData struct {
 	OneAccount    customer.OneAccountRequest `json:"one_account" validate:"required"`
 	TestDrive     TestDriveRequest           `json:"test_drive" validate:"required"`
 	Leads         leads.LeadsRequest         `json:"leads" validate:"required"`
-	Score         leads.Score                `json:"score" validate:"required"`
 	PICAssignment *PICAssignmentRequest      `json:"pic_assignment,omitempty"`
 }
 
