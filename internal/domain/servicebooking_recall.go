@@ -88,7 +88,7 @@ func (sbr *ServiceBookingRecall) ToCreateMap() ([]string, []interface{}) {
 	columns = append(columns, "c_created_by")
 	values = append(values, sbr.CreatedBy)
 	columns = append(columns, "c_updated_by")
-	values = append(values, sbr.UpdatedBy)
+	values = append(values, sbr.CreatedBy)
 
 	return columns, values
 }

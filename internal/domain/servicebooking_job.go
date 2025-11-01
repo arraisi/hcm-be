@@ -81,7 +81,7 @@ func (sbj *ServiceBookingJob) ToCreateMap() ([]string, []interface{}) {
 	columns = append(columns, "c_created_by")
 	values = append(values, sbj.CreatedBy)
 	columns = append(columns, "c_updated_by")
-	values = append(values, sbj.UpdatedBy)
+	values = append(values, sbj.CreatedBy)
 
 	return columns, values
 }

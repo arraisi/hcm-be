@@ -275,7 +275,7 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 	values = append(values, sb.CreatedBy)
 
 	columns = append(columns, "c_updated_by")
-	values = append(values, sb.UpdatedBy)
+	values = append(values, sb.CreatedBy)
 
 	return columns, values
 }
