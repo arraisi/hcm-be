@@ -1,16 +1,21 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type ServiceBookingJob struct {
-	ID               string  `db:"i_id"`
-	ServiceBookingID string  `db:"i_service_booking_id"`
-	JobName          string  `db:"n_job_name"`
-	LaborEstPrice    float64 `db:"n_labor_est_price"`
-	CreatedAt        string  `db:"d_created_at"`
-	CreatedBy        string  `db:"c_created_by"`
-	UpdatedAt        string  `db:"d_updated_at"`
-	UpdatedBy        string  `db:"c_updated_by"`
+	ID               string    `db:"i_id"`
+	ServiceBookingID string    `db:"i_service_booking_id"`
+	JobID            string    `db:"c_job_id"`
+	JobName          string    `db:"n_job_name"`
+	LaborEstPrice    string    `db:"v_labor_est_price"`
+	CreatedAt        time.Time `db:"d_created_at"`
+	CreatedBy        string    `db:"c_created_by"`
+	UpdatedAt        time.Time `db:"d_updated_at"`
+	UpdatedBy        string    `db:"c_updated_by"`
 }
 
 // TableName returns the database table name for the ServiceBookingJob model
@@ -23,6 +28,7 @@ func (sbj *ServiceBookingJob) Columns() []string {
 	return []string{
 		"i_id",
 		"i_service_booking_id",
+		"c_job_id",
 		"n_job_name",
 		"n_labor_est_price",
 		"d_created_at",
@@ -37,8 +43,9 @@ func (sbj *ServiceBookingJob) SelectColumns() []string {
 	return []string{
 		"CAST(i_id AS NVARCHAR(36)) as i_id",
 		"CAST(i_service_booking_id AS NVARCHAR(36)) as i_service_booking_id",
+		"c_job_id",
 		"n_job_name",
-		"n_labor_est_price",
+		"v_labor_est_price",
 		"d_created_at",
 		"c_created_by",
 		"d_updated_at",
@@ -59,20 +66,20 @@ func (sbj *ServiceBookingJob) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "i_service_booking_id")
 		values = append(values, sbj.ServiceBookingID)
 	}
+	if sbj.JobID != "" {
+		columns = append(columns, "c_job_id")
+		values = append(values, sbj.JobID)
+	}
 	if sbj.JobName != "" {
 		columns = append(columns, "n_job_name")
 		values = append(values, sbj.JobName)
 	}
-	if sbj.LaborEstPrice != 0 {
-		columns = append(columns, "n_labor_est_price")
+	if sbj.LaborEstPrice != "" {
+		columns = append(columns, "v_labor_est_price")
 		values = append(values, sbj.LaborEstPrice)
 	}
-	columns = append(columns, "d_created_at")
-	values = append(values, sbj.CreatedAt)
 	columns = append(columns, "c_created_by")
 	values = append(values, sbj.CreatedBy)
-	columns = append(columns, "d_updated_at")
-	values = append(values, sbj.UpdatedAt)
 	columns = append(columns, "c_updated_by")
 	values = append(values, sbj.UpdatedBy)
 
@@ -86,13 +93,16 @@ func (sbj *ServiceBookingJob) ToUpdateMap() map[string]interface{} {
 	if sbj.ServiceBookingID != "" {
 		updateMap["i_service_booking_id"] = sbj.ServiceBookingID
 	}
+	if sbj.JobID != "" {
+		updateMap["c_job_id"] = sbj.JobID
+	}
 	if sbj.JobName != "" {
 		updateMap["n_job_name"] = sbj.JobName
 	}
-	if sbj.LaborEstPrice != 0 {
+	if sbj.LaborEstPrice != "" {
 		updateMap["n_labor_est_price"] = sbj.LaborEstPrice
 	}
-	updateMap["d_updated_at"] = sbj.UpdatedAt
+	updateMap["d_updated_at"] = time.Now().UTC()
 	updateMap["c_updated_by"] = sbj.UpdatedBy
 
 	return updateMap
