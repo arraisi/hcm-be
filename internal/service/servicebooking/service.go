@@ -1,4 +1,4 @@
-package service_booking
+package servicebooking
 
 import (
 	"context"
@@ -17,58 +17,61 @@ type transactionRepository interface {
 	RollbackTransaction(tx *sqlx.Tx) error
 }
 
-type CustomerRepository interface {
-	CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error)
-	UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error)
-	GetCustomer(ctx context.Context, req customer.GetCustomerRequest) (domain.Customer, error)
+type CustomerService interface {
+	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest) (string, error)
 }
 
-type CustomerVehicleRepository interface {
-	CreateCustomerVehicle(ctx context.Context, tx *sqlx.Tx, req domain.CustomerVehicle) (string, error)
-	GetCustomerVehicle(ctx context.Context, req customervehicle.GetCustomerVehicleRequest) (domain.CustomerVehicle, error)
-	GetCustomerVehicles(ctx context.Context, req customervehicle.GetCustomerVehicleRequest) ([]domain.CustomerVehicle, error)
+type CustomerVehicleService interface {
+	UpsertCustomerVehicle(ctx context.Context, tx *sqlx.Tx, customerID, oneAccountID string, req customervehicle.CustomerVehicleRequest) (string, error)
 }
 
 type Repository interface {
-	CreateServiceBookingJob(ctx context.Context, tx *sqlx.Tx, req domain.ServiceBookingJob) error
+	CreateServiceBooking(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBooking) error
+	GetServiceBooking(ctx context.Context, req servicebooking.GetServiceBooking) (domain.ServiceBooking, error)
+	UpdateServiceBooking(ctx context.Context, tx *sqlx.Tx, req domain.ServiceBooking) error
+
+	CreateServiceBookingJob(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingJob) error
 	GetServiceBookingJob(ctx context.Context, req servicebooking.GetServiceBookingJob) (domain.ServiceBookingJob, error)
 	GetServiceBookingJobs(ctx context.Context, req servicebooking.GetServiceBookingJob) ([]domain.ServiceBookingJob, error)
 
-	CreateServiceBookingPart(ctx context.Context, tx *sqlx.Tx, req domain.ServiceBookingPart) error
+	CreateServiceBookingPart(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingPart) error
 	GetServiceBookingPart(ctx context.Context, req servicebooking.GetServiceBookingPart) (domain.ServiceBookingPart, error)
 	GetServiceBookingParts(ctx context.Context, req servicebooking.GetServiceBookingPart) ([]domain.ServiceBookingPart, error)
 
-	CreateServiceBookingPartItem(ctx context.Context, tx *sqlx.Tx, req domain.ServiceBookingPartItem) error
+	CreateServiceBookingPartItem(ctx context.Context, tx *sqlx.Tx, packageID string, req *domain.ServiceBookingPartItem) error
 	GetServiceBookingPartItem(ctx context.Context, req servicebooking.GetServiceBookingPartItem) (domain.ServiceBookingPartItem, error)
 	GetServiceBookingPartItems(ctx context.Context, req servicebooking.GetServiceBookingPartItem) ([]domain.ServiceBookingPartItem, error)
 
-	CreateServiceBookingRecall(ctx context.Context, tx *sqlx.Tx, req domain.ServiceBookingRecall) error
+	CreateServiceBookingRecall(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingRecall) error
 	GetServiceBookingRecall(ctx context.Context, req servicebooking.GetServiceBookingRecall) (domain.ServiceBookingRecall, error)
 	GetServiceBookingRecalls(ctx context.Context, req servicebooking.GetServiceBookingRecall) ([]domain.ServiceBookingRecall, error)
 
-	CreateServiceBookingWarranty(ctx context.Context, tx *sqlx.Tx, req domain.ServiceBookingWarranty) error
+	CreateServiceBookingWarranty(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingWarranty) error
 	GetServiceBookingWarranty(ctx context.Context, req servicebooking.GetServiceBookingWarranty) (domain.ServiceBookingWarranty, error)
 	GetServiceBookingWarranties(ctx context.Context, req servicebooking.GetServiceBookingWarranty) ([]domain.ServiceBookingWarranty, error)
 }
 
 type ServiceContainer struct {
-	TransactionRepo transactionRepository
-	Repo            Repository
-	CustomerRepo    CustomerRepository
+	TransactionRepo    transactionRepository
+	Repo               Repository
+	CustomerSvc        CustomerService
+	CustomerVehicleSvc CustomerVehicleService
 }
 
 type service struct {
-	cfg             *config.Config
-	transactionRepo transactionRepository
-	repo            Repository
-	customerRepo    CustomerRepository
+	cfg                *config.Config
+	transactionRepo    transactionRepository
+	repo               Repository
+	customerSvc        CustomerService
+	customerVehicleSvc CustomerVehicleService
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
 	return &service{
-		cfg:             cfg,
-		transactionRepo: container.TransactionRepo,
-		repo:            container.Repo,
-		customerRepo:    container.CustomerRepo,
+		cfg:                cfg,
+		transactionRepo:    container.TransactionRepo,
+		repo:               container.Repo,
+		customerSvc:        container.CustomerSvc,
+		customerVehicleSvc: container.CustomerVehicleSvc,
 	}
 }
