@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
 )
@@ -93,8 +94,8 @@ func (be *OneAccountRequest) ToDomain() domain.Customer {
 		PhoneNumber:  be.PhoneNumber,
 		Gender:       be.Gender,
 		CreatedAt:    time.Now(),
-		CreatedBy:    "mToyota", // or fetch from context if available
+		CreatedBy:    constants.System,
 		UpdatedAt:    time.Now(),
-		UpdatedBy:    utils.ToPointer("mToyota"), // or fetch from context if available
+		UpdatedBy:    utils.ToPointer(constants.System),
 	}
 }
