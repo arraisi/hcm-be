@@ -117,10 +117,6 @@ func (u *Leads) ToCreateMap() (columns []string, values []interface{}) {
 	columns = make([]string, 0, len(u.Columns()))
 	values = make([]interface{}, 0, len(u.Columns()))
 
-	id := uuid.NewString()
-	columns = append(columns, "i_id")
-	values = append(values, id)
-
 	if u.LeadsID != "" {
 		columns = append(columns, "i_leads_id")
 		values = append(values, u.LeadsID)

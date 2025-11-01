@@ -99,10 +99,6 @@ func (u *TestDrive) ToCreateMap() (columns []string, values []interface{}) {
 	columns = make([]string, 0, len(u.Columns()))
 	values = make([]interface{}, 0, len(u.Columns()))
 
-	id := uuid.NewString()
-	columns = append(columns, "i_id")
-	values = append(values, id)
-
 	if u.TestDriveID != "" {
 		columns = append(columns, "i_test_drive_id")
 		values = append(values, u.TestDriveID)

@@ -2,8 +2,6 @@ package domain
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Customer struct {
@@ -119,10 +117,6 @@ func (u *Customer) SelectColumns() []string {
 func (u *Customer) ToCreateMap() (columns []string, values []interface{}) {
 	columns = make([]string, 0, len(u.Columns()))
 	values = make([]interface{}, 0, len(u.Columns()))
-
-	id := uuid.NewString()
-	columns = append(columns, "i_id")
-	values = append(values, id)
 
 	if u.OneAccountID != "" {
 		columns = append(columns, "i_one_account_id")

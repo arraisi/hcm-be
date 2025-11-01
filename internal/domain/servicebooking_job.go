@@ -2,8 +2,6 @@ package domain
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type ServiceBookingJob struct {
@@ -57,10 +55,6 @@ func (sbj *ServiceBookingJob) SelectColumns() []string {
 func (sbj *ServiceBookingJob) ToCreateMap() ([]string, []interface{}) {
 	columns := make([]string, 0, len(sbj.Columns()))
 	values := make([]interface{}, 0, len(sbj.Columns()))
-
-	ID := uuid.NewString()
-	columns = append(columns, "i_id")
-	values = append(values, ID)
 
 	if sbj.ServiceBookingID != "" {
 		columns = append(columns, "i_service_booking_id")

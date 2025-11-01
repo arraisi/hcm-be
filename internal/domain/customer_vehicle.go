@@ -2,8 +2,6 @@ package domain
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type CustomerVehicle struct {
@@ -75,10 +73,6 @@ func (cv *CustomerVehicle) SelectColumns() []string {
 func (cv *CustomerVehicle) ToCreateMap() ([]string, []interface{}) {
 	columns := make([]string, 0, len(cv.Columns()))
 	values := make([]interface{}, 0, len(cv.Columns()))
-
-	id := uuid.NewString()
-	columns = append(columns, "i_id")
-	values = append(values, id)
 
 	if cv.CustomerID != "" {
 		columns = append(columns, "i_customer_id")

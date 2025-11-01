@@ -9,7 +9,6 @@ import (
 	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
-	"github.com/google/uuid"
 )
 
 type ServiceBookingEvent struct {
@@ -64,10 +63,8 @@ type WarrantyRequest struct {
 }
 
 func (wr WarrantyRequest) ToModel(serviceBookingID string) domain.ServiceBookingWarranty {
-	id := uuid.NewString()
 	now := time.Now()
 	return domain.ServiceBookingWarranty{
-		ID:               id,
 		ServiceBookingID: serviceBookingID,
 		WarrantyName:     wr.WarrantyName,
 		WarrantyStatus:   wr.WarrantyStatus,
@@ -86,10 +83,8 @@ type RecallRequest struct {
 }
 
 func (r *RecallRequest) ToModel(bookingID, part string) domain.ServiceBookingRecall {
-	id := uuid.NewString()
 	now := time.Now()
 	return domain.ServiceBookingRecall{
-		ID:                id,
 		ServiceBookingID:  bookingID,
 		RecallID:          r.RecallID,
 		RecallDate:        r.RecallDate,
@@ -109,10 +104,8 @@ type JobRequest struct {
 }
 
 func (j *JobRequest) ToDomain(serviceBookingID string) domain.ServiceBookingJob {
-	id := uuid.NewString()
 	now := time.Now()
 	return domain.ServiceBookingJob{
-		ID:               id,
 		ServiceBookingID: serviceBookingID,
 		JobID:            j.JobID,
 		JobName:          j.JobName,
@@ -139,25 +132,21 @@ type PartRequest struct {
 }
 
 func (p *PartRequest) ToDomain(serviceBookingID string) (domain.ServiceBookingPart, []domain.ServiceBookingPartItem) {
-	id := uuid.NewString()
 	now := time.Now()
 
 	partItems := make([]domain.ServiceBookingPartItem, 0, len(p.PackageParts))
 	for _, item := range p.PackageParts {
 		partItems = append(partItems, domain.ServiceBookingPartItem{
-			ID:                   uuid.NewString(),
-			ServiceBookingPartID: id,
-			PartNumber:           item.PartNumber,
-			PartName:             item.PartName,
-			CreatedAt:            now.UTC(),
-			CreatedBy:            constants.System,
-			UpdatedAt:            now.UTC(),
-			UpdatedBy:            constants.System,
+			PartNumber: item.PartNumber,
+			PartName:   item.PartName,
+			CreatedAt:  now.UTC(),
+			CreatedBy:  constants.System,
+			UpdatedAt:  now.UTC(),
+			UpdatedBy:  constants.System,
 		})
 	}
 
 	return domain.ServiceBookingPart{
-		ID:                       id,
 		ServiceBookingID:         serviceBookingID,
 		PartType:                 p.PartType,
 		PackageID:                p.PackageID,

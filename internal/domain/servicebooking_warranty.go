@@ -2,8 +2,6 @@ package domain
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type ServiceBookingWarranty struct {
@@ -53,10 +51,6 @@ func (sbw *ServiceBookingWarranty) SelectColumns() []string {
 func (sbw *ServiceBookingWarranty) ToCreateMap() ([]string, []interface{}) {
 	columns := make([]string, 0, len(sbw.Columns()))
 	values := make([]interface{}, 0, len(sbw.Columns()))
-
-	id := uuid.NewString()
-	columns = append(columns, "i_id")
-	values = append(values, id)
 
 	if sbw.ServiceBookingID != "" {
 		columns = append(columns, "i_service_booking_id")
