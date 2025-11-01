@@ -1,15 +1,20 @@
-package leadscore
+package leadsscore
 
 import (
 	"context"
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/elgris/sqrl"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error {
+func (r *repository) CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsScore) error {
 	columns, values := req.ToCreateMap()
+
+	req.ID = uuid.NewString()
+	columns = append(columns, "i_id")
+	values = append(values, req.ID)
 
 	query, args, err := sqrl.Insert(req.TableName()).
 		Columns(columns...).

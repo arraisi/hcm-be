@@ -18,25 +18,30 @@ type transactionRepository interface {
 }
 
 type CustomerRepository interface {
-	CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error)
-	UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error)
+	CreateCustomer(ctx context.Context, tx *sqlx.Tx, req *domain.Customer) error
 	GetCustomer(ctx context.Context, req customer.GetCustomerRequest) (domain.Customer, error)
+	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) ([]domain.Customer, error)
+	UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) error
+}
+
+type CustomerService interface {
+	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest) (string, error)
 }
 
 type LeadRepository interface {
-	CreateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error
+	CreateLeads(ctx context.Context, tx *sqlx.Tx, req *domain.Leads) error
 	UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error
 	GetLeads(ctx context.Context, req leads.GetLeadsRequest) (domain.Leads, error)
 }
 
 type LeadScoreRepository interface {
-	CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error
-	GetLeadScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadScore, error)
-	UpdateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error
+	CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsScore) error
+	GetLeadsScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadsScore, error)
+	UpdateLeadsScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadsScore) error
 }
 
 type Repository interface {
-	CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req domain.TestDrive) error
+	CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req *domain.TestDrive) error
 	GetTestDrive(ctx context.Context, req testdrive.GetTestDriveRequest) (domain.TestDrive, error)
 	UpdateTestDrive(ctx context.Context, tx *sqlx.Tx, req domain.TestDrive) error
 	GetTestDrives(ctx context.Context, req testdrive.GetTestDriveRequest) ([]domain.TestDrive, error)
@@ -48,6 +53,7 @@ type ServiceContainer struct {
 	CustomerRepo    CustomerRepository
 	LeadRepo        LeadRepository
 	LeadScoreRepo   LeadScoreRepository
+	CustomerSvc     CustomerService
 }
 
 type service struct {
@@ -57,6 +63,7 @@ type service struct {
 	customerRepo    CustomerRepository
 	leadRepo        LeadRepository
 	leadScoreRepo   LeadScoreRepository
+	customerSvc     CustomerService
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -67,5 +74,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		customerRepo:    container.CustomerRepo,
 		leadRepo:        container.LeadRepo,
 		leadScoreRepo:   container.LeadScoreRepo,
+		customerSvc:     container.CustomerSvc,
 	}
 }

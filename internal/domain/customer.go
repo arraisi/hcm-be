@@ -2,8 +2,6 @@ package domain
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Customer struct {
@@ -17,7 +15,7 @@ type Customer struct {
 	Email                string    `json:"email" db:"e_email"`
 	IsNew                bool      `json:"is_new" db:"c_isnew"`
 	IsMerge              bool      `json:"is_merge" db:"c_ismerge"`
-	PrimaryUser          string    `json:"primary_user" db:"c_primary_user"`
+	PrimaryUser          *string   `json:"primary_user" db:"c_primary_user"`
 	DealerCustomerID     string    `json:"dealer_customer_ID" db:"i_dealer_customer_id"`
 	IsValid              bool      `json:"is_valid" db:"c_isvalid"`
 	IsOmnichannel        bool      `json:"is_omnichannel" db:"c_isomnichannel"`
@@ -43,9 +41,9 @@ type Customer struct {
 	DetailAddress        string    `json:"detail_address" db:"e_detail_address"`
 	ToyotaIDSingleStatus string    `json:"toyota_id_single_status" db:"c_toyota_id_single_status"`
 	CreatedAt            time.Time `json:"created_at" db:"d_created_at"`
-	CreatedBy            string    `json:"created_by" db:"d_created_by"`
+	CreatedBy            string    `json:"created_by" db:"c_created_by"`
 	UpdatedAt            time.Time `json:"updated_at" db:"d_updated_at"`
-	UpdatedBy            *string   `json:"updated_by" db:"d_updated_by"`
+	UpdatedBy            *string   `json:"updated_by" db:"c_updated_by"`
 }
 
 // TableName returns the database table name for the User model
@@ -92,9 +90,9 @@ func (u *Customer) Columns() []string {
 		"e_detail_address",
 		"c_toyota_id_single_status",
 		"d_created_at",
-		"d_created_by",
+		"c_created_by",
 		"d_updated_at",
-		"d_updated_by",
+		"c_updated_by",
 	}
 }
 
@@ -103,26 +101,22 @@ func (u *Customer) SelectColumns() []string {
 	return []string{
 		"CAST(i_id AS NVARCHAR(36)) as i_id",
 		"CAST(i_one_account_id AS NVARCHAR(36)) as i_one_account_id",
-		"CAST(i_hasjrat_id AS NVARCHAR(36)) as i_hasjrat_id",
 		"n_first_name",
 		"n_last_name",
 		"n_gender",
 		"c_phone_number",
 		"e_email",
+		"c_primary_user",
 		"d_created_at",
-		"d_created_by",
+		"c_created_by",
 		"d_updated_at",
-		"d_updated_by",
+		"c_updated_by",
 	}
 }
 
 func (u *Customer) ToCreateMap() (columns []string, values []interface{}) {
 	columns = make([]string, 0, len(u.Columns()))
 	values = make([]interface{}, 0, len(u.Columns()))
-
-	id := uuid.NewString()
-	columns = append(columns, "i_id")
-	values = append(values, id)
 
 	if u.OneAccountID != "" {
 		columns = append(columns, "i_one_account_id")
@@ -152,7 +146,7 @@ func (u *Customer) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "e_email")
 		values = append(values, u.Email)
 	}
-	if u.PrimaryUser != "" {
+	if u.PrimaryUser != nil {
 		columns = append(columns, "c_primary_user")
 		values = append(values, u.PrimaryUser)
 	}
@@ -252,11 +246,11 @@ func (u *Customer) ToCreateMap() (columns []string, values []interface{}) {
 	values = append(values, u.ConsentGiven)
 	columns = append(columns, "d_created_at")
 	values = append(values, u.CreatedAt.UTC())
-	columns = append(columns, "d_created_by")
+	columns = append(columns, "c_created_by")
 	values = append(values, u.CreatedBy)
 	columns = append(columns, "d_updated_at")
 	values = append(values, u.UpdatedAt.UTC())
-	columns = append(columns, "d_updated_by")
+	columns = append(columns, "c_updated_by")
 	values = append(values, u.UpdatedBy)
 
 	return columns, values
@@ -280,6 +274,6 @@ func (u *Customer) ToUpdateMap() map[string]interface{} {
 		updateMap["e_email"] = u.Email
 	}
 	updateMap["d_updated_at"] = u.UpdatedAt.UTC()
-	updateMap["d_updated_by"] = u.UpdatedBy
+	updateMap["c_updated_by"] = u.UpdatedBy
 	return updateMap
 }

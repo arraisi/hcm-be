@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
+	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/arraisi/hcm-be/pkg/errors"
@@ -13,8 +13,8 @@ import (
 	"github.com/arraisi/hcm-be/pkg/utils/validator"
 )
 
-// TestDriveEvent handles POST /webhook/test-drive-booking
-func (h *Handler) TestDriveEvent(w http.ResponseWriter, r *http.Request) {
+// ServiceBookingEvent handles POST /webhook/service-booking
+func (h *Handler) ServiceBookingEvent(w http.ResponseWriter, r *http.Request) {
 	// Headers are already validated by middleware, just verify they exist
 	_, ok := middleware.GetWebhookHeaders(r.Context())
 	if !ok {
@@ -33,7 +33,7 @@ func (h *Handler) TestDriveEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse JSON body
-	var bookingEvent testdrive.TestDriveEvent
+	var bookingEvent servicebooking.ServiceBookingEvent
 	if err := json.Unmarshal(body, &bookingEvent); err != nil {
 		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookInvalidPayload, errors.ErrListWebhook)
 		response.ErrorResponseJSON(w, errorResponse)
@@ -54,7 +54,7 @@ func (h *Handler) TestDriveEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.testDriveSvc.InsertTestDriveBooking(r.Context(), bookingEvent)
+	err = h.ServiceBookingSvc.RequestServiceBooking(r.Context(), bookingEvent)
 	if err != nil {
 		// Combine webhook and test drive error lists
 		combinedErrorList := errors.ErrListWebhook.Extend(errors.ErrListTestDrive)

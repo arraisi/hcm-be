@@ -109,7 +109,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 
 	// Mock idempotency service expectations - only Store() is called in current implementation
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(nil)
-	m.mockTestDriveSvc.EXPECT().InsertTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
+	m.mockTestDriveSvc.EXPECT().RequestTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
 
 	// Execute with middleware simulation - Add webhook headers to context manually
 	// since we're testing the handler directly, not through the router
@@ -221,7 +221,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 	// Since current implementation doesn't verify signatures, this should succeed
 	// Mock expectations for successful processing
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(nil)
-	m.mockTestDriveSvc.EXPECT().InsertTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
+	m.mockTestDriveSvc.EXPECT().RequestTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
 
 	// Add webhook headers to context manually since we're testing the handler directly
 	webhookHeaders := webhookDto.Headers{
