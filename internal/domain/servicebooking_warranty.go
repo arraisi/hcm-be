@@ -1,0 +1,97 @@
+package domain
+
+import "github.com/google/uuid"
+
+type ServiceBookingWarranty struct {
+	ID               int64  `db:"i_id"`
+	ServiceBookingID string `db:"i_service_booking_id"`
+	WarrantyName     string `db:"n_warranty_name"`
+	WarrantyStatus   string `db:"c_warranty_status"`
+	CreatedAt        string `db:"d_created_at"`
+	CreatedBy        string `db:"c_created_by"`
+	UpdatedAt        string `db:"d_updated_at"`
+	UpdatedBy        string `db:"c_updated_by"`
+}
+
+// TableName returns the database table name for the ServiceBookingWarranty model
+func (sbw *ServiceBookingWarranty) TableName() string {
+	return "dbo.tm_service_booking_warranty"
+}
+
+// Columns returns the list of database columns for the ServiceBookingWarranty model
+func (sbw *ServiceBookingWarranty) Columns() []string {
+	return []string{
+		"i_id",
+		"i_service_booking_id",
+		"n_warranty_name",
+		"c_warranty_status",
+		"d_created_at",
+		"c_created_by",
+		"d_updated_at",
+		"c_updated_by",
+	}
+}
+
+// SelectColumns returns the list of columns to select in queries for the ServiceBookingWarranty model
+func (sbw *ServiceBookingWarranty) SelectColumns() []string {
+	return []string{
+		"CAST(i_id AS NVARCHAR(36)) as i_id",
+		"CAST(i_service_booking_id AS NVARCHAR(36)) as i_service_booking_id",
+		"n_warranty_name",
+		"c_warranty_status",
+		"d_created_at",
+		"c_created_by",
+		"d_updated_at",
+		"c_updated_by",
+	}
+}
+
+func (sbw *ServiceBookingWarranty) ToCreateMap() ([]string, []interface{}) {
+	columns := make([]string, 0, len(sbw.Columns()))
+	values := make([]interface{}, 0, len(sbw.Columns()))
+
+	id := uuid.NewString()
+	columns = append(columns, "i_id")
+	values = append(values, id)
+
+	if sbw.ServiceBookingID != "" {
+		columns = append(columns, "i_service_booking_id")
+		values = append(values, sbw.ServiceBookingID)
+	}
+	if sbw.WarrantyName != "" {
+		columns = append(columns, "n_warranty_name")
+		values = append(values, sbw.WarrantyName)
+	}
+	if sbw.WarrantyStatus != "" {
+		columns = append(columns, "c_warranty_status")
+		values = append(values, sbw.WarrantyStatus)
+	}
+	columns = append(columns, "d_created_at")
+	values = append(values, sbw.CreatedAt)
+	columns = append(columns, "c_created_by")
+	values = append(values, sbw.CreatedBy)
+	columns = append(columns, "d_updated_at")
+	values = append(values, sbw.UpdatedAt)
+	columns = append(columns, "c_updated_by")
+	values = append(values, sbw.UpdatedBy)
+
+	return columns, values
+}
+
+func (sbw *ServiceBookingWarranty) ToUpdateMap() map[string]interface{} {
+	updateMap := make(map[string]interface{})
+
+	if sbw.ServiceBookingID != "" {
+		updateMap["i_service_booking_id"] = sbw.ServiceBookingID
+	}
+	if sbw.WarrantyName != "" {
+		updateMap["n_warranty_name"] = sbw.WarrantyName
+	}
+	if sbw.WarrantyStatus != "" {
+		updateMap["c_warranty_status"] = sbw.WarrantyStatus
+	}
+	updateMap["d_updated_at"] = sbw.UpdatedAt
+	updateMap["c_updated_by"] = sbw.UpdatedBy
+
+	return updateMap
+}
