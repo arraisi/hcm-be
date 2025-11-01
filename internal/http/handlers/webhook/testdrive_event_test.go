@@ -123,7 +123,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 	ctx := context.WithValue(req.Context(), middleware.WebhookHeadersKey{}, webhookHeaders)
 	req = req.WithContext(ctx)
 
-	m.handler.TestDriveEvent(rr, req)
+	m.handler.RequestTestDrive(rr, req)
 
 	// Assert
 	assert.Equal(t, http.StatusAccepted, rr.Code)
@@ -235,7 +235,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 	req = req.WithContext(ctx)
 
 	// Execute
-	m.handler.TestDriveEvent(rr, req)
+	m.handler.RequestTestDrive(rr, req)
 
 	// Assert - should succeed because signature verification is not implemented
 	assert.Equal(t, http.StatusAccepted, rr.Code)
@@ -344,7 +344,7 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 	// Mock idempotency service to return error (simulating duplicate or other store failure)
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(fmt.Errorf("duplicate key"))
 
-	m.handler.TestDriveEvent(rr, req)
+	m.handler.RequestTestDrive(rr, req)
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)
 
 	var response map[string]interface{}

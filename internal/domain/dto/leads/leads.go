@@ -66,7 +66,7 @@ func (req GetLeadsRequest) Apply(q *sqrl.SelectBuilder) {
 	}
 }
 
-// ToDomain converts the TestDriveEvent to the internal Leads model
+// ToDomain converts the RequestTestDrive to the internal Leads model
 func (be *LeadsRequest) ToDomain(customerID, testDriveID string) domain.Leads {
 	return domain.Leads{
 		CustomerID:                      customerID,

@@ -13,8 +13,8 @@ import (
 	"github.com/arraisi/hcm-be/pkg/utils/validator"
 )
 
-// TestDriveEvent handles POST /webhook/test-drive-booking
-func (h *Handler) TestDriveEvent(w http.ResponseWriter, r *http.Request) {
+// RequestTestDrive handles POST /webhook/test-drive-booking
+func (h *Handler) RequestTestDrive(w http.ResponseWriter, r *http.Request) {
 	// Headers are already validated by middleware, just verify they exist
 	_, ok := middleware.GetWebhookHeaders(r.Context())
 	if !ok {
