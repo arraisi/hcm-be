@@ -30,6 +30,19 @@ func NewLeadsRequest(leads domain.Leads) LeadsRequest {
 		LeadsPreferenceContactTimeEnd:   leads.LeadsPreferenceContactTimeEnd,
 		LeadSource:                      leads.LeadSource,
 		AdditionalNotes:                 leads.AdditionalNotes,
+		LeadsScore: Score{
+			TAMLeadScore:    leads.TAMLeadScore,
+			OutletLeadScore: leads.OutletLeadScore,
+			Parameter: ScoreParameter{
+				PurchasePlanCriteria:    leads.PurchasePlanCriteria,
+				PaymentPreferCriteria:   leads.PaymentPreferCriteria,
+				NegotiationCriteria:     leads.NegotiationCriteria,
+				TestDriveCriteria:       leads.TestDriveCriteria,
+				TradeInCriteria:         leads.TradeInCriteria,
+				BrowsingHistoryCriteria: leads.BrowsingHistoryCriteria,
+				VehicleAgeCriteria:      leads.VehicleAgeCriteria,
+			},
+		},
 	}
 }
 
