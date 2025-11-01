@@ -2,8 +2,10 @@ package customer
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
 )
 
@@ -80,4 +82,19 @@ func (req UpdateCustomerRequest) ToUpdateMap() map[string]interface{} {
 	}
 
 	return updateMap
+}
+
+func (be *OneAccountRequest) ToDomain() domain.Customer {
+	return domain.Customer{
+		OneAccountID: be.OneAccountID,
+		FirstName:    be.FirstName,
+		LastName:     be.LastName,
+		Email:        be.Email,
+		PhoneNumber:  be.PhoneNumber,
+		Gender:       be.Gender,
+		CreatedAt:    time.Now(),
+		CreatedBy:    "mToyota", // or fetch from context if available
+		UpdatedAt:    time.Now(),
+		UpdatedBy:    utils.ToPointer("mToyota"), // or fetch from context if available
+	}
 }
