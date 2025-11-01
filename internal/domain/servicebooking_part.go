@@ -27,7 +27,7 @@ type ServiceBookingPart struct {
 
 // TableName returns the database table name for the ServiceBookingPart model
 func (sbp *ServiceBookingPart) TableName() string {
-	return "dbo.tm_service_booking_part"
+	return "dbo.tr_service_booking_part"
 }
 
 // Columns returns the list of database columns for the ServiceBookingPart model

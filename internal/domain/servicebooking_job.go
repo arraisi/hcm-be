@@ -20,7 +20,7 @@ type ServiceBookingJob struct {
 
 // TableName returns the database table name for the ServiceBookingJob model
 func (sbj *ServiceBookingJob) TableName() string {
-	return "dbo.tm_service_booking_jobs"
+	return "dbo.tr_service_booking_jobs"
 }
 
 // Columns returns the list of database columns for the ServiceBookingJob model
