@@ -11,8 +11,8 @@ import (
 	"github.com/arraisi/hcm-be/pkg/utils/validator"
 )
 
-// ConfirmDriveEvent handles PUT /test-drives/
-func (h *Handler) ConfirmDriveEvent(w http.ResponseWriter, r *http.Request) {
+// ConfirmTestDrive handles PUT /test-drives/
+func (h *Handler) ConfirmTestDrive(w http.ResponseWriter, r *http.Request) {
 	// Read raw body for signature verification (if needed later)
 	body, err := io.ReadAll(r.Body)
 	if err != nil {

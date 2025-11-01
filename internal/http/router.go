@@ -65,10 +65,6 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			users.Get("/", handler.CustomerHandler.GetCustomers)
 		})
 
-		api.Route("/test-drives", func(users chi.Router) {
-			users.Put("/confirm", handler.TestDriveHandler.ConfirmDriveEvent)
-		})
-
 		api.Route("/webhooks", func(webhooks chi.Router) {
 			// Create webhook middleware
 			webhookMiddleware := middleware.NewWebhookMiddleware(config)
@@ -77,6 +73,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Use(webhookMiddleware.ExtractAndValidateHeaders)
 
 			webhooks.Post("/test-drive", handler.TestDriveHandler.RequestTestDrive)
+			webhooks.Put("/test-drive", handler.TestDriveHandler.ConfirmTestDrive)
+
 			webhooks.Post("/service-booking", handler.ServiceBookingHandler.RequestServiceBooking)
 		})
 	})
