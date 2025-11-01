@@ -7,9 +7,9 @@ import (
 	"github.com/arraisi/hcm-be/internal/ext/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
+	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
-	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
@@ -88,15 +88,15 @@ func Run(cfg *config.Config) error {
 	// init handlers
 	userHandler := user.NewUserHandler(userSvc)
 	customerHandler := customer.New(customerSvc)
-	webhookHandler := webhook.NewWebhookHandler(cfg, idempotencyStore, testDriveSvc, serviceBookingSvc)
-	testdriveHandler := testdrive.New(testDriveSvc)
+	serviceBookingHandler := servicebooking.New(cfg, serviceBookingSvc, idempotencyStore)
+	testDriveHandler := testdrive.New(cfg, testDriveSvc, idempotencyStore)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
-		Config:           cfg,
-		UserHandler:      userHandler,
-		CustomerHandler:  customerHandler,
-		WebhookHandler:   webhookHandler,
-		TestDriveHandler: testdriveHandler,
+		Config:                cfg,
+		UserHandler:           userHandler,
+		CustomerHandler:       customerHandler,
+		ServiceBookingHandler: serviceBookingHandler,
+		TestDriveHandler:      testDriveHandler,
 	})
 
 	return apphttp.NewServer(cfg, router)

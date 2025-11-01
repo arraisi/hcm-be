@@ -1,4 +1,4 @@
-package webhook
+package servicebooking
 
 import (
 	"encoding/json"
@@ -54,7 +54,7 @@ func (h *Handler) RequestServiceBooking(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = h.ServiceBookingSvc.RequestServiceBooking(r.Context(), bookingEvent)
+	err = h.svc.RequestServiceBooking(r.Context(), bookingEvent)
 	if err != nil {
 		// Combine webhook and test drive error lists
 		combinedErrorList := errors.ErrListWebhook.Extend(errors.ErrListTestDrive)

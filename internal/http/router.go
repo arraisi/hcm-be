@@ -7,9 +7,9 @@ import (
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
+	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
-	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 
 	"github.com/go-chi/chi/v5"
@@ -17,11 +17,11 @@ import (
 )
 
 type Handler struct {
-	Config           *config.Config
-	UserHandler      user.Handler
-	CustomerHandler  customer.Handler
-	WebhookHandler   webhook.Handler
-	TestDriveHandler testdrive.Handler
+	Config                *config.Config
+	UserHandler           user.Handler
+	CustomerHandler       customer.Handler
+	ServiceBookingHandler servicebooking.Handler
+	TestDriveHandler      testdrive.Handler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -76,8 +76,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			// Apply webhook-specific middleware
 			webhooks.Use(webhookMiddleware.ExtractAndValidateHeaders)
 
-			webhooks.Post("/test-drive", handler.WebhookHandler.RequestTestDrive)
-			webhooks.Post("/service-booking", handler.WebhookHandler.RequestServiceBooking)
+			webhooks.Post("/test-drive", handler.TestDriveHandler.RequestTestDrive)
+			webhooks.Post("/service-booking", handler.ServiceBookingHandler.RequestServiceBooking)
 		})
 	})
 

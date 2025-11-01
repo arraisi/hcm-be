@@ -1,4 +1,4 @@
-package webhook
+package servicebooking
 
 import (
 	"bytes"
@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWebhookHandler_TestDriveBooking(t *testing.T) {
+func TestServiceBookingHandler_ServiceBooking(t *testing.T) {
 	m := setupMock(t)
 	defer m.Ctrl.Finish()
 
@@ -33,7 +33,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 	timestamp := time.Now().Unix()
 
 	bookingEvent := testdrive.TestDriveEvent{
-		Process:   "test drive request",
+		Process:   "service booking request",
 		EventID:   eventID,
 		Timestamp: timestamp,
 		Data: testdrive.TestDriveEventData{
@@ -109,9 +109,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 
 	// Mock idempotency service expectations - only Store() is called in current implementation
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(nil)
-	m.mockTestDriveSvc.EXPECT().RequestTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
-
-	// Execute with middleware simulation - Add webhook headers to context manually
+	m.mockSvc.EXPECT().RequestServiceBooking(gomock.Any(), gomock.Any()).Return(nil) // Execute with middleware simulation - Add webhook headers to context manually
 	// since we're testing the handler directly, not through the router
 	webhookHeaders := webhookDto.Headers{
 		ContentType: "application/json",
@@ -123,7 +121,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 	ctx := context.WithValue(req.Context(), middleware.WebhookHeadersKey{}, webhookHeaders)
 	req = req.WithContext(ctx)
 
-	m.handler.RequestTestDrive(rr, req)
+	m.handler.RequestServiceBooking(rr, req)
 
 	// Assert
 	assert.Equal(t, http.StatusAccepted, rr.Code)
@@ -137,7 +135,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 	assert.Equal(t, "RECEIVED", response["data"].(map[string]interface{})["status"])
 }
 
-func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
+func TestWebhookHandler_ServiceBooking_InvalidSignature(t *testing.T) {
 	m := setupMock(t)
 	defer m.Ctrl.Finish()
 
@@ -146,7 +144,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 	timestamp := time.Now().Unix()
 
 	bookingEvent := testdrive.TestDriveEvent{
-		Process:   "test drive request",
+		Process:   "service booking request",
 		EventID:   eventID,
 		Timestamp: timestamp,
 		Data: testdrive.TestDriveEventData{
@@ -221,7 +219,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 	// Since current implementation doesn't verify signatures, this should succeed
 	// Mock expectations for successful processing
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(nil)
-	m.mockTestDriveSvc.EXPECT().RequestTestDriveBooking(gomock.Any(), bookingEvent).Return(nil)
+	m.mockSvc.EXPECT().RequestServiceBooking(gomock.Any(), gomock.Any()).Return(nil)
 
 	// Add webhook headers to context manually since we're testing the handler directly
 	webhookHeaders := webhookDto.Headers{
@@ -235,7 +233,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 	req = req.WithContext(ctx)
 
 	// Execute
-	m.handler.RequestTestDrive(rr, req)
+	m.handler.RequestServiceBooking(rr, req)
 
 	// Assert - should succeed because signature verification is not implemented
 	assert.Equal(t, http.StatusAccepted, rr.Code)
@@ -247,7 +245,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 	assert.Equal(t, "accepted", response["message"])
 }
 
-func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
+func TestWebhookHandler_ServiceBooking_StoreFailure(t *testing.T) {
 	m := setupMock(t)
 	defer m.Ctrl.Finish()
 
@@ -257,7 +255,7 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 
 	createRequest := func() *http.Request {
 		bookingEvent := testdrive.TestDriveEvent{
-			Process:   "test drive request",
+			Process:   "service booking request",
 			EventID:   eventID,
 			Timestamp: timestamp,
 			Data: testdrive.TestDriveEventData{
@@ -344,7 +342,7 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 	// Mock idempotency service to return error (simulating duplicate or other store failure)
 	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(fmt.Errorf("duplicate key"))
 
-	m.handler.RequestTestDrive(rr, req)
+	m.handler.RequestServiceBooking(rr, req)
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)
 
 	var response map[string]interface{}

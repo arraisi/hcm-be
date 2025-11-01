@@ -1,4 +1,4 @@
-package webhook
+package testdrive
 
 import (
 	"encoding/json"
@@ -54,7 +54,7 @@ func (h *Handler) RequestTestDrive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.testDriveSvc.RequestTestDriveBooking(r.Context(), bookingEvent)
+	err = h.svc.RequestTestDriveBooking(r.Context(), bookingEvent)
 	if err != nil {
 		// Combine webhook and test drive error lists
 		combinedErrorList := errors.ErrListWebhook.Extend(errors.ErrListTestDrive)
