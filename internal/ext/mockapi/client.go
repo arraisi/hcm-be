@@ -2,71 +2,81 @@ package mockapi
 
 import (
 	"context"
-	"net/http"
-	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/platform/httpclient"
+	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
+// Client handles test drive operations via external API
 type Client struct {
-	httpClient config.HttpClientConfig
-	http       *httpclient.Client
+	cfg      *config.Config
+	httpUtil utils.HttpUtil
 }
 
-func New(httpClient config.HttpClientConfig) *Client {
+// New creates a new DIDX client with HttpUtil
+func New(cfg *config.Config, httpUtil utils.HttpUtil) *Client {
 	return &Client{
-		httpClient: httpClient,
-		http: httpclient.New(httpclient.Options{
-			Headers: map[string]string{
-				"X-API-Key": httpClient.APIKey,
-			},
-			Retries: httpClient.RetryCount,
-			Timeout: httpClient.Timeout * time.Second,
-		}),
+		cfg:      cfg,
+		httpUtil: httpUtil,
 	}
 }
 
-func (c *Client) GetUsers(ctx context.Context) ([]domain.User, error) {
-	var resp []domain.User
+func (c *Client) Post(ctx context.Context, request interface{}, path string) (response []byte, err error) {
+	url := c.cfg.Http.MockDIDXApi.BaseUrl + path
 
-	url := c.httpClient.BaseUrl + "/v1/users"
-	err := c.http.DoJSON(ctx, http.MethodGet, url, nil, &resp)
-	return resp, err
+	header := map[string]string{}
+
+	token := c.cfg.Http.MockDIDXApi.APIKey
+
+	respBody, err := c.httpUtil.Post(ctx, url, request, token, header)
+	if err != nil {
+		return nil, err
+	}
+
+	return respBody, nil
 }
 
-func (c *Client) GetUser(ctx context.Context) (domain.User, error) {
-	var resp domain.User
+func (c *Client) Put(ctx context.Context, request interface{}, path string) (response []byte, err error) {
+	url := c.cfg.Http.MockDIDXApi.BaseUrl + path
 
-	url := c.httpClient.BaseUrl + "/v1/users/1"
-	err := c.http.DoJSON(ctx, http.MethodGet, url, nil, &resp)
-	return resp, err
+	header := map[string]string{}
+
+	token := c.cfg.Http.MockDIDXApi.APIKey
+
+	respBody, err := c.httpUtil.Put(ctx, url, request, token, header)
+	if err != nil {
+		return nil, err
+	}
+
+	return respBody, nil
 }
 
-func (c *Client) CreatetUser(ctx context.Context) (domain.User, error) {
-	var resp domain.User
+func (c *Client) Get(ctx context.Context, path string) (response []byte, err error) {
+	url := c.cfg.Http.MockDIDXApi.BaseUrl + path
 
-	url := c.httpClient.BaseUrl + "/v1/users/"
-	err := c.http.DoJSON(ctx, http.MethodPost, url, domain.User{
-		Email:     "test@mail.com",
-		Name:      "Me",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}, &resp)
-	return resp, err
+	header := map[string]string{}
+
+	token := c.cfg.Http.MockDIDXApi.APIKey
+
+	respBody, err := c.httpUtil.Get(ctx, url, token, header)
+	if err != nil {
+		return nil, err
+	}
+
+	return respBody, nil
 }
 
-func (c *Client) UpdateUser(ctx context.Context) (domain.User, error) {
-	var resp domain.User
+func (c *Client) Delete(ctx context.Context, path string) (response []byte, err error) {
+	url := c.cfg.Http.MockDIDXApi.BaseUrl + path
 
-	url := c.httpClient.BaseUrl + "/v1/users/1"
-	err := c.http.DoJSON(ctx, http.MethodPut, url, domain.User{
-		Email:     "test@mail.com",
-		Name:      "Me",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}, &resp)
+	header := map[string]string{}
 
-	return resp, err
+	token := c.cfg.Http.MockDIDXApi.APIKey
+
+	respBody, err := c.httpUtil.Delete(ctx, url, token, header)
+	if err != nil {
+		return nil, err
+	}
+
+	return respBody, nil
 }

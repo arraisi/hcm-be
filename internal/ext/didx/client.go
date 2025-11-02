@@ -1,43 +1,82 @@
-package mockapi
+package didx
 
 import (
 	"context"
-	"net/http"
-	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
-	"github.com/arraisi/hcm-be/internal/platform/httpclient"
+	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
+// Client handles test drive operations via external API
 type Client struct {
-	httpClient config.HttpClientConfig
-	http       *httpclient.Client
+	cfg      *config.Config
+	httpUtil utils.HttpUtil
 }
 
-func New(httpClient config.HttpClientConfig) *Client {
+// New creates a new DIDX client with HttpUtil
+func New(cfg *config.Config, httpUtil utils.HttpUtil) *Client {
 	return &Client{
-		httpClient: httpClient,
-		http: httpclient.New(httpclient.Options{
-			Headers: map[string]string{
-				"X-API-Key": httpClient.APIKey,
-			},
-			Retries: httpClient.RetryCount,
-			Timeout: httpClient.Timeout * time.Second,
-		}),
+		cfg:      cfg,
+		httpUtil: httpUtil,
 	}
 }
 
-func (c *Client) ConfirmTestDrive(ctx context.Context, request testdrive.TestDriveEvent) error {
-	type Response struct {
-		RequestID string `json:"requestId"`
-	}
-	var resp Response
-	url := c.httpClient.BaseUrl + "/v1/test-drive/1"
-	err := c.http.DoJSON(ctx, http.MethodPut, url, request, &resp)
+func (c *Client) Post(ctx context.Context, request interface{}, path string) (response []byte, err error) {
+
+	url := c.cfg.Http.MockDIDXApi.BaseUrl + path
+	header := map[string]string{}
+
+	token := c.cfg.Http.MockDIDXApi.APIKey
+
+	respBody, err := c.httpUtil.Post(ctx, url, request, token, header)
 	if err != nil {
-		return err
+		return respBody, err
 	}
 
-	return nil
+	return respBody, nil
+}
+
+func (c *Client) Put(ctx context.Context, request interface{}, path string) (response []byte, err error) {
+	url := c.cfg.Http.MockDIDXApi.BaseUrl + path
+
+	header := map[string]string{}
+
+	token := c.cfg.Http.MockDIDXApi.APIKey
+
+	respBody, err := c.httpUtil.Put(ctx, url, request, token, header)
+	if err != nil {
+		return respBody, err
+	}
+
+	return respBody, nil
+}
+
+func (c *Client) Get(ctx context.Context, path string) (response []byte, err error) {
+
+	url := c.cfg.Http.MockDIDXApi.BaseUrl + path
+	header := map[string]string{}
+
+	token := c.cfg.Http.MockDIDXApi.APIKey
+
+	respBody, err := c.httpUtil.Get(ctx, url, token, header)
+	if err != nil {
+		return respBody, err
+	}
+
+	return respBody, nil
+}
+
+func (c *Client) Delete(ctx context.Context, path string) (response []byte, err error) {
+
+	url := c.cfg.Http.MockDIDXApi.BaseUrl + path
+	header := map[string]string{}
+
+	token := c.cfg.Http.MockDIDXApi.APIKey
+
+	respBody, err := c.httpUtil.Delete(ctx, url, token, header)
+	if err != nil {
+		return respBody, err
+	}
+
+	return respBody, nil
 }

@@ -4,13 +4,14 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
-	mockDIDXApi "github.com/arraisi/hcm-be/internal/ext/didx"
+	"github.com/arraisi/hcm-be/internal/ext/didx"
 	"github.com/arraisi/hcm-be/internal/ext/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
+	"github.com/arraisi/hcm-be/internal/platform/httpclient"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
 	employeeRepository "github.com/arraisi/hcm-be/internal/repository/employee"
@@ -18,13 +19,13 @@ import (
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
-	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	customervehicleService "github.com/arraisi/hcm-be/internal/service/customervehicle"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	servicebookingService "github.com/arraisi/hcm-be/internal/service/servicebooking"
 	testdriveService "github.com/arraisi/hcm-be/internal/service/testdrive"
 	userService "github.com/arraisi/hcm-be/internal/service/user"
+	"github.com/arraisi/hcm-be/pkg/utils"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/microsoft/go-mssqldb" // register driver
@@ -51,11 +52,19 @@ func Run(cfg *config.Config) error {
 	db.SetConnMaxIdleTime(cfg.Database.MaxConnectionIdleTime)
 
 	// init external clients
-	mockApiClient := mockapi.New(cfg.Http.MockApi)
-	mockDIDXApiClient := mockDIDXApi.New(cfg.Http.MockApi)
+	mockApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.MockApi.Timeout,
+		Retries: cfg.Http.MockApi.RetryCount,
+	})
+	mockApiClient := mockapi.New(cfg, mockApiHttpUtil)
+
+	mockDIDXApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.MockDIDXApi.Timeout,
+		Retries: cfg.Http.MockDIDXApi.RetryCount,
+	})
+	mockDIDXApiClient := didx.New(cfg, mockDIDXApiHttpUtil)
 
 	// init repositories
-	userRepo := userRepository.NewUserRepository(db)
 	txRepo := transactionRepository.New(db)
 	customerRepo := customerRepository.New(cfg, db)
 	leadRepo := leadsRepository.New(cfg, db)
@@ -65,7 +74,7 @@ func Run(cfg *config.Config) error {
 	employeeRepo := employeeRepository.New(cfg, db)
 
 	// init services
-	userSvc := userService.NewUserService(userRepo, txRepo, mockApiClient)
+	userSvc := userService.NewUserService(mockApiClient)
 	customerSvc := customerService.New(cfg, customerService.ServiceContainer{
 		TransactionRepo: txRepo,
 		Repo:            customerRepo,
