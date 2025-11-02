@@ -40,8 +40,8 @@ func (sbj *ServiceBookingJob) Columns() []string {
 // SelectColumns returns the list of columns to select in queries for the ServiceBookingJob model
 func (sbj *ServiceBookingJob) SelectColumns() []string {
 	return []string{
-		"CAST(i_id AS NVARCHAR(36)) as i_id",
-		"CAST(i_service_booking_id AS NVARCHAR(36)) as i_service_booking_id",
+		"i_id",
+		"i_service_booking_id",
 		"c_job_id",
 		"n_job_name",
 		"v_labor_est_price",

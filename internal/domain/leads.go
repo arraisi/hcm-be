@@ -90,10 +90,10 @@ func (u *Leads) Columns() []string {
 // SelectColumns returns the list of columns to select in queries for the User model
 func (u *Leads) SelectColumns() []string {
 	return []string{
-		"CAST(i_id AS NVARCHAR(36)) as i_id",
-		"CAST(i_customer_id AS NVARCHAR(36)) as i_customer_id",
-		"CAST(i_test_drive_id AS NVARCHAR(36)) as i_test_drive_id",
-		"CAST(i_leads_id AS NVARCHAR(36)) as i_leads_id",
+		"i_id",
+		"i_customer_id",
+		"i_test_drive_id",
+		"i_leads_id",
 		"c_leads_type",
 		"c_leads_follow_up_status",
 		"t_leads_preference_contact_time_start",

@@ -7,13 +7,13 @@ import (
 type ServiceBookingPart struct {
 	ID                       string    `db:"i_id"`
 	ServiceBookingID         string    `db:"i_service_booking_id"`
-	PackageID                string    `db:"i_package_id"`
+	PackageID                *string   `db:"i_package_id"`
 	PartType                 string    `db:"c_part_type"`
-	PartNumber               string    `db:"c_part_number"`
+	PartNumber               *string   `db:"c_part_number"`
 	PartName                 string    `db:"n_part_name"`
 	PartQuantity             int32     `db:"v_part_quantity"`
-	PartSize                 string    `db:"c_part_size"`
-	PartColor                string    `db:"c_part_color"`
+	PartSize                 *string   `db:"c_part_size"`
+	PartColor                *string   `db:"c_part_color"`
 	PartEstPrice             float32   `db:"v_part_est_price"`
 	PartInstallationEstPrice float32   `db:"v_part_installation_est_price"`
 	FlagPartNeedDownPayment  bool      `db:"b_flag_part_need_down_payment"`
@@ -54,9 +54,9 @@ func (sbp *ServiceBookingPart) Columns() []string {
 // SelectColumns returns the list of columns to select in queries for the ServiceBookingPart model
 func (sbp *ServiceBookingPart) SelectColumns() []string {
 	return []string{
-		"CAST(i_id AS NVARCHAR(36)) as i_id",
-		"CAST(service_booking_id AS NVARCHAR(36)) as service_booking_id",
-		"CAST(i_package_id AS NVARCHAR(36)) as i_package_id",
+		"i_id",
+		"i_service_booking_id",
+		"i_package_id",
 		"c_part_type",
 		"c_part_number",
 		"n_part_name",
@@ -81,7 +81,7 @@ func (sbp *ServiceBookingPart) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "i_service_booking_id")
 		values = append(values, sbp.ServiceBookingID)
 	}
-	if sbp.PackageID != "" {
+	if sbp.PackageID != nil {
 		columns = append(columns, "i_package_id")
 		values = append(values, sbp.PackageID)
 	}
@@ -89,7 +89,7 @@ func (sbp *ServiceBookingPart) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "c_part_type")
 		values = append(values, sbp.PartType)
 	}
-	if sbp.PartNumber != "" {
+	if sbp.PartNumber != nil {
 		columns = append(columns, "c_part_number")
 		values = append(values, sbp.PartNumber)
 	}
@@ -101,11 +101,11 @@ func (sbp *ServiceBookingPart) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "v_part_quantity")
 		values = append(values, sbp.PartQuantity)
 	}
-	if sbp.PartSize != "" {
+	if sbp.PartSize != nil {
 		columns = append(columns, "c_part_size")
 		values = append(values, sbp.PartSize)
 	}
-	if sbp.PartColor != "" {
+	if sbp.PartColor != nil {
 		columns = append(columns, "c_part_color")
 		values = append(values, sbp.PartColor)
 	}
@@ -134,13 +134,13 @@ func (sbp *ServiceBookingPart) ToUpdateMap() map[string]interface{} {
 	if sbp.ServiceBookingID != "" {
 		updateMap["i_service_booking_id"] = sbp.ServiceBookingID
 	}
-	if sbp.PackageID != "" {
+	if sbp.PackageID != nil {
 		updateMap["i_package_id"] = sbp.PackageID
 	}
 	if sbp.PartType != "" {
 		updateMap["c_part_type"] = sbp.PartType
 	}
-	if sbp.PartNumber != "" {
+	if sbp.PartNumber != nil {
 		updateMap["c_part_number"] = sbp.PartNumber
 	}
 	if sbp.PartName != "" {
@@ -149,10 +149,10 @@ func (sbp *ServiceBookingPart) ToUpdateMap() map[string]interface{} {
 	if sbp.PartQuantity != 0 {
 		updateMap["v_part_quantity"] = sbp.PartQuantity
 	}
-	if sbp.PartSize != "" {
+	if sbp.PartSize != nil {
 		updateMap["c_part_size"] = sbp.PartSize
 	}
-	if sbp.PartColor != "" {
+	if sbp.PartColor != nil {
 		updateMap["c_part_color"] = sbp.PartColor
 	}
 	if sbp.PartEstPrice != 0 {

@@ -44,6 +44,19 @@ type CustomerVehicleRequest struct {
 	ActualMileage   int32  `json:"actual_mileage"`
 }
 
+func NewCustomerVehicleRequest(domain domain.CustomerVehicle) CustomerVehicleRequest {
+	return CustomerVehicleRequest{
+		Vin:             domain.Vin,
+		KatashikiSuffix: domain.KatashikiSuffix,
+		ColorCode:       domain.ColorCode,
+		Model:           domain.Model,
+		Variant:         domain.Variant,
+		Color:           domain.Color,
+		PoliceNumber:    domain.PoliceNumber,
+		ActualMileage:   domain.ActualMileage,
+	}
+}
+
 func (req CustomerVehicleRequest) ToDomain(customerID, oneAccountID string) domain.CustomerVehicle {
 	return domain.CustomerVehicle{
 		CustomerID:      customerID,

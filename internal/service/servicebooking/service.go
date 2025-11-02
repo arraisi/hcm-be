@@ -7,7 +7,9 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
+	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
+	mockDIDXApi "github.com/arraisi/hcm-be/internal/external/didx"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -17,12 +19,21 @@ type transactionRepository interface {
 	RollbackTransaction(tx *sqlx.Tx) error
 }
 
+type CustomerRepository interface {
+	GetCustomer(ctx context.Context, req customer.GetCustomerRequest) (domain.Customer, error)
+}
+
 type CustomerService interface {
 	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest) (string, error)
 }
 
 type CustomerVehicleService interface {
+	GetCustomerVehicle(ctx context.Context, request customervehicle.GetCustomerVehicleRequest) (domain.CustomerVehicle, error)
 	UpsertCustomerVehicle(ctx context.Context, tx *sqlx.Tx, customerID, oneAccountID string, req customervehicle.CustomerVehicleRequest) (string, error)
+}
+
+type EmployeeRepository interface {
+	GetEmployee(ctx context.Context, req employee.GetEmployeeRequest) (domain.Employee, error)
 }
 
 type Repository interface {
@@ -60,16 +71,22 @@ type Repository interface {
 type ServiceContainer struct {
 	TransactionRepo    transactionRepository
 	Repo               Repository
+	CustomerRepo       CustomerRepository
 	CustomerSvc        CustomerService
 	CustomerVehicleSvc CustomerVehicleService
+	EmployeeRepo       EmployeeRepository
+	MockDIDXApi        *mockDIDXApi.Client
 }
 
 type service struct {
 	cfg                *config.Config
 	transactionRepo    transactionRepository
 	repo               Repository
+	customerRepo       CustomerRepository
 	customerSvc        CustomerService
 	customerVehicleSvc CustomerVehicleService
+	employeeRepo       EmployeeRepository
+	mockDIDXApiClient  *mockDIDXApi.Client
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -77,7 +94,10 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		cfg:                cfg,
 		transactionRepo:    container.TransactionRepo,
 		repo:               container.Repo,
+		customerRepo:       container.CustomerRepo,
 		customerSvc:        container.CustomerSvc,
 		customerVehicleSvc: container.CustomerVehicleSvc,
+		employeeRepo:       container.EmployeeRepo,
+		mockDIDXApiClient:  container.MockDIDXApi,
 	}
 }

@@ -61,119 +61,6 @@ type ServiceBookingRequest struct {
 	ServicePricingCallFlag       bool              `json:"service_pricing_call_flag"`
 }
 
-type WarrantyRequest struct {
-	WarrantyName   string `json:"warranty_name"`
-	WarrantyStatus string `json:"warranty_status"`
-}
-
-func (wr WarrantyRequest) ToModel(serviceBookingID string) domain.ServiceBookingWarranty {
-	now := time.Now()
-	return domain.ServiceBookingWarranty{
-		ServiceBookingID: serviceBookingID,
-		WarrantyName:     wr.WarrantyName,
-		WarrantyStatus:   wr.WarrantyStatus,
-		CreatedAt:        now.UTC(),
-		CreatedBy:        constants.System,
-		UpdatedAt:        now.UTC(),
-		UpdatedBy:        constants.System,
-	}
-}
-
-type RecallRequest struct {
-	RecallID          string   `json:"recall_ID"`
-	RecallDate        string   `json:"recall_date"`
-	RecallDescription string   `json:"recall_description"`
-	AffectedParts     []string `json:"affected_parts"`
-}
-
-func (r *RecallRequest) ToModel(bookingID, part string) domain.ServiceBookingRecall {
-	now := time.Now()
-	return domain.ServiceBookingRecall{
-		ServiceBookingID:  bookingID,
-		RecallID:          r.RecallID,
-		RecallDate:        r.RecallDate,
-		RecallDescription: r.RecallDescription,
-		AffectedPart:      part,
-		CreatedAt:         now.UTC(),
-		CreatedBy:         constants.System,
-		UpdatedAt:         now.UTC(),
-		UpdatedBy:         constants.System,
-	}
-}
-
-type JobRequest struct {
-	JobID         string  `json:"job_ID"`
-	JobName       string  `json:"job_name"`
-	LaborEstPrice float32 `json:"labor_est_price"`
-}
-
-func (j *JobRequest) ToDomain(serviceBookingID string) domain.ServiceBookingJob {
-	now := time.Now()
-	return domain.ServiceBookingJob{
-		ServiceBookingID: serviceBookingID,
-		JobID:            j.JobID,
-		JobName:          j.JobName,
-		LaborEstPrice:    j.LaborEstPrice,
-		CreatedAt:        now.UTC(),
-		CreatedBy:        constants.System,
-		UpdatedAt:        now.UTC(),
-		UpdatedBy:        constants.System,
-	}
-}
-
-type PartRequest struct {
-	PartType                 string            `json:"part_type"`
-	PackageID                string            `json:"package_ID"`
-	PartNumber               string            `json:"part_number"`
-	PartName                 string            `json:"part_name"`
-	PartQuantity             int32             `json:"part_quantity"`
-	PackageParts             []PartItemRequest `json:"package_parts"`
-	PartSize                 string            `json:"part_size"`
-	PartColor                string            `json:"part_color"`
-	PartEstPrice             float32           `json:"part_est_price"`
-	PartInstallationEstPrice float32           `json:"part_installation_est_price"`
-	FlagPartNeedDownPayment  bool              `json:"flag_part_need_down_payment"`
-}
-
-func (p *PartRequest) ToDomain(serviceBookingID string) (domain.ServiceBookingPart, []domain.ServiceBookingPartItem) {
-	now := time.Now()
-
-	partItems := make([]domain.ServiceBookingPartItem, 0, len(p.PackageParts))
-	for _, item := range p.PackageParts {
-		partItems = append(partItems, domain.ServiceBookingPartItem{
-			PartNumber: item.PartNumber,
-			PartName:   item.PartName,
-			CreatedAt:  now.UTC(),
-			CreatedBy:  constants.System,
-			UpdatedAt:  now.UTC(),
-			UpdatedBy:  constants.System,
-		})
-	}
-
-	return domain.ServiceBookingPart{
-		ServiceBookingID:         serviceBookingID,
-		PartType:                 p.PartType,
-		PackageID:                p.PackageID,
-		PartNumber:               p.PartNumber,
-		PartName:                 p.PartName,
-		PartQuantity:             p.PartQuantity,
-		PartSize:                 p.PartSize,
-		PartColor:                p.PartColor,
-		PartEstPrice:             p.PartEstPrice,
-		PartInstallationEstPrice: p.PartInstallationEstPrice,
-		FlagPartNeedDownPayment:  p.FlagPartNeedDownPayment,
-		CreatedAt:                now.UTC(),
-		CreatedBy:                constants.System,
-		UpdatedAt:                now.UTC(),
-		UpdatedBy:                constants.System,
-	}, partItems
-}
-
-type PartItemRequest struct {
-	PartNumber string `json:"part_number"`
-	PartName   string `json:"part_name"`
-}
-
 // ToServiceBookingModel converts the DataRequest to the domain.TestDrive model
 func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicleID string) domain.ServiceBooking {
 	return domain.ServiceBooking{
@@ -249,5 +136,61 @@ func (g *GetServiceBooking) Apply(q *sqrl.SelectBuilder) {
 	}
 	if g.EventID != nil {
 		q.Where(sqrl.Eq{"i_event_id": g.EventID})
+	}
+}
+
+type ConfirmServiceBookingRequest struct {
+	ServiceBookingID string `json:"service_booking_id"`
+	EmployeeID       string `json:"employee_id"`
+}
+
+// ServiceBookingEventData represents the data payload for confirm event
+type ServiceBookingEventData struct {
+	OneAccount     customer.OneAccountRequest `json:"one_account" validate:"required"`
+	ServiceBooking *ServiceBookingRequest     `json:"service_booking" validate:"required"`
+	PICAssignment  *PICAssignmentRequest      `json:"pic_assignment,omitempty"`
+}
+
+// PICAssignmentRequest represents the PIC assignment information
+type PICAssignmentRequest struct {
+	EmployeeID string `json:"employee_id" validate:"required"`
+	FirstName  string `json:"first_name" validate:"required"`
+}
+
+// NewServiceBookingRequest creates a ServiceBookingRequest from domain model
+func NewServiceBookingRequest(sb domain.ServiceBooking, warranties []WarrantyRequest, recalls []RecallRequest) ServiceBookingRequest {
+	return ServiceBookingRequest{
+		Warranty:                     warranties,
+		Recalls:                      recalls,
+		BookingId:                    sb.ServiceBookingID,
+		BookingNumber:                sb.ServiceBookingNumber,
+		BookingSource:                sb.ServiceBookingSource,
+		BookingStatus:                sb.ServiceBookingStatus,
+		CreatedDatetime:              sb.CreatedDatetime.Unix(),
+		ServiceCategory:              sb.ServiceCategory,
+		ServiceSequence:              sb.ServiceSequence,
+		SlotDatetimeStart:            sb.SlotDatetimeStart.Unix(),
+		SlotDatetimeEnd:              sb.SlotDatetimeEnd.Unix(),
+		SlotRequestedDatetimeStart:   sb.SlotRequestedDatetimeStart.Unix(),
+		SlotRequestedDatetimeEnd:     sb.SlotRequestedDatetimeEnd.Unix(),
+		SlotUnavailableFlag:          sb.SlotUnavailableFlag,
+		CarrierName:                  sb.CarrierName,
+		CarrierPhoneNumber:           sb.CarrierPhoneNumber,
+		PreferenceContactPhoneNumber: sb.PreferenceContactPhoneNumber,
+		PreferenceContactTimeStart:   sb.PreferenceContactTimeStart,
+		PreferenceContactTimeEnd:     sb.PreferenceContactTimeEnd,
+		ServiceLocation:              sb.ServiceLocation,
+		OutletID:                     sb.OutletID,
+		OutletName:                   sb.OutletName,
+		MobileServiceAddress:         sb.MobileServiceAddress,
+		Province:                     sb.Province,
+		City:                         sb.City,
+		District:                     sb.District,
+		SubDistrict:                  sb.SubDistrict,
+		PostalCode:                   sb.PostalCode,
+		VehicleProblem:               sb.VehicleProblem,
+		CancellationReason:           sb.CancellationReason,
+		OtherCancellationReason:      sb.OtherCancellationReason,
+		ServicePricingCallFlag:       sb.ServicePricingCallFlag,
 	}
 }

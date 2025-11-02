@@ -16,6 +16,8 @@ type ServiceBookingWarranty struct {
 	Deleted          bool      `db:"b_deleted"`
 }
 
+type ServiceBookingWarranties []ServiceBookingWarranty
+
 // TableName returns the database table name for the ServiceBookingWarranty model
 func (sbw *ServiceBookingWarranty) TableName() string {
 	return "dbo.tr_service_booking_warranty"

@@ -30,3 +30,8 @@ func (d *DeleteServiceBookingPartItem) Apply(q *sqrl.DeleteBuilder) {
 		q.Where(sqrl.Eq{"i_service_booking_id": d.ServiceBookingID})
 	}
 }
+
+type PartItemRequest struct {
+	PartNumber string `json:"part_number"`
+	PartName   string `json:"part_name"`
+}

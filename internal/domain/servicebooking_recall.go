@@ -42,9 +42,9 @@ func (sbr *ServiceBookingRecall) Columns() []string {
 // SelectColumns returns the list of columns to select in queries for the ServiceBookingRecall model
 func (sbr *ServiceBookingRecall) SelectColumns() []string {
 	return []string{
-		"CAST(i_id AS NVARCHAR(36)) as i_id",
-		"CAST(i_service_booking_id AS NVARCHAR(36)) as i_service_booking_id",
-		"CAST(i_recall_id AS NVARCHAR(36)) as i_recall_id",
+		"i_id",
+		"i_service_booking_id",
+		"i_recall_id",
 		"d_recall_date",
 		"e_recall_description",
 		"c_affected_part",

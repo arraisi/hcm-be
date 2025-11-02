@@ -10,6 +10,7 @@ import (
 
 type Service interface {
 	RequestServiceBooking(ctx context.Context, request servicebooking.ServiceBookingEvent) error
+	ConfirmServiceBooking(ctx context.Context, request servicebooking.ConfirmServiceBookingRequest) error
 }
 
 type IdempotencyService interface {

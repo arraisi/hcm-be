@@ -97,11 +97,11 @@ func (sb *ServiceBooking) Columns() []string {
 // SelectColumns returns the list of columns to select in queries for the ServiceBooking model
 func (sb *ServiceBooking) SelectColumns() []string {
 	return []string{
-		"CAST(i_id AS VARCHAR) AS i_id",
-		"CAST(i_customer_id AS VARCHAR) AS i_customer_id",
-		"CAST(i_customer_vehicle_id AS VARCHAR) AS i_customer_vehicle_id",
-		"CAST(i_service_booking_id AS VARCHAR) AS i_service_booking_id",
-		"CAST(i_event_id AS VARCHAR) AS i_event_id",
+		"i_id",
+		"i_customer_id",
+		"i_customer_vehicle_id",
+		"i_service_booking_id",
+		"i_event_id",
 		"c_service_booking_number",
 		"c_service_booking_source",
 		"c_service_booking_status",
