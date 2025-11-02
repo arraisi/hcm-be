@@ -54,7 +54,7 @@ func (h *Handler) RequestServiceBookingGR(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = h.svc.RequestServiceBooking(r.Context(), bookingEvent)
+	err = h.svc.RequestServiceBookingGR(r.Context(), bookingEvent)
 	if err != nil {
 		// Combine webhook and test drive error lists
 		combinedErrorList := errors.ErrListWebhook.Extend(errors.ErrListTestDrive)

@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (s *service) RequestServiceBooking(ctx context.Context, event servicebooking.ServiceBookingEvent) error {
+func (s *service) RequestServiceBookingGR(ctx context.Context, event servicebooking.ServiceBookingEvent) error {
 	// Validate service category
 	if _, ok := constants.ServiceCategoryMap[event.Data.ServiceBookingRequest.ServiceCategory]; !ok {
 		return errorx.ErrServiceBookingCategoryInvalid
