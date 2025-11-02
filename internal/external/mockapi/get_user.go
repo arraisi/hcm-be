@@ -6,17 +6,20 @@ import (
 	"fmt"
 
 	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
 func (c *Client) GetUser(ctx context.Context, userID int64) (domain.User, error) {
 	var user domain.User
 
-	endPoint := "/v1/users/" + utils.ToString(userID)
-	result, err := c.Get(ctx, endPoint)
+	url := fmt.Sprintf("%s/v1/test-drive/%d", c.cfg.Http.MockDIDXApi.BaseUrl, userID)
+	header := map[string]string{}
+	token := c.cfg.Http.MockApi.APIKey
+
+	result, err := c.httpUtil.Get(ctx, url, token, header)
 	if err != nil {
-		return user, err
+		return domain.User{}, err
 	}
+
 	if err := json.Unmarshal(result, &user); err != nil {
 		return user, fmt.Errorf("parse response: %w", err)
 	}

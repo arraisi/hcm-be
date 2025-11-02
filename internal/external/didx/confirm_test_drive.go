@@ -6,12 +6,14 @@ import (
 	"fmt"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
-	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
 func (c *Client) ConfirmTestDrive(ctx context.Context, request testdrive.TestDriveEvent) error {
-	endPoint := "/v1/test-drive/" + utils.ToString(1)
-	result, err := c.Put(ctx, request, endPoint)
+	url := fmt.Sprintf("%s/v1/test-drive", c.cfg.Http.MockDIDXApi.BaseUrl)
+	header := map[string]string{}
+	token := c.cfg.Http.MockDIDXApi.APIKey
+
+	result, err := c.httpUtil.Post(ctx, url, request, token, header)
 	if err != nil {
 		return err
 	}

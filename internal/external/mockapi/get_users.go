@@ -24,14 +24,15 @@ func (c *Client) GetUsers(ctx context.Context, request user.GetUserRequest) ([]d
 		query.Add("page", strconv.Itoa(request.Offset))
 	}
 
-	// Build endpoint with query
-	endPoint := "/v1/users"
-	endPointWithQuery := endPoint + "?" + query.Encode()
+	baseUrl := fmt.Sprintf("%s/v1/users", c.cfg.Http.MockDIDXApi.BaseUrl)
+	urlWithQuery := baseUrl + "?" + query.Encode()
 
-	// Make request
-	result, err := c.Get(ctx, endPointWithQuery)
+	header := map[string]string{}
+	token := c.cfg.Http.MockApi.APIKey
+
+	result, err := c.httpUtil.Get(ctx, urlWithQuery, token, header)
 	if err != nil {
-		return users, err
+		return nil, err
 	}
 
 	// Parse JSON response
