@@ -5,7 +5,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/user"
-	"github.com/arraisi/hcm-be/internal/ext/mockapi"
+	"github.com/arraisi/hcm-be/internal/external/mockapi"
 )
 
 // UserService provides user-related operations

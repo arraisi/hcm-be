@@ -9,7 +9,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
-	mockDIDXApi "github.com/arraisi/hcm-be/internal/ext/didx"
+	mockDIDXApi "github.com/arraisi/hcm-be/internal/external/didx"
 	"github.com/jmoiron/sqlx"
 )
 

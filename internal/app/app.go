@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/ext/didx"
-	"github.com/arraisi/hcm-be/internal/ext/mockapi"
+	"github.com/arraisi/hcm-be/internal/external/didx"
+	"github.com/arraisi/hcm-be/internal/external/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
