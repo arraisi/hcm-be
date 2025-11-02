@@ -1,11 +1,10 @@
-package webhook
+package servicebooking
 
 import (
 	"context"
 	"testing"
 
 	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/golang/mock/gomock"
 )
 
@@ -13,8 +12,8 @@ type mock struct {
 	Config             *config.Config
 	Ctrl               *gomock.Controller
 	Ctx                context.Context
-	mockTestDriveSvc   *MockTestDriveService
-	mockIdempotencySvc *MockIdempotencyStore
+	mockSvc            *MockService
+	mockIdempotencySvc *MockIdempotencyService
 	handler            *Handler
 }
 
@@ -37,14 +36,13 @@ func setupMock(t *testing.T) mock {
 		},
 	}
 
-	m.mockTestDriveSvc = NewMockTestDriveService(m.Ctrl)
-	m.mockIdempotencySvc = NewMockIdempotencyStore(m.Ctrl)
+	m.mockSvc = NewMockService(m.Ctrl)
+	m.mockIdempotencySvc = NewMockIdempotencyService(m.Ctrl)
 
 	m.handler = &Handler{
-		config:            m.Config,
-		signatureVerifier: middleware.NewSignatureVerifier(m.Config.Webhook.HMACSecret),
-		idempotencySvc:    m.mockIdempotencySvc,
-		testDriveSvc:      m.mockTestDriveSvc,
+		config:         m.Config,
+		idempotencySvc: m.mockIdempotencySvc,
+		svc:            m.mockSvc,
 	}
 
 	return m

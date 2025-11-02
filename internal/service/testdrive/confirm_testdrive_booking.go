@@ -2,10 +2,10 @@ package testdrive
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
+	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/arraisi/hcm-be/pkg/constants"
@@ -36,6 +36,13 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 		return err
 	}
 
+	employeeData, err := s.employeeRepo.GetEmployee(ctx, employee.GetEmployeeRequest{
+		EmployeeID: utils.ToPointer(request.EmployeeID),
+	})
+	if err != nil {
+		return err
+	}
+
 	tdEventConfirmRequest := testdrive.TestDriveEvent{
 		Process:   "test_drive_confirm",
 		EventID:   testDrive.EventID,
@@ -45,14 +52,16 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 			TestDrive:  testdrive.NewTestDriveRequest(testDrive),
 			Leads:      leads.NewLeadsRequest(leadsData),
 			PICAssignment: utils.ToPointer(testdrive.PICAssignmentRequest{
-				EmployeeID: request.PICID,
-				FirstName:  request.PICFirstName,
-				LastName:   request.PICLastName,
+				EmployeeID: employeeData.EmployeeID,
+				FirstName:  employeeData.EmployeeName,
 			}),
 		},
 	}
 
-	fmt.Printf("%+v", tdEventConfirmRequest)
+	err = s.mockDIDXApiClient.ConfirmTestDrive(ctx, tdEventConfirmRequest)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -56,7 +56,6 @@ type TestDriveEventData struct {
 	OneAccount    customer.OneAccountRequest `json:"one_account" validate:"required"`
 	TestDrive     TestDriveRequest           `json:"test_drive" validate:"required"`
 	Leads         leads.LeadsRequest         `json:"leads" validate:"required"`
-	Score         leads.Score                `json:"score" validate:"required"`
 	PICAssignment *PICAssignmentRequest      `json:"pic_assignment,omitempty"`
 }
 
@@ -127,8 +126,6 @@ func (req GetTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
 }
 
 type ConfirmTestDriveBookingRequest struct {
-	TestDriveID  string `json:"test_drive_id"`
-	PICID        string `json:"employee_id"`
-	PICFirstName string `json:"first_name"`
-	PICLastName  string `json:"last_name"`
+	TestDriveID string `json:"test_drive_id"`
+	EmployeeID  string `json:"employee_id"`
 }

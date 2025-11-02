@@ -6,8 +6,10 @@ import (
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
+	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
+	mockDIDXApi "github.com/arraisi/hcm-be/internal/external/didx"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -34,6 +36,10 @@ type LeadRepository interface {
 	GetLeads(ctx context.Context, req leads.GetLeadsRequest) (domain.Leads, error)
 }
 
+type EmployeeRepository interface {
+	GetEmployee(ctx context.Context, req employee.GetEmployeeRequest) (domain.Employee, error)
+}
+
 type Repository interface {
 	CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req *domain.TestDrive) error
 	GetTestDrive(ctx context.Context, req testdrive.GetTestDriveRequest) (domain.TestDrive, error)
@@ -47,24 +53,30 @@ type ServiceContainer struct {
 	CustomerRepo    CustomerRepository
 	LeadRepo        LeadRepository
 	CustomerSvc     CustomerService
+	EmployeeRepo    EmployeeRepository
+	MockDIDXApi     *mockDIDXApi.Client
 }
 
 type service struct {
-	cfg             *config.Config
-	transactionRepo transactionRepository
-	repo            Repository
-	customerRepo    CustomerRepository
-	leadRepo        LeadRepository
-	customerSvc     CustomerService
+	cfg               *config.Config
+	transactionRepo   transactionRepository
+	repo              Repository
+	customerRepo      CustomerRepository
+	leadRepo          LeadRepository
+	customerSvc       CustomerService
+	employeeRepo      EmployeeRepository
+	mockDIDXApiClient *mockDIDXApi.Client
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
 	return &service{
-		cfg:             cfg,
-		transactionRepo: container.TransactionRepo,
-		repo:            container.Repo,
-		customerRepo:    container.CustomerRepo,
-		leadRepo:        container.LeadRepo,
-		customerSvc:     container.CustomerSvc,
+		cfg:               cfg,
+		transactionRepo:   container.TransactionRepo,
+		repo:              container.Repo,
+		customerRepo:      container.CustomerRepo,
+		leadRepo:          container.LeadRepo,
+		customerSvc:       container.CustomerSvc,
+		employeeRepo:      container.EmployeeRepo,
+		mockDIDXApiClient: container.MockDIDXApi,
 	}
 }

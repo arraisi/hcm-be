@@ -4,25 +4,28 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/ext/mockapi"
+	"github.com/arraisi/hcm-be/internal/external/didx"
+	"github.com/arraisi/hcm-be/internal/external/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
+	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
-	"github.com/arraisi/hcm-be/internal/http/handlers/webhook"
+	"github.com/arraisi/hcm-be/internal/platform/httpclient"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
+	employeeRepository "github.com/arraisi/hcm-be/internal/repository/employee"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
-	userRepository "github.com/arraisi/hcm-be/internal/repository/user"
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	customervehicleService "github.com/arraisi/hcm-be/internal/service/customervehicle"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	servicebookingService "github.com/arraisi/hcm-be/internal/service/servicebooking"
 	testdriveService "github.com/arraisi/hcm-be/internal/service/testdrive"
 	userService "github.com/arraisi/hcm-be/internal/service/user"
+	"github.com/arraisi/hcm-be/pkg/utils"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/microsoft/go-mssqldb" // register driver
@@ -49,19 +52,29 @@ func Run(cfg *config.Config) error {
 	db.SetConnMaxIdleTime(cfg.Database.MaxConnectionIdleTime)
 
 	// init external clients
-	mockApiClient := mockapi.New(cfg.Http.MockApi)
+	mockApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.MockApi.Timeout,
+		Retries: cfg.Http.MockApi.RetryCount,
+	})
+	mockApiClient := mockapi.New(cfg, mockApiHttpUtil)
+
+	mockDIDXApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.MockDIDXApi.Timeout,
+		Retries: cfg.Http.MockDIDXApi.RetryCount,
+	})
+	mockDIDXApiClient := didx.New(cfg, mockDIDXApiHttpUtil)
 
 	// init repositories
-	userRepo := userRepository.NewUserRepository(db)
 	txRepo := transactionRepository.New(db)
 	customerRepo := customerRepository.New(cfg, db)
 	leadRepo := leadsRepository.New(cfg, db)
 	testDriveRepo := testdriveRepository.New(cfg, db)
 	serviceBookingRepo := servicebookingRepository.New(cfg, db)
 	customerVehicleRepo := customervehicleRepository.New(cfg, db)
+	employeeRepo := employeeRepository.New(cfg, db)
 
 	// init services
-	userSvc := userService.NewUserService(userRepo, txRepo, mockApiClient)
+	userSvc := userService.NewUserService(mockApiClient)
 	customerSvc := customerService.New(cfg, customerService.ServiceContainer{
 		TransactionRepo: txRepo,
 		Repo:            customerRepo,
@@ -72,6 +85,8 @@ func Run(cfg *config.Config) error {
 		CustomerRepo:    customerRepo,
 		LeadRepo:        leadRepo,
 		CustomerSvc:     customerSvc,
+		EmployeeRepo:    employeeRepo,
+		MockDIDXApi:     mockDIDXApiClient,
 	})
 	idempotencyStore := idempotencyService.NewInMemoryIdempotencyStore(24 * time.Hour) // 24 hour TTL
 	customerVehicleSvc := customervehicleService.New(cfg, customervehicleService.ServiceContainer{
@@ -88,15 +103,15 @@ func Run(cfg *config.Config) error {
 	// init handlers
 	userHandler := user.NewUserHandler(userSvc)
 	customerHandler := customer.New(customerSvc)
-	webhookHandler := webhook.NewWebhookHandler(cfg, idempotencyStore, testDriveSvc, serviceBookingSvc)
-	testdriveHandler := testdrive.New(testDriveSvc)
+	serviceBookingHandler := servicebooking.New(cfg, serviceBookingSvc, idempotencyStore)
+	testDriveHandler := testdrive.New(cfg, testDriveSvc, idempotencyStore)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
-		Config:           cfg,
-		UserHandler:      userHandler,
-		CustomerHandler:  customerHandler,
-		WebhookHandler:   webhookHandler,
-		TestDriveHandler: testdriveHandler,
+		Config:                cfg,
+		UserHandler:           userHandler,
+		CustomerHandler:       customerHandler,
+		ServiceBookingHandler: serviceBookingHandler,
+		TestDriveHandler:      testDriveHandler,
 	})
 
 	return apphttp.NewServer(cfg, router)
