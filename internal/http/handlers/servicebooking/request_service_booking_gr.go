@@ -13,8 +13,8 @@ import (
 	"github.com/arraisi/hcm-be/pkg/utils/validator"
 )
 
-// RequestServiceBooking handles POST /webhook/service-booking
-func (h *Handler) RequestServiceBooking(w http.ResponseWriter, r *http.Request) {
+// RequestServiceBookingGR handles POST /webhook/service-booking
+func (h *Handler) RequestServiceBookingGR(w http.ResponseWriter, r *http.Request) {
 	// Headers are already validated by middleware, just verify they exist
 	_, ok := middleware.GetWebhookHeaders(r.Context())
 	if !ok {
