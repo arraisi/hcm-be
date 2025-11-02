@@ -1,7 +1,6 @@
 package testdrive
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
@@ -13,30 +12,14 @@ import (
 
 // ConfirmTestDrive handles PUT /test-drives/{test_drive_id}
 func (h *Handler) ConfirmTestDrive(w http.ResponseWriter, r *http.Request) {
-	// Extract test-drive-id from URL path
-	testDriveID := chi.URLParam(r, "test_drive_id")
-	if testDriveID == "" {
-		errorResponse := errorx.NewErrorResponse(http.StatusBadRequest, errors.New("test-drive-id is required"))
-		response.ErrorResponseJSON(w, errorResponse)
-		return
-	}
-
-	// Extract employee_id from query parameters
-	employeeID := r.URL.Query().Get("employee_id")
-	if employeeID == "" {
-		errorResponse := errorx.NewErrorResponse(http.StatusBadRequest, errors.New("employee_id query parameter is required"))
-		response.ErrorResponseJSON(w, errorResponse)
-		return
-	}
-
 	// Parse JSON body
-	var request testdrive.ConfirmTestDriveBookingRequest
-
-	// Set the test drive ID from URL path (takes precedence over body)
-	request.TestDriveID = testDriveID
-
-	// Set the employee ID from query parameter (takes precedence over body)
-	request.EmployeeID = employeeID
+	request := testdrive.ConfirmTestDriveBookingRequest{
+		TestDriveID:         chi.URLParam(r, "test_drive_id"),
+		EmployeeID:          r.URL.Query().Get("employee_id"),
+		TestDriveStatus:     r.URL.Query().Get("test_drive_status"),
+		LeadsType:           r.URL.Query().Get("leads_type"),
+		LeadsFollowUpStatus: r.URL.Query().Get("leads_follow_up_status"),
+	}
 
 	// Validate payload structure
 	if err := validator.ValidateStruct(request); err != nil {

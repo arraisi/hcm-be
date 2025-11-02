@@ -1,7 +1,6 @@
 package servicebooking
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
@@ -13,30 +12,13 @@ import (
 
 // ConfirmServiceBooking handles PUT /service-bookings/{service_booking_id}
 func (h *Handler) ConfirmServiceBooking(w http.ResponseWriter, r *http.Request) {
-	// Extract service-booking-id from URL path
-	serviceBookingID := chi.URLParam(r, "service_booking_id")
-	if serviceBookingID == "" {
-		errorResponse := errorx.NewErrorResponse(http.StatusBadRequest, errors.New("service-booking-id is required"))
-		response.ErrorResponseJSON(w, errorResponse)
-		return
-	}
-
-	// Extract employee_id from query parameters
-	employeeID := r.URL.Query().Get("employee_id")
-	if employeeID == "" {
-		errorResponse := errorx.NewErrorResponse(http.StatusBadRequest, errors.New("employee_id query parameter is required"))
-		response.ErrorResponseJSON(w, errorResponse)
-		return
-	}
-
 	// Parse JSON body
-	var request servicebooking.ConfirmServiceBookingRequest
-
-	// Set the service booking ID from URL path (takes precedence over body)
-	request.ServiceBookingID = serviceBookingID
-
-	// Set the employee ID from query parameter (takes precedence over body)
-	request.EmployeeID = employeeID
+	request := servicebooking.ConfirmServiceBookingRequest{
+		ServiceBookingID: chi.URLParam(r, "service_booking_id"),
+		EmployeeID:       r.URL.Query().Get("employee_id"),
+		Status:           r.URL.Query().Get("status"),
+		Location:         r.URL.Query().Get("location"),
+	}
 
 	// Validate payload structure
 	if err := validator.ValidateStruct(request); err != nil {

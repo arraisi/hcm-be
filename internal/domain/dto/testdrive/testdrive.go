@@ -126,6 +126,9 @@ func (req GetTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
 }
 
 type ConfirmTestDriveBookingRequest struct {
-	TestDriveID string `json:"test_drive_id"`
-	EmployeeID  string `json:"employee_id"`
+	TestDriveID         string `json:"test_drive_id" validate:"required"`
+	EmployeeID          string `json:"employee_id" validate:"required"`
+	TestDriveStatus     string `json:"test_drive_status" validate:"required,oneof=CONFIRMED CANCELLED COMPLETED NOT_SHOW"`
+	LeadsType           string `json:"leads_type,omitempty"`
+	LeadsFollowUpStatus string `json:"leads_follow_up_status" validate:"required,oneof=NOT_YET_FOLLOWED_UP ON_CONSIDERATION NO_RESPONSE"`
 }

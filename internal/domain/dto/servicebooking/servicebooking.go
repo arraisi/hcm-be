@@ -140,8 +140,10 @@ func (g *GetServiceBooking) Apply(q *sqrl.SelectBuilder) {
 }
 
 type ConfirmServiceBookingRequest struct {
-	ServiceBookingID string `json:"service_booking_id"`
-	EmployeeID       string `json:"employee_id"`
+	ServiceBookingID string `json:"service_booking_id" validate:"required"`
+	EmployeeID       string `json:"employee_id" validate:"required"`
+	Status           string `json:"status" validate:"required,oneof=MANUALLY_CONFIRMED CANCELLED COMPLETED NOT_SHOW SYSTEM_CONFIRMED"`
+	Location         string `json:"location" validate:"required,oneof=WORKSHOP MOBILE_SERVICES"`
 }
 
 // ServiceBookingEventData represents the data payload for confirm event
