@@ -40,7 +40,7 @@ type CustomerVehicleRequest struct {
 	Model           string `json:"model"`
 	Variant         string `json:"variant"`
 	Color           string `json:"color"`
-	PoliceNumber    string `json:"police_number"`
+	PoliceNumber    string `json:"police_number" validate:"required"`
 	ActualMileage   int32  `json:"actual_mileage"`
 }
 

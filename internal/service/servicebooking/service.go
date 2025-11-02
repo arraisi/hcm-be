@@ -28,6 +28,7 @@ type CustomerVehicleService interface {
 type Repository interface {
 	CreateServiceBooking(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBooking) error
 	GetServiceBooking(ctx context.Context, req servicebooking.GetServiceBooking) (domain.ServiceBooking, error)
+	GetServiceBookings(ctx context.Context, req servicebooking.GetServiceBooking) ([]domain.ServiceBooking, error)
 	UpdateServiceBooking(ctx context.Context, tx *sqlx.Tx, req domain.ServiceBooking) error
 
 	CreateServiceBookingJob(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingJob) error

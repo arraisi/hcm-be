@@ -4,11 +4,18 @@ import (
 	"context"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
+	"github.com/arraisi/hcm-be/pkg/constants"
+	errorx "github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/jmoiron/sqlx"
 )
 
 func (s *service) RequestServiceBooking(ctx context.Context, event servicebooking.ServiceBookingEvent) error {
+	// Validate service category
+	if _, ok := constants.ServiceCategoryMap[event.Data.ServiceBookingRequest.ServiceCategory]; !ok {
+		return errorx.ErrServiceBookingCategoryInvalid
+	}
+
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err
@@ -20,6 +27,14 @@ func (s *service) RequestServiceBooking(ctx context.Context, event servicebookin
 	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, event.Data.OneAccount)
 	if err != nil {
 		return err
+	}
+
+	// Check if customer already has an active periodic maintenance booking
+	if event.Data.ServiceBookingRequest.ServiceCategory == constants.ServiceCategoryPeriodicMaintenance {
+		err := s.checkActivePeriodicMaintenance(ctx, customerID)
+		if err != nil {
+			return err
+		}
 	}
 
 	customerVehicleID, err := s.customerVehicleSvc.UpsertCustomerVehicle(ctx, tx, customerID, event.Data.OneAccount.OneAccountID, event.Data.CustomerVehicle)
@@ -142,5 +157,29 @@ func (s *service) handleServiceBookingParts(ctx context.Context, tx *sqlx.Tx, se
 			}
 		}
 	}
+	return nil
+}
+
+// checkActivePeriodicMaintenance checks if the customer has any active periodic maintenance bookings
+func (s *service) checkActivePeriodicMaintenance(ctx context.Context, customerID string) error {
+	// Get all service bookings for the customer with periodic maintenance category
+	// and active statuses
+	bookings, err := s.repo.GetServiceBookings(ctx, servicebooking.GetServiceBooking{
+		CustomerID:      utils.ToPointer(customerID),
+		ServiceCategory: utils.ToPointer(constants.ServiceCategoryPeriodicMaintenance),
+	})
+	if err != nil {
+		return err
+	}
+
+	// Check if any booking has an active status
+	for _, booking := range bookings {
+		for _, activeStatus := range constants.ActiveServiceBookingStatuses {
+			if booking.ServiceBookingStatus == activeStatus {
+				return errorx.ErrServiceBookingCustomerHasActive
+			}
+		}
+	}
+
 	return nil
 }

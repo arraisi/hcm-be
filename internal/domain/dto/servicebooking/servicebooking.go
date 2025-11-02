@@ -29,14 +29,14 @@ type DataRequest struct {
 type ServiceBookingRequest struct {
 	Warranty                     []WarrantyRequest `json:"warranty"`
 	Recalls                      []RecallRequest   `json:"recalls"`
-	BookingId                    string            `json:"booking_ID"`
-	BookingNumber                string            `json:"booking_number"`
-	BookingSource                string            `json:"booking_source"`
-	BookingStatus                string            `json:"booking_status"`
-	CreatedDatetime              int64             `json:"created_datetime"`
-	ServiceCategory              string            `json:"service_category"`
+	BookingId                    string            `json:"booking_ID" validate:"required"`
+	BookingNumber                string            `json:"booking_number" validate:"required"`
+	BookingSource                string            `json:"booking_source" validate:"required"`
+	BookingStatus                string            `json:"booking_status" validate:"required"`
+	CreatedDatetime              int64             `json:"created_datetime" validate:"required"`
+	ServiceCategory              string            `json:"service_category" validate:"required"`
 	ServiceSequence              int32             `json:"service_sequence"`
-	SlotDatetimeStart            int64             `json:"slot_datetime_start"`
+	SlotDatetimeStart            int64             `json:"slot_datetime_start" validate:"required"`
 	SlotDatetimeEnd              int64             `json:"slot_datetime_end"`
 	SlotRequestedDatetimeStart   int64             `json:"slot_requested_datetime_start"`
 	SlotRequestedDatetimeEnd     int64             `json:"slot_requested_datetime_end"`
@@ -47,8 +47,8 @@ type ServiceBookingRequest struct {
 	PreferenceContactTimeStart   string            `json:"preference_contact_time_start"`
 	PreferenceContactTimeEnd     string            `json:"preference_contact_time_end"`
 	ServiceLocation              string            `json:"service_location"`
-	OutletID                     string            `json:"outlet_ID"`
-	OutletName                   string            `json:"outlet_name"`
+	OutletID                     string            `json:"outlet_ID" validate:"required"`
+	OutletName                   string            `json:"outlet_name" validate:"required"`
 	MobileServiceAddress         string            `json:"mobile_service_address"`
 	Province                     string            `json:"province"`
 	City                         string            `json:"city"`
@@ -219,9 +219,12 @@ func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicle
 
 type GetServiceBooking struct {
 	ID                   *string
+	CustomerID           *string
 	ServiceBookingID     *string
 	ServiceBookingNumber *string
 	ServiceBookingSource *string
+	ServiceBookingStatus *string
+	ServiceCategory      *string
 	EventID              *string
 }
 
@@ -229,11 +232,20 @@ func (g *GetServiceBooking) Apply(q *sqrl.SelectBuilder) {
 	if g.ID != nil {
 		q.Where(sqrl.Eq{"i_id": g.ID})
 	}
+	if g.CustomerID != nil {
+		q.Where(sqrl.Eq{"i_customer_id": g.CustomerID})
+	}
 	if g.ServiceBookingID != nil {
 		q.Where(sqrl.Eq{"i_service_booking_id": g.ServiceBookingID})
 	}
 	if g.ServiceBookingNumber != nil {
 		q.Where(sqrl.Eq{"c_service_booking_number": g.ServiceBookingNumber})
+	}
+	if g.ServiceBookingStatus != nil {
+		q.Where(sqrl.Eq{"c_service_booking_status": g.ServiceBookingStatus})
+	}
+	if g.ServiceCategory != nil {
+		q.Where(sqrl.Eq{"c_service_category": g.ServiceCategory})
 	}
 	if g.EventID != nil {
 		q.Where(sqrl.Eq{"i_event_id": g.EventID})

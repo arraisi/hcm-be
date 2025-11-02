@@ -63,14 +63,22 @@ var (
 		{Error: ErrWebhookInvalidEventID, Code: http.StatusBadRequest},
 	}
 
-	ErrTestDriveNotFound           = errors.New("test drive booking not found")
-	ErrTestDriveInvalidData        = errors.New("invalid test drive data")
-	ErrTestDriveCreateFailed       = errors.New("failed to create test drive booking")
-	ErrTestDriveUpdateFailed       = errors.New("failed to update test drive booking")
-	ErrTestDriveInvalidStatus      = errors.New("invalid test drive status")
-	ErrTestDriveStatusInvalid      = errors.New("test drive status is invalid")
-	ErrLeadsFollowUpStatusInvalid  = errors.New("leads follow-up status is invalid")
-	ErrTestDriveCustomerHasBooking = errors.New("customer already has a test drive booking")
+	ErrTestDriveNotFound                        = errors.New("test drive booking not found")
+	ErrTestDriveInvalidData                     = errors.New("invalid test drive data")
+	ErrTestDriveCreateFailed                    = errors.New("failed to create test drive booking")
+	ErrTestDriveUpdateFailed                    = errors.New("failed to update test drive booking")
+	ErrTestDriveInvalidStatus                   = errors.New("invalid test drive status")
+	ErrTestDriveStatusInvalid                   = errors.New("test drive status is invalid")
+	ErrTestDriveLocationInvalid                 = errors.New("test drive location is invalid")
+	ErrLeadsFollowUpStatusInvalid               = errors.New("leads follow-up status is invalid")
+	ErrLeadsTypeInvalid                         = errors.New("leads type is invalid")
+	ErrLeadsSourceInvalid                       = errors.New("leads source is invalid")
+	ErrLeadsTAMLeadScoreInvalid                 = errors.New("leads TAM lead score is invalid")
+	ErrLeadsOutletLeadScoreInvalid              = errors.New("leads outlet lead score is invalid")
+	ErrTestDriveCancellationReasonInvalid       = errors.New("test drive cancellation reason is invalid")
+	ErrTestDriveCancellationReasonRequired      = errors.New("cancellation reason is required for cancelled test drive")
+	ErrTestDriveOtherCancellationReasonRequired = errors.New("other cancellation reason is required when cancellation reason is OTHERS")
+	ErrTestDriveCustomerHasBooking              = errors.New("customer already has a test drive booking")
 	// Test Drive-specific error list
 	ErrListTestDrive = ErrList{
 		{Error: ErrTestDriveNotFound, Code: http.StatusNotFound},
@@ -79,8 +87,25 @@ var (
 		{Error: ErrTestDriveUpdateFailed, Code: http.StatusInternalServerError},
 		{Error: ErrTestDriveInvalidStatus, Code: http.StatusBadRequest},
 		{Error: ErrTestDriveStatusInvalid, Code: http.StatusBadRequest},
+		{Error: ErrTestDriveLocationInvalid, Code: http.StatusBadRequest},
 		{Error: ErrLeadsFollowUpStatusInvalid, Code: http.StatusBadRequest},
+		{Error: ErrLeadsTypeInvalid, Code: http.StatusBadRequest},
+		{Error: ErrLeadsSourceInvalid, Code: http.StatusBadRequest},
+		{Error: ErrLeadsTAMLeadScoreInvalid, Code: http.StatusBadRequest},
+		{Error: ErrLeadsOutletLeadScoreInvalid, Code: http.StatusBadRequest},
+		{Error: ErrTestDriveCancellationReasonInvalid, Code: http.StatusBadRequest},
+		{Error: ErrTestDriveCancellationReasonRequired, Code: http.StatusBadRequest},
+		{Error: ErrTestDriveOtherCancellationReasonRequired, Code: http.StatusBadRequest},
 		{Error: ErrTestDriveCustomerHasBooking, Code: http.StatusConflict},
+	}
+
+	// Service Booking errors
+	ErrServiceBookingCategoryInvalid   = errors.New("service booking category is invalid")
+	ErrServiceBookingCustomerHasActive = errors.New("customer already has an active periodic maintenance booking")
+	// Service Booking-specific error list
+	ErrListServiceBooking = ErrList{
+		{Error: ErrServiceBookingCategoryInvalid, Code: http.StatusBadRequest},
+		{Error: ErrServiceBookingCustomerHasActive, Code: http.StatusConflict},
 	}
 
 	// Service errors
