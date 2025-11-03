@@ -10,7 +10,7 @@ type ServiceBookingVehicleInsurancePolicy struct {
 	ServiceBookingID       string    `db:"i_service_booking_id"`
 	VehicleInsuranceID     string    `db:"i_vehicle_insurance_id"`
 	InsuranceType          string    `db:"c_insurance_type"`
-	InsuranceCoverage      string    `db:"e_insurance_coverage"`
+	InsuranceCoverage      *string   `db:"e_insurance_coverage"`
 	InsuranceStartDatetime time.Time `db:"d_insurance_datetime_start"`
 	InsuranceEndDatetime   time.Time `db:"d_insurance_datetime_end"`
 	InsuranceStatus        string    `db:"c_insurance_status"`
@@ -78,7 +78,7 @@ func (ip *ServiceBookingVehicleInsurancePolicy) ToCreateMap() ([]string, []inter
 		columns = append(columns, "c_insurance_type")
 		values = append(values, ip.InsuranceType)
 	}
-	if len(ip.InsuranceCoverage) > 0 {
+	if ip.InsuranceCoverage != nil {
 		columns = append(columns, "e_insurance_coverage")
 		values = append(values, ip.InsuranceCoverage)
 	}

@@ -60,6 +60,11 @@ func (s *service) ConfirmServiceBooking(ctx context.Context, request servicebook
 	}
 	recalls := servicebooking.NewRecallsRequest(serviceBookingRecalls)
 
+	vehicleInsurance, err := s.getVehicleInsurance(ctx, serviceBooking.ID)
+	if err != nil {
+		return err
+	}
+
 	sbEventConfirmRequest := servicebooking.ServiceBookingEvent{
 		Process:   "service_booking_confirm",
 		EventID:   serviceBooking.EventID,
@@ -70,6 +75,7 @@ func (s *service) ConfirmServiceBooking(ctx context.Context, request servicebook
 			CustomerVehicle:       customervehicle.NewCustomerVehicleRequest(customerVehicle),
 			Job:                   jobs,
 			Part:                  parts,
+			VehicleInsurance:      vehicleInsurance,
 		},
 	}
 
@@ -140,4 +146,30 @@ func (s *service) getPartsAndItems(ctx context.Context, serviceBookingID string)
 		}
 	}
 	return part, partItems, nil
+}
+
+func (s *service) getVehicleInsurance(ctx context.Context, serviceBookingID string) (*servicebooking.VehicleInsuranceRequest, error) {
+	// Get vehicle insurance
+	vehicleInsurance, err := s.repo.GetServiceBookingVehicleInsurance(ctx, servicebooking.GetServiceBookingVehicleInsurance{
+		ServiceBookingID: utils.ToPointer(serviceBookingID),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// If no insurance data found, return nil (not an error)
+	if vehicleInsurance.ID == "" {
+		return nil, nil
+	}
+
+	// Get vehicle insurance policies
+	policies, err := s.repo.GetServiceBookingVehicleInsurancePolicies(ctx, servicebooking.GetServiceBookingVehicleInsurancePolicy{
+		VehicleInsuranceID: utils.ToPointer(vehicleInsurance.ID),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert to request DTO
+	return servicebooking.NewVehicleInsuranceRequest(vehicleInsurance, policies), nil
 }

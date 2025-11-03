@@ -33,7 +33,7 @@ func (v *VehicleInsuranceRequest) ToModel(serviceBookingID string) domain.Servic
 	return domain.ServiceBookingVehicleInsurance{
 		ServiceBookingID:       serviceBookingID,
 		InsuranceProvider:      v.InsuranceProvider,
-		InsuranceProviderOther: v.InsuranceProviderOther,
+		InsuranceProviderOther: utils.ToPointer(v.InsuranceProviderOther),
 		InsurancePolicyNumber:  v.InsurancePolicyNumber,
 		CreatedAt:              now.UTC(),
 		CreatedBy:              constants.System,
@@ -49,7 +49,7 @@ func (p *PolicyRequest) ToModel(vehicleInsuranceID, serviceBookingID string) dom
 		ServiceBookingID:       serviceBookingID,
 		VehicleInsuranceID:     vehicleInsuranceID,
 		InsuranceType:          p.InsuranceType,
-		InsuranceCoverage:      strings.Join(p.InsuranceCoverage, ","),
+		InsuranceCoverage:      utils.ToPointer(strings.Join(p.InsuranceCoverage, ",")),
 		InsuranceStartDatetime: utils.GetTimeUnix(p.InsuranceStartDatetime).UTC(),
 		InsuranceEndDatetime:   utils.GetTimeUnix(p.InsuranceEndDatetime).UTC(),
 		InsuranceStatus:        p.InsuranceStatus,
@@ -117,5 +117,35 @@ type DeleteServiceBookingVehicleInsurancePolicy struct {
 func (d *DeleteServiceBookingVehicleInsurancePolicy) Apply(q *sqrl.DeleteBuilder) {
 	if d.ServiceBookingID != nil {
 		q.Where(sqrl.Eq{"i_service_booking_id": d.ServiceBookingID})
+	}
+}
+
+// NewVehicleInsuranceRequest converts domain models to VehicleInsuranceRequest DTO
+func NewVehicleInsuranceRequest(insurance domain.ServiceBookingVehicleInsurance, policies []domain.ServiceBookingVehicleInsurancePolicy) *VehicleInsuranceRequest {
+	if insurance.ID == "" {
+		return nil
+	}
+
+	policyRequests := make([]PolicyRequest, 0, len(policies))
+	for _, policy := range policies {
+		var coverage []string
+		if policy.InsuranceCoverage != nil {
+			coverage = strings.Split(utils.ToValue(policy.InsuranceCoverage), ",")
+		}
+
+		policyRequests = append(policyRequests, PolicyRequest{
+			InsuranceType:          policy.InsuranceType,
+			InsuranceCoverage:      coverage,
+			InsuranceStartDatetime: policy.InsuranceStartDatetime.Unix(),
+			InsuranceEndDatetime:   policy.InsuranceEndDatetime.Unix(),
+			InsuranceStatus:        policy.InsuranceStatus,
+		})
+	}
+
+	return &VehicleInsuranceRequest{
+		InsuranceProvider:      insurance.InsuranceProvider,
+		InsuranceProviderOther: utils.ToValue(insurance.InsuranceProviderOther),
+		InsurancePolicyNumber:  insurance.InsurancePolicyNumber,
+		Policies:               policyRequests,
 	}
 }

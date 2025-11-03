@@ -24,7 +24,7 @@ type DataRequest struct {
 	Job                   []JobRequest                           `json:"job"`
 	Part                  []PartRequest                          `json:"part"`
 	ServiceBookingRequest ServiceBookingRequest                  `json:"service_booking"`
-	VehicleInsurance      VehicleInsuranceRequest                `json:"vehicle_insurance"`
+	VehicleInsurance      *VehicleInsuranceRequest               `json:"vehicle_insurance"`
 }
 
 type ServiceBookingRequest struct {
@@ -168,7 +168,7 @@ type ConfirmServiceBookingRequest struct {
 	ServiceBookingID string `json:"service_booking_id" validate:"required"`
 	EmployeeID       string `json:"employee_id" validate:"required"`
 	Status           string `json:"status" validate:"required,oneof=MANUALLY_CONFIRMED CANCELLED COMPLETED NOT_SHOW SYSTEM_CONFIRMED"`
-	Location         string `json:"location" validate:"required,oneof=WORKSHOP MOBILE_SERVICES"`
+	Location         string `json:"location"`
 }
 
 // ServiceBookingEventData represents the data payload for confirm event
