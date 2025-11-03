@@ -3,6 +3,7 @@ package constants
 const (
 	// Service Categories
 	ServiceCategoryPeriodicMaintenance = "PERIODIC_MAINTENANCE"
+	ServiceCategoryBodyAndPaint        = "BODY_AND_PAINT"
 
 	// Service Booking Statuses
 	ServiceBookingStatusSubmitted         = "SUBMITTED"
@@ -14,6 +15,7 @@ const (
 var (
 	ServiceCategoryMap = map[string]string{
 		ServiceCategoryPeriodicMaintenance: "Periodic Maintenance",
+		ServiceCategoryBodyAndPaint:        "Body and Paint",
 	}
 
 	ServiceBookingStatusMap = map[string]string{

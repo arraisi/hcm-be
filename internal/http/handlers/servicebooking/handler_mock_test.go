@@ -49,18 +49,18 @@ func (mr *MockServiceMockRecorder) ConfirmServiceBooking(ctx, request interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmServiceBooking", reflect.TypeOf((*MockService)(nil).ConfirmServiceBooking), ctx, request)
 }
 
-// RequestServiceBookingGR mocks base method.
-func (m *MockService) RequestServiceBookingGR(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
+// RequestServiceBooking mocks base method.
+func (m *MockService) RequestServiceBooking(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RequestServiceBookingGR", ctx, request)
+	ret := m.ctrl.Call(m, "RequestServiceBooking", ctx, request)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// RequestServiceBookingGR indicates an expected call of RequestServiceBookingGR.
-func (mr *MockServiceMockRecorder) RequestServiceBookingGR(ctx, request interface{}) *gomock.Call {
+// RequestServiceBooking indicates an expected call of RequestServiceBooking.
+func (mr *MockServiceMockRecorder) RequestServiceBooking(ctx, request interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RequestServiceBookingGR", reflect.TypeOf((*MockService)(nil).RequestServiceBookingGR), ctx, request)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RequestServiceBooking", reflect.TypeOf((*MockService)(nil).RequestServiceBooking), ctx, request)
 }
 
 // MockIdempotencyService is a mock of IdempotencyService interface.

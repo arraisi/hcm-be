@@ -24,6 +24,7 @@ type DataRequest struct {
 	Job                   []JobRequest                           `json:"job"`
 	Part                  []PartRequest                          `json:"part"`
 	ServiceBookingRequest ServiceBookingRequest                  `json:"service_booking"`
+	VehicleInsurance      VehicleInsuranceRequest                `json:"vehicle_insurance"`
 }
 
 type ServiceBookingRequest struct {
@@ -36,7 +37,7 @@ type ServiceBookingRequest struct {
 	CreatedDatetime              int64             `json:"created_datetime" validate:"required"`
 	ServiceCategory              string            `json:"service_category" validate:"required"`
 	ServiceSequence              int32             `json:"service_sequence"`
-	SlotDatetimeStart            int64             `json:"slot_datetime_start" validate:"required"`
+	SlotDatetimeStart            int64             `json:"slot_datetime_start"`
 	SlotDatetimeEnd              int64             `json:"slot_datetime_end"`
 	SlotRequestedDatetimeStart   int64             `json:"slot_requested_datetime_start"`
 	SlotRequestedDatetimeEnd     int64             `json:"slot_requested_datetime_end"`
@@ -59,11 +60,20 @@ type ServiceBookingRequest struct {
 	CancellationReason           string            `json:"cancellation_reason"`
 	OtherCancellationReason      string            `json:"other_cancellation_reason"`
 	ServicePricingCallFlag       bool              `json:"service_pricing_call_flag"`
+
+	// from service booking bp
+	AppointmentDatetimeStart          int64    `json:"appointment_datetime_start"`
+	AppointmentDatetimeEnd            int64    `json:"appointment_datetime_end"`
+	AppointmentRequestedDatetimeStart int64    `json:"appointment_requested_datetime_start"`
+	AppointmentRequestedDatetimeEnd   int64    `json:"appointment_requested_datetime_end"`
+	AdditionalVehicleProblem          string   `json:"additional_vehicle_problem"`
+	DamageImage                       []string `json:"damage_image"`
+	InsuranceClaim                    string   `json:"insurance_claim"`
 }
 
 // ToServiceBookingModel converts the DataRequest to the domain.TestDrive model
 func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicleID string) domain.ServiceBooking {
-	return domain.ServiceBooking{
+	serviceBooking := domain.ServiceBooking{
 		EventID:                      sb.EventID,
 		CustomerID:                   customerID,
 		CustomerVehicleID:            customerVehicleID,
@@ -101,7 +111,22 @@ func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicle
 		CreatedBy:                    constants.System, // or fetch from context if available
 		UpdatedAt:                    time.Now().UTC(),
 		UpdatedBy:                    constants.System, // or fetch from context if available
+		AdditionalVehicleProblem:     sb.Data.ServiceBookingRequest.AdditionalVehicleProblem,
+		InsuranceClaim:               sb.Data.ServiceBookingRequest.InsuranceClaim,
 	}
+	if sb.Data.ServiceBookingRequest.AppointmentDatetimeStart != 0 {
+		serviceBooking.SlotDatetimeStart = utils.GetTimeUnix(sb.Data.ServiceBookingRequest.AppointmentDatetimeStart).UTC()
+	}
+	if sb.Data.ServiceBookingRequest.AppointmentDatetimeEnd != 0 {
+		serviceBooking.SlotDatetimeEnd = utils.GetTimeUnix(sb.Data.ServiceBookingRequest.AppointmentDatetimeEnd).UTC()
+	}
+	if sb.Data.ServiceBookingRequest.AppointmentRequestedDatetimeStart != 0 {
+		serviceBooking.SlotRequestedDatetimeStart = utils.GetTimeUnix(sb.Data.ServiceBookingRequest.AppointmentRequestedDatetimeStart).UTC()
+	}
+	if sb.Data.ServiceBookingRequest.AppointmentRequestedDatetimeEnd != 0 {
+		serviceBooking.SlotRequestedDatetimeEnd = utils.GetTimeUnix(sb.Data.ServiceBookingRequest.AppointmentRequestedDatetimeEnd).UTC()
+	}
+	return serviceBooking
 }
 
 type GetServiceBooking struct {

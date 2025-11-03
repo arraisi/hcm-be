@@ -43,6 +43,8 @@ type ServiceBooking struct {
 	UpdatedAt                    time.Time `db:"d_updated_at"`
 	UpdatedBy                    string    `db:"c_updated_by"`
 	EventID                      string    `db:"i_event_id"`
+	AdditionalVehicleProblem     string    `db:"e_additional_vehicle_problem"`
+	InsuranceClaim               string    `db:"c_insurance_claim"`
 }
 
 // TableName returns the database table name for the ServiceBooking model

@@ -13,8 +13,8 @@ import (
 	"github.com/arraisi/hcm-be/pkg/utils/validator"
 )
 
-// RequestServiceBookingGR handles POST /webhook/service-booking
-func (h *Handler) RequestServiceBookingGR(w http.ResponseWriter, r *http.Request) {
+// RequestServiceBooking handles POST /webhook/service-booking
+func (h *Handler) RequestServiceBooking(w http.ResponseWriter, r *http.Request) {
 	// Headers are already validated by middleware, just verify they exist
 	_, ok := middleware.GetWebhookHeaders(r.Context())
 	if !ok {
@@ -54,7 +54,7 @@ func (h *Handler) RequestServiceBookingGR(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = h.svc.RequestServiceBookingGR(r.Context(), bookingEvent)
+	err = h.svc.RequestServiceBooking(r.Context(), bookingEvent)
 	if err != nil {
 		// Combine webhook and test drive error lists
 		combinedErrorList := errors.ErrListWebhook.Extend(errors.ErrListTestDrive)

@@ -66,6 +66,16 @@ type Repository interface {
 	GetServiceBookingWarranty(ctx context.Context, req servicebooking.GetServiceBookingWarranty) (domain.ServiceBookingWarranty, error)
 	GetServiceBookingWarranties(ctx context.Context, req servicebooking.GetServiceBookingWarranty) ([]domain.ServiceBookingWarranty, error)
 	DeleteServiceBookingWarranty(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingWarranty) error
+
+	// BP-specific methods
+	CreateServiceBookingVehicleInsurance(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingVehicleInsurance) error
+	DeleteServiceBookingVehicleInsurance(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingVehicleInsurance) error
+
+	CreateServiceBookingVehicleInsurancePolicy(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingVehicleInsurancePolicy) error
+	DeleteServiceBookingVehicleInsurancePolicy(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingVehicleInsurancePolicy) error
+
+	CreateServiceBookingDamageImage(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingDamageImage) error
+	DeleteServiceBookingDamageImage(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingDamageImage) error
 }
 
 type ServiceContainer struct {
