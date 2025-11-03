@@ -112,12 +112,10 @@ func (s *service) handleServiceBookingRecalls(ctx context.Context, tx *sqlx.Tx, 
 		return err
 	}
 	for _, recall := range event.Data.ServiceBookingRequest.Recalls {
-		for _, part := range recall.AffectedParts {
-			recallPart := recall.ToModel(serviceBookingID, part)
-			err := s.repo.CreateServiceBookingRecall(ctx, tx, &recallPart)
-			if err != nil {
-				return err
-			}
+		recallPart := recall.ToModel(serviceBookingID)
+		err := s.repo.CreateServiceBookingRecall(ctx, tx, &recallPart)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -197,6 +195,11 @@ func (s *service) checkActivePeriodicMaintenance(ctx context.Context, customerID
 }
 
 func (s *service) handleServiceBookingVehicleInsurance(ctx context.Context, tx *sqlx.Tx, serviceBookingID string, event servicebooking.ServiceBookingEvent) error {
+	// If no vehicle insurance data is provided, skip processing
+	if event.Data.VehicleInsurance.InsuranceProvider == "" && event.Data.VehicleInsurance.InsuranceProviderOther == "" {
+		return nil
+	}
+
 	// Delete existing vehicle insurance and policies
 	err := s.repo.DeleteServiceBookingVehicleInsurancePolicy(ctx, tx, servicebooking.DeleteServiceBookingVehicleInsurancePolicy{
 		ServiceBookingID: utils.ToPointer(serviceBookingID),
@@ -212,21 +215,18 @@ func (s *service) handleServiceBookingVehicleInsurance(ctx context.Context, tx *
 		return err
 	}
 
-	// If vehicle insurance data is provided, create new records
-	if event.Data.VehicleInsurance.InsuranceProvider != "" {
-		vehicleInsurance := event.Data.VehicleInsurance.ToModel(serviceBookingID)
-		err := s.repo.CreateServiceBookingVehicleInsurance(ctx, tx, &vehicleInsurance)
+	vehicleInsurance := event.Data.VehicleInsurance.ToModel(serviceBookingID)
+	err = s.repo.CreateServiceBookingVehicleInsurance(ctx, tx, &vehicleInsurance)
+	if err != nil {
+		return err
+	}
+
+	// Create insurance policies
+	for _, policy := range event.Data.VehicleInsurance.Policies {
+		policyModel := policy.ToModel(vehicleInsurance.ID, serviceBookingID)
+		err := s.repo.CreateServiceBookingVehicleInsurancePolicy(ctx, tx, &policyModel)
 		if err != nil {
 			return err
-		}
-
-		// Create insurance policies
-		for _, policy := range event.Data.VehicleInsurance.Policies {
-			policyModel := policy.ToModel(vehicleInsurance.ID, serviceBookingID)
-			err := s.repo.CreateServiceBookingVehicleInsurancePolicy(ctx, tx, &policyModel)
-			if err != nil {
-				return err
-			}
 		}
 	}
 
@@ -234,8 +234,12 @@ func (s *service) handleServiceBookingVehicleInsurance(ctx context.Context, tx *
 }
 
 func (s *service) handleServiceBookingDamageImages(ctx context.Context, tx *sqlx.Tx, serviceBookingID string, event servicebooking.ServiceBookingEvent) error {
+	if len(event.Data.ServiceBookingRequest.DamageImage) == 0 {
+		return nil
+	}
+
 	// Delete existing damage images
-	err := s.repo.DeleteServiceBookingDamageImage(ctx, tx, servicebooking.DeleteServiceBookingDamageImage{
+	err := s.repo.DeleteServiceBookingImage(ctx, tx, servicebooking.DeleteServiceBookingDamageImage{
 		ServiceBookingID: utils.ToPointer(serviceBookingID),
 	})
 	if err != nil {
@@ -246,7 +250,7 @@ func (s *service) handleServiceBookingDamageImages(ctx context.Context, tx *sqlx
 	// TODO: Integrate with object storage service to upload base64 images and get URLs
 	// For now, we store the base64 strings directly (as per requirement to expose a hook for future implementation)
 	for _, imageData := range event.Data.ServiceBookingRequest.DamageImage {
-		damageImage := domain.ServiceBookingDamageImage{
+		damageImage := domain.ServiceBookingImage{
 			ServiceBookingID: serviceBookingID,
 			ImageURL:         imageData, // TODO: Replace with uploaded URL from object storage
 			CreatedAt:        time.Now().UTC(),
@@ -254,7 +258,7 @@ func (s *service) handleServiceBookingDamageImages(ctx context.Context, tx *sqlx
 			UpdatedAt:        time.Now().UTC(),
 			UpdatedBy:        constants.System,
 		}
-		err := s.repo.CreateServiceBookingDamageImage(ctx, tx, &damageImage)
+		err := s.repo.CreateServiceBookingImage(ctx, tx, &damageImage)
 		if err != nil {
 			return err
 		}

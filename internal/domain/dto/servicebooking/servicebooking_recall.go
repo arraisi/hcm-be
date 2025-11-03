@@ -1,6 +1,7 @@
 package servicebooking
 
 import (
+	"strings"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
@@ -44,14 +45,14 @@ type RecallRequest struct {
 	AffectedParts     []string `json:"affected_parts"`
 }
 
-func (r *RecallRequest) ToModel(bookingID, part string) domain.ServiceBookingRecall {
+func (r *RecallRequest) ToModel(bookingID string) domain.ServiceBookingRecall {
 	now := time.Now()
 	return domain.ServiceBookingRecall{
 		ServiceBookingID:  bookingID,
 		RecallID:          r.RecallID,
 		RecallDate:        r.RecallDate,
 		RecallDescription: r.RecallDescription,
-		AffectedPart:      part,
+		AffectedParts:     strings.Join(r.AffectedParts, ","),
 		CreatedAt:         now.UTC(),
 		CreatedBy:         constants.System,
 		UpdatedAt:         now.UTC(),
@@ -60,11 +61,6 @@ func (r *RecallRequest) ToModel(bookingID, part string) domain.ServiceBookingRec
 }
 
 func NewRecallsRequest(recalls []domain.ServiceBookingRecall) []RecallRequest {
-	affectedPartsMap := make(map[string][]string)
-	for _, recall := range recalls {
-		affectedPartsMap[recall.RecallID] = append(affectedPartsMap[recall.RecallID], recall.AffectedPart)
-	}
-
 	var recallsRequest []RecallRequest
 	seen := make(map[string]bool)
 	for _, recall := range recalls {
@@ -73,7 +69,7 @@ func NewRecallsRequest(recalls []domain.ServiceBookingRecall) []RecallRequest {
 				RecallID:          recall.RecallID,
 				RecallDate:        recall.RecallDate,
 				RecallDescription: recall.RecallDescription,
-				AffectedParts:     affectedPartsMap[recall.RecallID],
+				AffectedParts:     strings.Split(recall.AffectedParts, ","),
 			})
 			seen[recall.RecallID] = true
 		}

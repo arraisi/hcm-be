@@ -13,7 +13,6 @@ type ServiceBookingWarranty struct {
 	CreatedBy        string    `db:"c_created_by"`
 	UpdatedAt        time.Time `db:"d_updated_at"`
 	UpdatedBy        string    `db:"c_updated_by"`
-	Deleted          bool      `db:"b_deleted"`
 }
 
 type ServiceBookingWarranties []ServiceBookingWarranty

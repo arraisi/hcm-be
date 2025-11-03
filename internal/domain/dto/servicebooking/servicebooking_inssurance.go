@@ -1,6 +1,7 @@
 package servicebooking
 
 import (
+	"strings"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
@@ -48,7 +49,7 @@ func (p *PolicyRequest) ToModel(vehicleInsuranceID, serviceBookingID string) dom
 		ServiceBookingID:       serviceBookingID,
 		VehicleInsuranceID:     vehicleInsuranceID,
 		InsuranceType:          p.InsuranceType,
-		InsuranceCoverage:      p.InsuranceCoverage,
+		InsuranceCoverage:      strings.Join(p.InsuranceCoverage, ","),
 		InsuranceStartDatetime: utils.GetTimeUnix(p.InsuranceStartDatetime).UTC(),
 		InsuranceEndDatetime:   utils.GetTimeUnix(p.InsuranceEndDatetime).UTC(),
 		InsuranceStatus:        p.InsuranceStatus,

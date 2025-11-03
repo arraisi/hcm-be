@@ -74,8 +74,8 @@ type Repository interface {
 	CreateServiceBookingVehicleInsurancePolicy(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingVehicleInsurancePolicy) error
 	DeleteServiceBookingVehicleInsurancePolicy(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingVehicleInsurancePolicy) error
 
-	CreateServiceBookingDamageImage(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingDamageImage) error
-	DeleteServiceBookingDamageImage(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingDamageImage) error
+	CreateServiceBookingImage(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingImage) error
+	DeleteServiceBookingImage(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingDamageImage) error
 }
 
 type ServiceContainer struct {

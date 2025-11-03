@@ -10,12 +10,11 @@ type ServiceBookingRecall struct {
 	RecallID          string    `db:"i_recall_id"`
 	RecallDate        string    `db:"d_recall_date"`
 	RecallDescription string    `db:"e_recall_description"`
-	AffectedPart      string    `db:"c_affected_part"`
+	AffectedParts     string    `db:"e_affected_parts"`
 	CreatedAt         time.Time `db:"d_created_at"`
 	CreatedBy         string    `db:"c_created_by"`
 	UpdatedAt         time.Time `db:"d_updated_at"`
 	UpdatedBy         string    `db:"c_updated_by"`
-	Deleted           bool      `db:"b_deleted"`
 }
 
 // TableName returns the database table name for the ServiceBookingRecall model
@@ -31,7 +30,7 @@ func (sbr *ServiceBookingRecall) Columns() []string {
 		"i_recall_id",
 		"d_recall_date",
 		"e_recall_description",
-		"c_affected_part",
+		"e_affected_parts",
 		"d_created_at",
 		"c_created_by",
 		"d_updated_at",
@@ -47,7 +46,7 @@ func (sbr *ServiceBookingRecall) SelectColumns() []string {
 		"i_recall_id",
 		"d_recall_date",
 		"e_recall_description",
-		"c_affected_part",
+		"e_affected_parts",
 		"d_created_at",
 		"c_created_by",
 		"d_updated_at",
@@ -76,9 +75,9 @@ func (sbr *ServiceBookingRecall) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "e_recall_description")
 		values = append(values, sbr.RecallDescription)
 	}
-	if sbr.AffectedPart != "" {
-		columns = append(columns, "c_affected_part")
-		values = append(values, sbr.AffectedPart)
+	if sbr.AffectedParts != "" {
+		columns = append(columns, "e_affected_parts")
+		values = append(values, sbr.AffectedParts)
 	}
 	columns = append(columns, "c_created_by")
 	values = append(values, sbr.CreatedBy)
@@ -103,8 +102,8 @@ func (sbr *ServiceBookingRecall) ToUpdateMap() map[string]interface{} {
 	if sbr.RecallDescription != "" {
 		updateMap["e_recall_description"] = sbr.RecallDescription
 	}
-	if sbr.AffectedPart != "" {
-		updateMap["c_affected_part"] = sbr.AffectedPart
+	if sbr.AffectedParts != "" {
+		updateMap["e_affected_parts"] = sbr.AffectedParts
 	}
 	updateMap["d_updated_at"] = time.Now()
 	updateMap["c_updated_by"] = sbr.UpdatedBy

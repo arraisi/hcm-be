@@ -14,7 +14,7 @@ type ServiceBooking struct {
 	ServiceBookingStatus         string    `db:"c_service_booking_status"`
 	CreatedDatetime              time.Time `db:"d_created_datetime"`
 	ServiceCategory              string    `db:"c_service_category"`
-	ServiceSequence              int32     `db:"c_service_sequence"`
+	ServiceSequence              *int32    `db:"c_service_sequence"`
 	SlotDatetimeStart            time.Time `db:"d_slot_datetime_start"`
 	SlotDatetimeEnd              time.Time `db:"d_slot_datetime_end"`
 	SlotRequestedDatetimeStart   time.Time `db:"d_slot_requested_datetime_start"`
@@ -25,16 +25,16 @@ type ServiceBooking struct {
 	PreferenceContactPhoneNumber string    `db:"c_preference_contact_phone_number"`
 	PreferenceContactTimeStart   string    `db:"t_preference_contact_time_start"`
 	PreferenceContactTimeEnd     string    `db:"t_preference_contact_time_end"`
-	ServiceLocation              string    `db:"c_service_location"`
+	ServiceLocation              *string   `db:"c_service_location"`
 	OutletID                     string    `db:"c_outlet_id"`
 	OutletName                   string    `db:"n_outlet_name"`
-	MobileServiceAddress         string    `db:"e_mobile_service_address"`
-	Province                     string    `db:"c_province"`
-	City                         string    `db:"c_city"`
-	District                     string    `db:"c_district"`
-	SubDistrict                  string    `db:"c_subdistrict"`
-	PostalCode                   string    `db:"c_postal_code"`
-	VehicleProblem               string    `db:"e_vehicle_problem"`
+	MobileServiceAddress         *string   `db:"e_mobile_service_address"`
+	Province                     *string   `db:"c_province"`
+	City                         *string   `db:"c_city"`
+	District                     *string   `db:"c_district"`
+	SubDistrict                  *string   `db:"c_subdistrict"`
+	PostalCode                   *string   `db:"c_postal_code"`
+	VehicleProblem               *string   `db:"e_vehicle_problem"`
 	CancellationReason           string    `db:"e_cancellation_reason"`
 	OtherCancellationReason      string    `db:"e_other_cancellation_reason"`
 	ServicePricingCallFlag       bool      `db:"b_service_pricing_call_flag"`
@@ -181,7 +181,7 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "c_service_category")
 		values = append(values, sb.ServiceCategory)
 	}
-	if sb.ServiceSequence != 0 {
+	if sb.ServiceSequence != nil {
 		columns = append(columns, "c_service_sequence")
 		values = append(values, sb.ServiceSequence)
 	}
@@ -223,7 +223,7 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "t_preference_contact_time_end")
 		values = append(values, sb.PreferenceContactTimeEnd)
 	}
-	if sb.ServiceLocation != "" {
+	if sb.ServiceLocation != nil {
 		columns = append(columns, "c_service_location")
 		values = append(values, sb.ServiceLocation)
 	}
@@ -235,31 +235,31 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "n_outlet_name")
 		values = append(values, sb.OutletName)
 	}
-	if sb.MobileServiceAddress != "" {
+	if sb.MobileServiceAddress != nil {
 		columns = append(columns, "e_mobile_service_address")
 		values = append(values, sb.MobileServiceAddress)
 	}
-	if sb.Province != "" {
+	if sb.Province != nil {
 		columns = append(columns, "c_province")
 		values = append(values, sb.Province)
 	}
-	if sb.City != "" {
+	if sb.City != nil {
 		columns = append(columns, "c_city")
 		values = append(values, sb.City)
 	}
-	if sb.District != "" {
+	if sb.District != nil {
 		columns = append(columns, "c_district")
 		values = append(values, sb.District)
 	}
-	if sb.SubDistrict != "" {
+	if sb.SubDistrict != nil {
 		columns = append(columns, "c_subdistrict")
 		values = append(values, sb.SubDistrict)
 	}
-	if sb.PostalCode != "" {
+	if sb.PostalCode != nil {
 		columns = append(columns, "c_postal_code")
 		values = append(values, sb.PostalCode)
 	}
-	if sb.VehicleProblem != "" {
+	if sb.VehicleProblem != nil {
 		columns = append(columns, "e_vehicle_problem")
 		values = append(values, sb.VehicleProblem)
 	}
@@ -311,7 +311,7 @@ func (sb *ServiceBooking) ToUpdateMap() map[string]interface{} {
 	if sb.ServiceCategory != "" {
 		updateMap["c_service_category"] = sb.ServiceCategory
 	}
-	if sb.ServiceSequence != 0 {
+	if sb.ServiceSequence != nil {
 		updateMap["c_service_sequence"] = sb.ServiceSequence
 	}
 	if !sb.SlotDatetimeStart.IsZero() {
@@ -341,7 +341,7 @@ func (sb *ServiceBooking) ToUpdateMap() map[string]interface{} {
 	if sb.PreferenceContactTimeEnd != "" {
 		updateMap["t_preference_contact_time_end"] = sb.PreferenceContactTimeEnd
 	}
-	if sb.ServiceLocation != "" {
+	if sb.ServiceLocation != nil {
 		updateMap["c_service_location"] = sb.ServiceLocation
 	}
 	if sb.OutletID != "" {
@@ -350,25 +350,25 @@ func (sb *ServiceBooking) ToUpdateMap() map[string]interface{} {
 	if sb.OutletName != "" {
 		updateMap["n_outlet_name"] = sb.OutletName
 	}
-	if sb.MobileServiceAddress != "" {
+	if sb.MobileServiceAddress != nil {
 		updateMap["e_mobile_service_address"] = sb.MobileServiceAddress
 	}
-	if sb.Province != "" {
+	if sb.Province != nil {
 		updateMap["c_province"] = sb.Province
 	}
-	if sb.City != "" {
+	if sb.City != nil {
 		updateMap["c_city"] = sb.City
 	}
-	if sb.District != "" {
+	if sb.District != nil {
 		updateMap["c_district"] = sb.District
 	}
-	if sb.SubDistrict != "" {
+	if sb.SubDistrict != nil {
 		updateMap["c_subdistrict"] = sb.SubDistrict
 	}
-	if sb.PostalCode != "" {
+	if sb.PostalCode != nil {
 		updateMap["c_postal_code"] = sb.PostalCode
 	}
-	if sb.VehicleProblem != "" {
+	if sb.VehicleProblem != nil {
 		updateMap["e_vehicle_problem"] = sb.VehicleProblem
 	}
 	if sb.CancellationReason != "" {
