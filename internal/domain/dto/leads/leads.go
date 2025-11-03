@@ -1,7 +1,11 @@
 package leads
 
 import (
+	"time"
+
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/constants"
+	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
 )
 
@@ -14,6 +18,7 @@ type LeadsRequest struct {
 	LeadsPreferenceContactTimeEnd   string  `json:"leads_preference_contact_time_end"`
 	LeadSource                      string  `json:"leads_source" validate:"required"`
 	AdditionalNotes                 *string `json:"additional_notes"`
+	LeadsScore                      Score   `json:"score" validate:"required"`
 }
 
 func NewLeadsRequest(leads domain.Leads) LeadsRequest {
@@ -25,6 +30,19 @@ func NewLeadsRequest(leads domain.Leads) LeadsRequest {
 		LeadsPreferenceContactTimeEnd:   leads.LeadsPreferenceContactTimeEnd,
 		LeadSource:                      leads.LeadSource,
 		AdditionalNotes:                 leads.AdditionalNotes,
+		LeadsScore: Score{
+			TAMLeadScore:    leads.TAMLeadScore,
+			OutletLeadScore: leads.OutletLeadScore,
+			Parameter: ScoreParameter{
+				PurchasePlanCriteria:    leads.PurchasePlanCriteria,
+				PaymentPreferCriteria:   leads.PaymentPreferCriteria,
+				NegotiationCriteria:     leads.NegotiationCriteria,
+				TestDriveCriteria:       leads.TestDriveCriteria,
+				TradeInCriteria:         leads.TradeInCriteria,
+				BrowsingHistoryCriteria: leads.BrowsingHistoryCriteria,
+				VehicleAgeCriteria:      leads.VehicleAgeCriteria,
+			},
+		},
 	}
 }
 
@@ -46,22 +64,6 @@ type Score struct {
 	Parameter       ScoreParameter `json:"parameter"`
 }
 
-func NewScoreRequest(leadScore domain.LeadScore) Score {
-	return Score{
-		TAMLeadScore:    leadScore.TAMLeadScore,
-		OutletLeadScore: leadScore.OutletLeadScore,
-		Parameter: ScoreParameter{
-			PurchasePlanCriteria:    leadScore.PurchasePlanCriteria,
-			PaymentPreferCriteria:   leadScore.PaymentPreferCriteria,
-			NegotiationCriteria:     leadScore.NegotiationCriteria,
-			TestDriveCriteria:       leadScore.TestDriveCriteria,
-			TradeInCriteria:         leadScore.TradeInCriteria,
-			BrowsingHistoryCriteria: leadScore.BrowsingHistoryCriteria,
-			VehicleAgeCriteria:      leadScore.VehicleAgeCriteria,
-		},
-	}
-}
-
 type GetLeadsRequest struct {
 	ID      *string
 	LeadsID *string
@@ -77,13 +79,30 @@ func (req GetLeadsRequest) Apply(q *sqrl.SelectBuilder) {
 	}
 }
 
-type GetLeadScoreRequest struct {
-	ID *string
-}
-
-// Apply applies the request parameters to the given SelectBuilder
-func (req GetLeadScoreRequest) Apply(q *sqrl.SelectBuilder) {
-	if req.ID != nil {
-		q.Where(sqrl.Eq{"i_id": req.ID})
+// ToDomain converts the RequestTestDrive to the internal Leads model
+func (be *LeadsRequest) ToDomain(customerID, testDriveID string) domain.Leads {
+	return domain.Leads{
+		CustomerID:                      customerID,
+		TestDriveID:                     testDriveID,
+		LeadsID:                         be.LeadsID,
+		LeadsType:                       be.LeadsType,
+		LeadsFollowUpStatus:             be.LeadsFollowUpStatus,
+		LeadsPreferenceContactTimeStart: be.LeadsPreferenceContactTimeStart,
+		LeadsPreferenceContactTimeEnd:   be.LeadsPreferenceContactTimeEnd,
+		LeadSource:                      be.LeadSource,
+		AdditionalNotes:                 be.AdditionalNotes,
+		TAMLeadScore:                    be.LeadsScore.TAMLeadScore,
+		OutletLeadScore:                 be.LeadsScore.OutletLeadScore,
+		PurchasePlanCriteria:            be.LeadsScore.Parameter.PurchasePlanCriteria,
+		PaymentPreferCriteria:           be.LeadsScore.Parameter.PaymentPreferCriteria,
+		TestDriveCriteria:               be.LeadsScore.Parameter.TestDriveCriteria,
+		TradeInCriteria:                 be.LeadsScore.Parameter.TradeInCriteria,
+		BrowsingHistoryCriteria:         be.LeadsScore.Parameter.BrowsingHistoryCriteria,
+		VehicleAgeCriteria:              be.LeadsScore.Parameter.VehicleAgeCriteria,
+		NegotiationCriteria:             be.LeadsScore.Parameter.NegotiationCriteria,
+		CreatedAt:                       time.Now(),
+		CreatedBy:                       constants.System,
+		UpdatedAt:                       time.Now(),
+		UpdatedBy:                       utils.ToPointer(constants.System),
 	}
 }

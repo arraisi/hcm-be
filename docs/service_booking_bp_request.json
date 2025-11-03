@@ -1,0 +1,142 @@
+{
+  "process": "service_booking_bp_request",
+  "event_ID": "1b841146-7a1e-41a3-9eca-d619fa09a1f4",
+  "timestamp": 1709096400,
+  "data": {
+    "one_account": {
+      "one_account_ID": "GMO4GNYBSI0D85IP6K59OYGJZ6V0KVW3Y",
+      "first_name": "Nkoc",
+      "last_name": "Mai",
+      "gender": "MALE",
+      "phone_number": "MFV8OI04y46K",
+      "email": "pgb.terfsxgfsnwu@v",
+      "primary_user": "MASTER"
+    },
+    "customer_vehicle": {
+      "vin": "MKFKZE81SCJ115045",
+      "katashiki_suffix": "NSP170R-MWYQKD02",
+      "color_code": "3R6",
+      "model": "Avanza Velos",
+      "variant": "2.0 Q A/T",
+      "color": "Putih",
+      "police_number": "V*096*XXP",
+      "actual_mileage": 15000
+    },
+    "service_booking": {
+      "booking_ID": "3aca8a16-5f26-42a6-98c5-48d8bd85b0fa",
+      "booking_number": "AUT001301-03-20250327-nEZ",
+      "booking_source": "MTOYOTA",
+      "booking_status": "SUBMITTED",
+      "created_datetime": 1709085600,
+      "service_category": "BODY_AND_PAINT",
+      "appointment_datetime_start": 1709085600,
+      "appointment_datetime_end": 1709085600,
+      "appointment_requested_datetime_start": 1708398000,
+      "appointment_requested_datetime_end": 1708398000,
+      "slot_unavailable_flag": false,
+      "carrier_name": "RTSv vyOf",
+      "carrier_phone_number": "TCLyY7ki67on",
+      "preference_contact_phone_number": "ScqhslPf7MCm",
+      "preference_contact_time_start": "11:00",
+      "preference_contact_time_end": "11:30",
+      "outlet_ID": "AST001329",
+      "outlet_name": "Astrido Toyota Bitung",
+      "additional_vehicle_problem": "mobil ditabrak dari belakang, lampunya tidak menyala",
+      "damage_image": [
+        "IVVR4nGMAAQAABQABDQottAAAABAjRU5ErkJggg==",
+        "IVVR4nGMAAQAABQABDQottAAAABAjRU5ErkJggg=="
+      ],
+      "insurance_claim": "HAS CLAIM INSURANCE",
+      "cancellation_reason": "RECEIVING_SERVICE_ELSEWHERE",
+      "other_cancellation_reason": "perubahan kebutuhan mobil",
+      "service_pricing_call_flag": false,
+      "vehicle_insurance": {
+        "insurance_provider": "GARDA_OTO",
+        "insurance_provider_other": "",
+        "insurance_policy_number": "asd56FDRcs",
+        "policies": [
+          {
+            "insurance_type": "COMPREHENSIVE",
+            "insurance_coverage": [],
+            "insurance_start_datetime": 1709085600,
+            "insurance_end_datetime": 1709085600,
+            "insurance_status": "ACTIVE"
+          },
+          {
+            "insurance_type": "ALL_RISK",
+            "insurance_coverage": [
+              "VOLCANIC_ERUPTION",
+              "EARTHQUAKE",
+              "TSUNAMI"
+            ],
+            "insurance_start_datetime": 1709085600,
+            "insurance_end_datetime": 1709085600,
+            "insurance_status": "ACTIVE"
+          }
+        ]
+      },
+      "job": [
+        {
+          "job_ID": "08880CE605",
+          "job_name": "BATTERY_CHANGE",
+          "labor_est_price": 500000.0
+        },
+        {
+          "job_ID": "08880CE605",
+          "job_name": "OIL_CHANGE",
+          "labor_est_price": 500000.0
+        }
+      ],
+      "part": [
+        {
+          "part_type": "PACKAGE",
+          "package_ID": "79eeb5f7-5673-4ec8-898b-5f91d109b0e2",
+          "part_number": "",
+          "part_name": "Lux Package",
+          "part_quantity": 1,
+          "package_parts": [
+            {
+              "part_number": "64102TA560",
+              "part_name": "Black Outer Mirror Ornament"
+            },
+            {
+              "part_number": "64102TA564",
+              "part_name": "Side Body Moulding"
+            }
+          ],
+          "part_size": "",
+          "part_color": "",
+          "part_est_price": 13690000.0,
+          "part_installation_est_price": 200000.0,
+          "flag_part_need_down_payment": true
+        },
+        {
+          "part_type": "MERCHANDISE",
+          "package_ID": "",
+          "part_number": "64102TA560",
+          "part_name": "Jaket",
+          "part_quantity": 1,
+          "package_parts": [],
+          "part_size": "small",
+          "part_color": "Black",
+          "part_est_price": 200000.0,
+          "part_installation_est_price": 0.0,
+          "flag_part_need_down_payment": false
+        },
+        {
+          "part_type": "ACCESSORIES",
+          "package_ID": "",
+          "part_number": "64102TA560",
+          "part_name": "White Outer Mirror Ornament",
+          "part_quantity": 1,
+          "package_parts": [],
+          "part_size": "",
+          "part_color": "Black",
+          "part_est_price": 40000.0,
+          "part_installation_est_price": 150000.0,
+          "flag_part_need_down_payment": false
+        }
+      ]
+    }
+  }
+}

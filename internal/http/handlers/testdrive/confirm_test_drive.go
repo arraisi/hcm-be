@@ -1,46 +1,38 @@
 package testdrive
 
 import (
-	"encoding/json"
-	"io"
 	"net/http"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
-	"github.com/arraisi/hcm-be/pkg/errors"
+	errorx "github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/response"
 	"github.com/arraisi/hcm-be/pkg/utils/validator"
+	"github.com/go-chi/chi/v5"
 )
 
-// ConfirmDriveEvent handles PUT /test-drives/
-func (h *Handler) ConfirmDriveEvent(w http.ResponseWriter, r *http.Request) {
-	// Read raw body for signature verification (if needed later)
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookReadBodyFailed, errors.ErrListWebhook)
-		response.ErrorResponseJSON(w, errorResponse)
-		return
-	}
-
+// ConfirmTestDrive handles PUT /test-drives/{test_drive_id}
+func (h *Handler) ConfirmTestDrive(w http.ResponseWriter, r *http.Request) {
 	// Parse JSON body
-	var request testdrive.ConfirmTestDriveBookingRequest
-	if err := json.Unmarshal(body, &request); err != nil {
-		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookInvalidPayload, errors.ErrListWebhook)
-		response.ErrorResponseJSON(w, errorResponse)
-		return
+	request := testdrive.ConfirmTestDriveBookingRequest{
+		TestDriveID:         chi.URLParam(r, "test_drive_id"),
+		EmployeeID:          r.URL.Query().Get("employee_id"),
+		TestDriveStatus:     r.URL.Query().Get("test_drive_status"),
+		LeadsType:           r.URL.Query().Get("leads_type"),
+		LeadsFollowUpStatus: r.URL.Query().Get("leads_follow_up_status"),
 	}
 
 	// Validate payload structure
 	if err := validator.ValidateStruct(request); err != nil {
-		errorResponse := errors.NewErrorResponse(http.StatusBadRequest, err)
+		errorResponse := errorx.NewErrorResponse(http.StatusBadRequest, err)
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
 
-	err = h.svc.ConfirmTestDriveBooking(r.Context(), request)
+	err := h.svc.ConfirmTestDriveBooking(r.Context(), request)
 	if err != nil {
 		// Combine webhook and test drive error lists
-		combinedErrorList := errors.ErrListWebhook.Extend(errors.ErrListTestDrive)
-		errorResponse := errors.NewErrorResponseFromList(err, combinedErrorList)
+		combinedErrorList := errorx.ErrListWebhook.Extend(errorx.ErrListTestDrive)
+		errorResponse := errorx.NewErrorResponseFromList(err, combinedErrorList)
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}

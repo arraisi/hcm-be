@@ -13,6 +13,7 @@ import (
 )
 
 // Client wraps a reusable HTTP client with sensible defaults.
+// It implements the HTTPClient interface.
 type Client struct {
 	httpClient *http.Client
 	headers    map[string]string

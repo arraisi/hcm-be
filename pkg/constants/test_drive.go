@@ -5,6 +5,19 @@ const (
 	TestDriveBookingStatusChangeRequest   = "CHANGE_REQUEST"
 	TestDriveBookingStatusCancelSubmitted = "CANCEL_SUBMITTED"
 	TestDriveBookingStatusConfirmed       = "CONFIRMED"
+
+	// Test Drive Locations
+	TestDriveLocationHome   = "HOME"
+	TestDriveLocationDealer = "DEALER"
+
+	// Cancellation Reasons
+	CancellationReasonScheduleConflict            = "SCHEDULE_CONFLICT"
+	CancellationReasonPricingConsideration        = "PRICING_CONSIDERATION"
+	CancellationReasonFoundBetterDealElsewhere    = "FOUND_A_BETTER_DEAL_ELSEWHERE"
+	CancellationReasonPoorCustomerService         = "POOR_CUSTOMER_SERVICE"
+	CancellationReasonChangeInVehicleNeeds        = "CHANGE_IN_VEHICLE_NEEDS"
+	CancellationReasonDoNotWantToDiscloseMyReason = "I_DO_NOT_WANT_TO_DISCLOSE_MY_REASONS"
+	CancellationReasonOthers                      = "OTHERS"
 )
 
 var (
@@ -12,5 +25,20 @@ var (
 		TestDriveBookingStatusSubmitted:       "Submitted",
 		TestDriveBookingStatusChangeRequest:   "Change Request",
 		TestDriveBookingStatusCancelSubmitted: "Cancel Submitted",
+	}
+
+	TestDriveLocationMap = map[string]string{
+		TestDriveLocationHome:   "Home",
+		TestDriveLocationDealer: "Dealer",
+	}
+
+	CancellationReasonMap = map[string]string{
+		CancellationReasonScheduleConflict:            "Schedule Conflict",
+		CancellationReasonPricingConsideration:        "Pricing Consideration",
+		CancellationReasonFoundBetterDealElsewhere:    "Found a Better Deal Elsewhere",
+		CancellationReasonPoorCustomerService:         "Poor Customer Service",
+		CancellationReasonChangeInVehicleNeeds:        "Change in Vehicle Needs",
+		CancellationReasonDoNotWantToDiscloseMyReason: "I Do Not Want to Disclose My Reasons",
+		CancellationReasonOthers:                      "Others",
 	}
 )

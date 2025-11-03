@@ -6,8 +6,10 @@ import (
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
+	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
+	mockDIDXApi "github.com/arraisi/hcm-be/internal/external/didx"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -18,25 +20,28 @@ type transactionRepository interface {
 }
 
 type CustomerRepository interface {
-	CreateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error)
-	UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error)
+	CreateCustomer(ctx context.Context, tx *sqlx.Tx, req *domain.Customer) error
 	GetCustomer(ctx context.Context, req customer.GetCustomerRequest) (domain.Customer, error)
+	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) ([]domain.Customer, error)
+	UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.Customer) error
+}
+
+type CustomerService interface {
+	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest) (string, error)
 }
 
 type LeadRepository interface {
-	CreateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error
+	CreateLeads(ctx context.Context, tx *sqlx.Tx, req *domain.Leads) error
 	UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error
 	GetLeads(ctx context.Context, req leads.GetLeadsRequest) (domain.Leads, error)
 }
 
-type LeadScoreRepository interface {
-	CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error
-	GetLeadScore(ctx context.Context, req leads.GetLeadScoreRequest) (domain.LeadScore, error)
-	UpdateLeadScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadScore) error
+type EmployeeRepository interface {
+	GetEmployee(ctx context.Context, req employee.GetEmployeeRequest) (domain.Employee, error)
 }
 
 type Repository interface {
-	CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req domain.TestDrive) error
+	CreateTestDrive(ctx context.Context, tx *sqlx.Tx, req *domain.TestDrive) error
 	GetTestDrive(ctx context.Context, req testdrive.GetTestDriveRequest) (domain.TestDrive, error)
 	UpdateTestDrive(ctx context.Context, tx *sqlx.Tx, req domain.TestDrive) error
 	GetTestDrives(ctx context.Context, req testdrive.GetTestDriveRequest) ([]domain.TestDrive, error)
@@ -47,25 +52,31 @@ type ServiceContainer struct {
 	Repo            Repository
 	CustomerRepo    CustomerRepository
 	LeadRepo        LeadRepository
-	LeadScoreRepo   LeadScoreRepository
+	CustomerSvc     CustomerService
+	EmployeeRepo    EmployeeRepository
+	MockDIDXApi     *mockDIDXApi.Client
 }
 
 type service struct {
-	cfg             *config.Config
-	transactionRepo transactionRepository
-	repo            Repository
-	customerRepo    CustomerRepository
-	leadRepo        LeadRepository
-	leadScoreRepo   LeadScoreRepository
+	cfg               *config.Config
+	transactionRepo   transactionRepository
+	repo              Repository
+	customerRepo      CustomerRepository
+	leadRepo          LeadRepository
+	customerSvc       CustomerService
+	employeeRepo      EmployeeRepository
+	mockDIDXApiClient *mockDIDXApi.Client
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
 	return &service{
-		cfg:             cfg,
-		transactionRepo: container.TransactionRepo,
-		repo:            container.Repo,
-		customerRepo:    container.CustomerRepo,
-		leadRepo:        container.LeadRepo,
-		leadScoreRepo:   container.LeadScoreRepo,
+		cfg:               cfg,
+		transactionRepo:   container.TransactionRepo,
+		repo:              container.Repo,
+		customerRepo:      container.CustomerRepo,
+		leadRepo:          container.LeadRepo,
+		customerSvc:       container.CustomerSvc,
+		employeeRepo:      container.EmployeeRepo,
+		mockDIDXApiClient: container.MockDIDXApi,
 	}
 }

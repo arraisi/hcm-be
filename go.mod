@@ -11,6 +11,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
 	github.com/jmoiron/sqlx v1.4.0
+	github.com/lib/pq v1.10.9
 	github.com/microsoft/go-mssqldb v1.9.3
 	github.com/prometheus/client_golang v1.23.2
 	github.com/spf13/viper v1.21.0
