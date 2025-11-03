@@ -14,7 +14,8 @@ func (s *service) CreateOneAccount(ctx context.Context, request customer.OneAcco
 		_ = tx.Rollback()
 	}()
 
-	_, err = s.repo.CreateCustomer(ctx, tx, request.ToCustomerModel())
+	cs := request.ToCustomerModel()
+	err = s.repo.CreateCustomer(ctx, tx, &cs)
 	if err != nil {
 		return err
 	}

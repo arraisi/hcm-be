@@ -1,4 +1,4 @@
-package webhook
+package customer
 
 import (
 	"encoding/json"
@@ -52,7 +52,7 @@ func (h *Handler) OneAccessCreationEvent(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = h.customerSvc.CreateOneAccount(r.Context(), oneAccountCreationEvent)
+	err = h.svc.CreateOneAccount(r.Context(), oneAccountCreationEvent)
 	if err != nil {
 		// Combine webhook and test drive error lists
 		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListWebhook)

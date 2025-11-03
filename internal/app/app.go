@@ -105,7 +105,7 @@ func Run(cfg *config.Config) error {
 
 	// init handlers
 	userHandler := user.NewUserHandler(userSvc)
-	customerHandler := customer.New(customerSvc)
+	customerHandler := customer.New(customerSvc, idempotencyStore)
 	serviceBookingHandler := servicebooking.New(cfg, serviceBookingSvc, idempotencyStore)
 	testDriveHandler := testdrive.New(cfg, testDriveSvc, idempotencyStore)
 

@@ -178,7 +178,6 @@ func (oa *OneAccountCreationEvent) ToCustomerModel() domain.Customer {
 		Email:                src.Email,
 		IsNew:                true,  // business rule guess: first time we see this event
 		IsMerge:              false, // default false
-		PrimaryUser:          "",    // not provided
 		DealerCustomerID:     src.DealerCustomerID,
 		IsValid:              true,  // you may flip this if validation failed elsewhere
 		IsOmnichannel:        false, // not provided
