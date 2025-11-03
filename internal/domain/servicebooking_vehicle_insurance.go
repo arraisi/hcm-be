@@ -9,7 +9,7 @@ type ServiceBookingVehicleInsurance struct {
 	ID                     string    `db:"i_id"`
 	ServiceBookingID       string    `db:"i_service_booking_id"`
 	InsuranceProvider      string    `db:"c_insurance_provider"`
-	InsuranceProviderOther string    `db:"c_insurance_provider_other"`
+	InsuranceProviderOther *string   `db:"c_insurance_provider_other"`
 	InsurancePolicyNumber  string    `db:"c_insurance_policy_number"`
 	CreatedAt              time.Time `db:"d_created_at"`
 	CreatedBy              string    `db:"c_created_by"`
@@ -65,7 +65,7 @@ func (vi *ServiceBookingVehicleInsurance) ToCreateMap() ([]string, []interface{}
 		columns = append(columns, "c_insurance_provider")
 		values = append(values, vi.InsuranceProvider)
 	}
-	if vi.InsuranceProviderOther != "" {
+	if vi.InsuranceProviderOther != nil {
 		columns = append(columns, "c_insurance_provider_other")
 		values = append(values, vi.InsuranceProviderOther)
 	}

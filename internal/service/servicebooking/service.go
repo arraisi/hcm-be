@@ -69,9 +69,11 @@ type Repository interface {
 
 	// BP-specific methods
 	CreateServiceBookingVehicleInsurance(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingVehicleInsurance) error
+	GetServiceBookingVehicleInsurance(ctx context.Context, req servicebooking.GetServiceBookingVehicleInsurance) (domain.ServiceBookingVehicleInsurance, error)
 	DeleteServiceBookingVehicleInsurance(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingVehicleInsurance) error
 
 	CreateServiceBookingVehicleInsurancePolicy(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingVehicleInsurancePolicy) error
+	GetServiceBookingVehicleInsurancePolicies(ctx context.Context, req servicebooking.GetServiceBookingVehicleInsurancePolicy) ([]domain.ServiceBookingVehicleInsurancePolicy, error)
 	DeleteServiceBookingVehicleInsurancePolicy(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingVehicleInsurancePolicy) error
 
 	CreateServiceBookingImage(ctx context.Context, tx *sqlx.Tx, req *domain.ServiceBookingImage) error
