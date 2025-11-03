@@ -1,0 +1,151 @@
+{
+  "process": "service_booking_gr_confirm",
+  "event_ID": "05dbe854-7f4a-4ed0-be00-da098d3569d6",
+  "timestamp": 1690985600,
+  "data": {
+    "one_account": {
+      "one_account_ID": "GMO4GNYBSI0D85IP6K59OYGJZ6V0KVW3Y",
+      "dealer_customer_ID": "ASTVAJMF000552",
+      "first_name": "Nkoc",
+      "last_name": "Mai",
+      "gender": "MALE",
+      "phone_number": "MFV8OI04y46K",
+      "email": "pgb.terfsxgfsnwu@v",
+      "primary_user": "MASTER"
+    },
+    "customer_vehicle": {
+      "vin": "MKFKZE81SCJ115045",
+      "katashiki_suffix": "NSP170R-MWYQKD02",
+      "color_code": "3R6",
+      "model": "Innova Zenix",
+      "variant": "2.0 Q A/T",
+      "color": "Putih",
+      "police_number": "V*096*XXP",
+      "actual_mileage": 15000
+    },
+    "service_booking": {
+      "booking_ID": "53A91DC8-04A0-4E8A-8B08-F8D04B3C941C",
+      "booking_number": "AULT001301-03_20250327-nEZ",
+      "booking_status": "SYSTEM_CONFIRMED",
+      "booking_source": "MTOYOTA",
+      "created_datetime": 1709096400,
+      "service_category": "PERIODIC_MAINTENANCE",
+      "service_sequence": 5,
+      "slot_datetime_start": 1708398000,
+      "slot_datetime_end": 1709085600,
+      "slot_requested_datetime_start": 1708398000,
+      "slot_requested_datetime_end": 1709085600,
+      "carrier_name": "RTSv vyOf",
+      "carrier_phone_number": "TCLyY7ki67on",
+      "preference_contact_phone_number": "R4uB lZrEi",
+      "preference_contact_time_start": "09:30",
+      "preference_contact_time_end": "10:30",
+      "service_location": "MOBILE_SERVICES",
+      "outlet_ID": "AST001329",
+      "outlet_name": "Astrido Toyota Bitung",
+      "mobile_service_address": "8ag5g RT3Rk MluvJ7 IWg2h PS.ii, 8j.R7/6m.M, s2R4uB lZrEi, QRoePQc eT4ml, jHkVdB kE13DI ndqUFXq ui7k0Dg, 89Pad82Ea",
+      "province": "Jakarta",
+      "city": "Jakarta Timur",
+      "district": "Pulo Gadung",
+      "subdistrict": "Jati",
+      "postal_code": "13220",
+      "vehicle_problem": "Wiper macet tidak bisa bergerak",
+      "warranty": [
+        {
+          "warranty_name": "T_CARE",
+          "warranty_status": "ACTIVE"
+        },
+        {
+          "warranty_name": "BODY_COAT",
+          "warranty_status": "ACTIVE"
+        }
+      ],
+      "recalls": [
+        {
+          "recall_ID": "VGG05B9",
+          "recall_date": "24-12-2025",
+          "recall_description": "SSC FUEL PUMP REPLACEMENT - W TEST",
+          "affected_parts": [
+            "400214942",
+            "400214943"
+          ]
+        },
+        {
+          "recall_ID": "VGG05C9",
+          "recall_date": "24-12-2025",
+          "recall_description": "SSC FUEL PUMP REPLACEMENT - HOUSING",
+          "affected_parts": [
+            "400214942",
+            "400214943"
+          ]
+        }
+      ],
+      "cancellation_reason": "Perubahan kebutuhan Mobil",
+      "other_cancellation_reason": "pengecekan kondisi mesin berkala, pergantian oli dan mengatur kembali stir",
+      "job_description": "Replace part dan service",
+      "stall_or_squad_number": "A1",
+      "jobs": [
+        {
+          "job_ID": "08880CE605",
+          "job_name": "TMO SEAT CL LEATHER",
+          "labor_est_price": 8000.0
+        },
+        {
+          "job_ID": "08880CE608",
+          "job_name": "CHANGE OIL",
+          "labor_est_price": 10000.0
+        }
+      ],
+      "parts": [
+        {
+          "part_type": "PACKAGE",
+          "package_ID": "2f68fd25-4d32-4f58-9383-ebd6fcb46241",
+          "part_number": "",
+          "part_name": "Lux Package",
+          "part_quantity": 1,
+          "package_parts": [
+            {
+              "part_number": "64102TA560",
+              "part_name": "Black Outer Mirror Ornament"
+            },
+            {
+              "part_number": "64102TA561",
+              "part_name": "Side Body Moulding"
+            }
+          ],
+          "part_size": "",
+          "part_color": "",
+          "part_est_price": 369000.0,
+          "part_installation_est_price": 150000.0,
+          "flag_part_need_down_payment": true
+        },
+        {
+          "part_type": "MERCHANDISE",
+          "package_ID": "",
+          "part_number": "M55B00KA0F",
+          "part_name": "Jaket",
+          "part_quantity": 1,
+          "package_parts": [],
+          "part_size": "small",
+          "part_color": "black",
+          "part_est_price": 20000.0,
+          "part_installation_est_price": 0.0,
+          "flag_part_need_down_payment": false
+        },
+        {
+          "part_type": "ACCESSORIES",
+          "package_ID": "",
+          "part_number": "64102TA560",
+          "part_name": "Black Outer Mirror Ornament",
+          "part_quantity": 1,
+          "package_parts": [],
+          "part_size": "",
+          "part_color": "",
+          "part_est_price": 10000.0,
+          "part_installation_est_price": 3000.0,
+          "flag_part_need_down_payment": false
+        }
+      ]
+    }
+  }
+}

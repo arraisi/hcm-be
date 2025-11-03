@@ -2,13 +2,22 @@ package servicebooking
 
 import (
 	"context"
+	"time"
 
+	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
+	"github.com/arraisi/hcm-be/pkg/constants"
+	errorx "github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/jmoiron/sqlx"
 )
 
 func (s *service) RequestServiceBooking(ctx context.Context, event servicebooking.ServiceBookingEvent) error {
+	// Validate service category
+	if _, ok := constants.ServiceCategoryMap[event.Data.ServiceBookingRequest.ServiceCategory]; !ok {
+		return errorx.ErrServiceBookingCategoryInvalid
+	}
+
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err
@@ -20,6 +29,14 @@ func (s *service) RequestServiceBooking(ctx context.Context, event servicebookin
 	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, event.Data.OneAccount)
 	if err != nil {
 		return err
+	}
+
+	// Check if customer already has an active periodic maintenance booking
+	if event.Data.ServiceBookingRequest.ServiceCategory == constants.ServiceCategoryPeriodicMaintenance {
+		err := s.checkActivePeriodicMaintenance(ctx, customerID)
+		if err != nil {
+			return err
+		}
 	}
 
 	customerVehicleID, err := s.customerVehicleSvc.UpsertCustomerVehicle(ctx, tx, customerID, event.Data.OneAccount.OneAccountID, event.Data.CustomerVehicle)
@@ -48,6 +65,16 @@ func (s *service) RequestServiceBooking(ctx context.Context, event servicebookin
 	}
 
 	err = s.handleServiceBookingParts(ctx, tx, serviceBookingID, event)
+	if err != nil {
+		return err
+	}
+
+	err = s.handleServiceBookingVehicleInsurance(ctx, tx, serviceBookingID, event)
+	if err != nil {
+		return err
+	}
+
+	err = s.handleServiceBookingDamageImages(ctx, tx, serviceBookingID, event)
 	if err != nil {
 		return err
 	}
@@ -85,12 +112,10 @@ func (s *service) handleServiceBookingRecalls(ctx context.Context, tx *sqlx.Tx, 
 		return err
 	}
 	for _, recall := range event.Data.ServiceBookingRequest.Recalls {
-		for _, part := range recall.AffectedParts {
-			recallPart := recall.ToModel(serviceBookingID, part)
-			err := s.repo.CreateServiceBookingRecall(ctx, tx, &recallPart)
-			if err != nil {
-				return err
-			}
+		recallPart := recall.ToModel(serviceBookingID)
+		err := s.repo.CreateServiceBookingRecall(ctx, tx, &recallPart)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -142,5 +167,102 @@ func (s *service) handleServiceBookingParts(ctx context.Context, tx *sqlx.Tx, se
 			}
 		}
 	}
+	return nil
+}
+
+// checkActivePeriodicMaintenance checks if the customer has any active periodic maintenance bookings
+func (s *service) checkActivePeriodicMaintenance(ctx context.Context, customerID string) error {
+	// Get all service bookings for the customer with periodic maintenance category
+	// and active statuses
+	bookings, err := s.repo.GetServiceBookings(ctx, servicebooking.GetServiceBooking{
+		CustomerID:      utils.ToPointer(customerID),
+		ServiceCategory: utils.ToPointer(constants.ServiceCategoryPeriodicMaintenance),
+	})
+	if err != nil {
+		return err
+	}
+
+	// Check if any booking has an active status
+	for _, booking := range bookings {
+		for _, activeStatus := range constants.ActiveServiceBookingStatuses {
+			if booking.ServiceBookingStatus == activeStatus {
+				return errorx.ErrServiceBookingCustomerHasActive
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s *service) handleServiceBookingVehicleInsurance(ctx context.Context, tx *sqlx.Tx, serviceBookingID string, event servicebooking.ServiceBookingEvent) error {
+	// If no vehicle insurance data is provided, skip processing
+	if event.Data.VehicleInsurance.InsuranceProvider == "" && event.Data.VehicleInsurance.InsuranceProviderOther == "" {
+		return nil
+	}
+
+	// Delete existing vehicle insurance and policies
+	err := s.repo.DeleteServiceBookingVehicleInsurancePolicy(ctx, tx, servicebooking.DeleteServiceBookingVehicleInsurancePolicy{
+		ServiceBookingID: utils.ToPointer(serviceBookingID),
+	})
+	if err != nil {
+		return err
+	}
+
+	err = s.repo.DeleteServiceBookingVehicleInsurance(ctx, tx, servicebooking.DeleteServiceBookingVehicleInsurance{
+		ServiceBookingID: utils.ToPointer(serviceBookingID),
+	})
+	if err != nil {
+		return err
+	}
+
+	vehicleInsurance := event.Data.VehicleInsurance.ToModel(serviceBookingID)
+	err = s.repo.CreateServiceBookingVehicleInsurance(ctx, tx, &vehicleInsurance)
+	if err != nil {
+		return err
+	}
+
+	// Create insurance policies
+	for _, policy := range event.Data.VehicleInsurance.Policies {
+		policyModel := policy.ToModel(vehicleInsurance.ID, serviceBookingID)
+		err := s.repo.CreateServiceBookingVehicleInsurancePolicy(ctx, tx, &policyModel)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *service) handleServiceBookingDamageImages(ctx context.Context, tx *sqlx.Tx, serviceBookingID string, event servicebooking.ServiceBookingEvent) error {
+	if len(event.Data.ServiceBookingRequest.DamageImage) == 0 {
+		return nil
+	}
+
+	// Delete existing damage images
+	err := s.repo.DeleteServiceBookingImage(ctx, tx, servicebooking.DeleteServiceBookingDamageImage{
+		ServiceBookingID: utils.ToPointer(serviceBookingID),
+	})
+	if err != nil {
+		return err
+	}
+
+	// Create new damage image records
+	// TODO: Integrate with object storage service to upload base64 images and get URLs
+	// For now, we store the base64 strings directly (as per requirement to expose a hook for future implementation)
+	for _, imageData := range event.Data.ServiceBookingRequest.DamageImage {
+		damageImage := domain.ServiceBookingImage{
+			ServiceBookingID: serviceBookingID,
+			ImageURL:         imageData, // TODO: Replace with uploaded URL from object storage
+			CreatedAt:        time.Now().UTC(),
+			CreatedBy:        constants.System,
+			UpdatedAt:        time.Now().UTC(),
+			UpdatedBy:        constants.System,
+		}
+		err := s.repo.CreateServiceBookingImage(ctx, tx, &damageImage)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

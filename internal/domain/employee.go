@@ -24,8 +24,8 @@ func (e *Employee) Columns() []string {
 
 func (e *Employee) SelectColumns() []string {
 	return []string{
-		"CAST(i_id AS CHAR) AS i_id",
-		"CAST(i_employee_id AS CHAR) AS i_employee_id",
+		"i_id",
+		"i_employee_id",
 		"n_employee_name",
 		"c_email",
 		"c_phone_number",

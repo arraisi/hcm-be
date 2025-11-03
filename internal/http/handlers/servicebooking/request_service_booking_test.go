@@ -15,8 +15,8 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
-	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
-	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
+	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
+	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/golang/mock/gomock"
@@ -32,11 +32,11 @@ func TestServiceBookingHandler_ServiceBooking(t *testing.T) {
 	eventID := "05dbe854-74a4-4e0d-be00-da098d3569d6"
 	timestamp := time.Now().Unix()
 
-	bookingEvent := testdrive.TestDriveEvent{
+	bookingEvent := servicebooking.ServiceBookingEvent{
 		Process:   "service booking request",
 		EventID:   eventID,
-		Timestamp: timestamp,
-		Data: testdrive.TestDriveEventData{
+		Timestamp: int(timestamp),
+		Data: servicebooking.DataRequest{
 			OneAccount: customer.OneAccountRequest{
 				OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 				FirstName:    "John",
@@ -45,45 +45,32 @@ func TestServiceBookingHandler_ServiceBooking(t *testing.T) {
 				PhoneNumber:  "1234567890",
 				Email:        "john.doe@example.com",
 			},
-			TestDrive: testdrive.TestDriveRequest{
-				TestDriveID:             "0d5be854-74a4-4e0d-be00-da098d3529d5",
-				TestDriveNumber:         "TUT010026-02-20241107959",
-				KatashikiCode:           "NSP170R-MWYXKD",
-				Model:                   "Innova Zenix",
-				Variant:                 "2.0 Q A/T",
-				CreatedDatetime:         timestamp,
-				TestDriveDatetimeStart:  timestamp + 3600,
-				TestDriveDatetimeEnd:    timestamp + 7200,
-				Location:                "DEALER",
-				OutletID:                "AST01329",
-				OutletName:              "Astrido Toyota Bitung",
-				TestDriveStatus:         "SUBMITTED",
-				CancellationReason:      nil,
-				OtherCancellationReason: nil,
-				CustomerDrivingConsent:  true,
+			CustomerVehicle: customervehicle.CustomerVehicleRequest{
+				PoliceNumber:    "B1234XYZ",
+				Vin:             "MHFXW1820FK123456",
+				KatashikiSuffix: "MWYXKD",
+				Model:           "Innova Zenix",
+				Variant:         "2.0 Q A/T",
+				Color:           "Silver Metallic",
+				ColorCode:       "1G3",
+				ActualMileage:   15000,
 			},
-			Leads: leads.LeadsRequest{
-				LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
-				LeadsType:                       "TEST_DRIVE_REQUEST",
-				LeadsFollowUpStatus:             "ON_CONSIDERATION",
-				LeadsPreferenceContactTimeStart: "09:30",
-				LeadsPreferenceContactTimeEnd:   "10:30",
-				LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
-				AdditionalNotes:                 nil,
-				LeadsScore: leads.Score{
-					TAMLeadScore:    "HOT",
-					OutletLeadScore: "MEDIUM",
-					Parameter: leads.ScoreParameter{
-						PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
-						PaymentPreferCriteria:   "CASH",
-						NegotiationCriteria:     "HAVE_STARTED_NEGOTIATIONS",
-						TestDriveCriteria:       "COMPLETED",
-						TradeInCriteria:         "DELIVERY",
-						BrowsingHistoryCriteria: "MORE_THAN_5_PAGES",
-						VehicleAgeCriteria:      "MORE_THAN_2.5_YEARS",
-					},
-				},
+			ServiceBookingRequest: servicebooking.ServiceBookingRequest{
+				BookingId:         "0d5be854-74a4-4e0d-be00-da098d3529d5",
+				BookingNumber:     "SVC010026-02-20241107959",
+				BookingSource:     "CUSTOMER_APP",
+				BookingStatus:     "SUBMITTED",
+				CreatedDatetime:   timestamp,
+				ServiceCategory:   "PERIODIC_MAINTENANCE",
+				ServiceSequence:   1,
+				SlotDatetimeStart: timestamp + 3600,
+				SlotDatetimeEnd:   timestamp + 7200,
+				OutletID:          "AST01329",
+				OutletName:        "Astrido Toyota Bitung",
+				ServiceLocation:   "DEALER",
 			},
+			Job:  []servicebooking.JobRequest{},
+			Part: []servicebooking.PartRequest{},
 		},
 	}
 
@@ -97,7 +84,7 @@ func TestServiceBookingHandler_ServiceBooking(t *testing.T) {
 	signature := hex.EncodeToString(h.Sum(nil))
 
 	// Create request with correct route
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/webhook/test-drive-event", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/webhook/service-booking-event", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
@@ -135,19 +122,13 @@ func TestServiceBookingHandler_ServiceBooking(t *testing.T) {
 	assert.Equal(t, "RECEIVED", response["data"].(map[string]interface{})["status"])
 }
 
-func TestWebhookHandler_ServiceBooking_InvalidSignature(t *testing.T) {
-	m := setupMock(t)
-	defer m.Ctrl.Finish()
-
-	// Test data
-	eventID := "05dbe854-74a4-4e0d-be00-da098d3569d6"
-	timestamp := time.Now().Unix()
-
-	bookingEvent := testdrive.TestDriveEvent{
+// Helper function to create a sample service booking event
+func createSampleServiceBookingEvent(eventID string, timestamp int64) servicebooking.ServiceBookingEvent {
+	return servicebooking.ServiceBookingEvent{
 		Process:   "service booking request",
 		EventID:   eventID,
-		Timestamp: timestamp,
-		Data: testdrive.TestDriveEventData{
+		Timestamp: int(timestamp),
+		Data: servicebooking.DataRequest{
 			OneAccount: customer.OneAccountRequest{
 				OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 				FirstName:    "John",
@@ -156,47 +137,45 @@ func TestWebhookHandler_ServiceBooking_InvalidSignature(t *testing.T) {
 				PhoneNumber:  "1234567890",
 				Email:        "john.doe@example.com",
 			},
-			TestDrive: testdrive.TestDriveRequest{
-				TestDriveID:             "0d5be854-74a4-4e0d-be00-da098d3529d5",
-				TestDriveNumber:         "TUT010026-02-20241107959",
-				KatashikiCode:           "NSP170R-MWYXKD",
-				Model:                   "Innova Zenix",
-				Variant:                 "2.0 Q A/T",
-				CreatedDatetime:         timestamp,
-				TestDriveDatetimeStart:  timestamp + 3600,
-				TestDriveDatetimeEnd:    timestamp + 7200,
-				Location:                "DEALER",
-				OutletID:                "AST01329",
-				OutletName:              "Astrido Toyota Bitung",
-				TestDriveStatus:         "SUBMITTED",
-				CancellationReason:      nil,
-				OtherCancellationReason: nil,
-				CustomerDrivingConsent:  true,
+			CustomerVehicle: customervehicle.CustomerVehicleRequest{
+				PoliceNumber:    "B1234XYZ",
+				Vin:             "MHFXW1820FK123456",
+				KatashikiSuffix: "MWYXKD",
+				Model:           "Innova Zenix",
+				Variant:         "2.0 Q A/T",
+				Color:           "Silver Metallic",
+				ColorCode:       "1G3",
+				ActualMileage:   15000,
 			},
-			Leads: leads.LeadsRequest{
-				LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
-				LeadsType:                       "TEST_DRIVE_REQUEST",
-				LeadsFollowUpStatus:             "ON_CONSIDERATION",
-				LeadsPreferenceContactTimeStart: "09:30",
-				LeadsPreferenceContactTimeEnd:   "10:30",
-				LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
-				AdditionalNotes:                 nil,
-				LeadsScore: leads.Score{
-					TAMLeadScore:    "HOT",
-					OutletLeadScore: "MEDIUM",
-					Parameter: leads.ScoreParameter{
-						PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
-						PaymentPreferCriteria:   "CASH",
-						NegotiationCriteria:     "HAVE_STARTED_NEGOTIATIONS",
-						TestDriveCriteria:       "COMPLETED",
-						TradeInCriteria:         "DELIVERY",
-						BrowsingHistoryCriteria: "MORE_THAN_5_PAGES",
-						VehicleAgeCriteria:      "MORE_THAN_2.5_YEARS",
-					},
-				},
+			ServiceBookingRequest: servicebooking.ServiceBookingRequest{
+				BookingId:         "0d5be854-74a4-4e0d-be00-da098d3529d5",
+				BookingNumber:     "SVC010026-02-20241107959",
+				BookingSource:     "CUSTOMER_APP",
+				BookingStatus:     "SUBMITTED",
+				CreatedDatetime:   timestamp,
+				ServiceCategory:   "PERIODIC_MAINTENANCE",
+				ServiceSequence:   1,
+				SlotDatetimeStart: timestamp + 3600,
+				SlotDatetimeEnd:   timestamp + 7200,
+				OutletID:          "AST01329",
+				OutletName:        "Astrido Toyota Bitung",
+				ServiceLocation:   "DEALER",
 			},
+			Job:  []servicebooking.JobRequest{},
+			Part: []servicebooking.PartRequest{},
 		},
 	}
+}
+
+func TestWebhookHandler_ServiceBooking_InvalidSignature(t *testing.T) {
+	m := setupMock(t)
+	defer m.Ctrl.Finish()
+
+	// Test data
+	eventID := "05dbe854-74a4-4e0d-be00-da098d3569d6"
+	timestamp := time.Now().Unix()
+
+	bookingEvent := createSampleServiceBookingEvent(eventID, timestamp)
 
 	// Create request body
 	body, err := json.Marshal(bookingEvent)
@@ -206,7 +185,7 @@ func TestWebhookHandler_ServiceBooking_InvalidSignature(t *testing.T) {
 	invalidSignature := "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 
 	// Create request with correct route
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/webhook/test-drive-event", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/webhook/service-booking-event", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", invalidSignature)
@@ -254,67 +233,14 @@ func TestWebhookHandler_ServiceBooking_StoreFailure(t *testing.T) {
 	timestamp := time.Now().Unix()
 
 	createRequest := func() *http.Request {
-		bookingEvent := testdrive.TestDriveEvent{
-			Process:   "service booking request",
-			EventID:   eventID,
-			Timestamp: timestamp,
-			Data: testdrive.TestDriveEventData{
-				OneAccount: customer.OneAccountRequest{
-					OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
-					FirstName:    "John",
-					LastName:     "Doe",
-					Gender:       "MALE",
-					PhoneNumber:  "1234567890",
-					Email:        "john.doe@example.com",
-				},
-				TestDrive: testdrive.TestDriveRequest{
-					TestDriveID:             "0d5be854-74a4-4e0d-be00-da098d3529d5",
-					TestDriveNumber:         "TUT010026-02-20241107959",
-					KatashikiCode:           "NSP170R-MWYXKD",
-					Model:                   "Innova Zenix",
-					Variant:                 "2.0 Q A/T",
-					CreatedDatetime:         timestamp,
-					TestDriveDatetimeStart:  timestamp + 3600,
-					TestDriveDatetimeEnd:    timestamp + 7200,
-					Location:                "DEALER",
-					OutletID:                "AST01329",
-					OutletName:              "Astrido Toyota Bitung",
-					TestDriveStatus:         "SUBMITTED",
-					CancellationReason:      nil,
-					OtherCancellationReason: nil,
-					CustomerDrivingConsent:  true,
-				},
-				Leads: leads.LeadsRequest{
-					LeadsID:                         "44ae2529-98e4-41f4-bae8-f305f609932d",
-					LeadsType:                       "TEST_DRIVE_REQUEST",
-					LeadsFollowUpStatus:             "ON_CONSIDERATION",
-					LeadsPreferenceContactTimeStart: "09:30",
-					LeadsPreferenceContactTimeEnd:   "10:30",
-					LeadSource:                      "OFFLINE_WALK_IN_OR_CALL_IN",
-					AdditionalNotes:                 nil,
-					LeadsScore: leads.Score{
-						TAMLeadScore:    "HOT",
-						OutletLeadScore: "MEDIUM",
-						Parameter: leads.ScoreParameter{
-							PurchasePlanCriteria:    "31_DAYS_TO_INFINITE",
-							PaymentPreferCriteria:   "CASH",
-							NegotiationCriteria:     "HAVE_STARTED_NEGOTIATIONS",
-							TestDriveCriteria:       "COMPLETED",
-							TradeInCriteria:         "DELIVERY",
-							BrowsingHistoryCriteria: "MORE_THAN_5_PAGES",
-							VehicleAgeCriteria:      "MORE_THAN_2.5_YEARS",
-						},
-					},
-				},
-			},
-		}
+		bookingEvent := createSampleServiceBookingEvent(eventID, timestamp)
 
 		body, _ := json.Marshal(bookingEvent)
 		h := hmac.New(sha256.New, []byte(m.Config.Webhook.HMACSecret))
 		h.Write(body)
 		signature := hex.EncodeToString(h.Sum(nil))
 
-		req := httptest.NewRequest(http.MethodPost, "/api/v1/webhook/test-drive-event", bytes.NewReader(body))
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/webhook/service-booking-event", bytes.NewReader(body))
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 		req.Header.Set("X-Signature", signature)

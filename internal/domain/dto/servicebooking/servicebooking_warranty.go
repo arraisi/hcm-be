@@ -1,6 +1,12 @@
 package servicebooking
 
-import "github.com/elgris/sqrl"
+import (
+	"time"
+
+	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/constants"
+	"github.com/elgris/sqrl"
+)
 
 type GetServiceBookingWarranty struct {
 	ID               *string
@@ -29,4 +35,33 @@ func (d *DeleteServiceBookingWarranty) Apply(q *sqrl.DeleteBuilder) {
 	if d.ServiceBookingID != nil {
 		q.Where(sqrl.Eq{"i_service_booking_id": d.ServiceBookingID})
 	}
+}
+
+func (wr WarrantyRequest) ToModel(serviceBookingID string) domain.ServiceBookingWarranty {
+	now := time.Now()
+	return domain.ServiceBookingWarranty{
+		ServiceBookingID: serviceBookingID,
+		WarrantyName:     wr.WarrantyName,
+		WarrantyStatus:   wr.WarrantyStatus,
+		CreatedAt:        now.UTC(),
+		CreatedBy:        constants.System,
+		UpdatedAt:        now.UTC(),
+		UpdatedBy:        constants.System,
+	}
+}
+
+type WarrantyRequest struct {
+	WarrantyName   string `json:"warranty_name"`
+	WarrantyStatus string `json:"warranty_status"`
+}
+
+func NewWarrantiesRequest(warranties []domain.ServiceBookingWarranty) []WarrantyRequest {
+	var warrantiesRequest []WarrantyRequest
+	for _, warranty := range warranties {
+		warrantiesRequest = append(warrantiesRequest, WarrantyRequest{
+			WarrantyName:   warranty.WarrantyName,
+			WarrantyStatus: warranty.WarrantyStatus,
+		})
+	}
+	return warrantiesRequest
 }

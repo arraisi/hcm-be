@@ -35,6 +35,20 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// ConfirmServiceBooking mocks base method.
+func (m *MockService) ConfirmServiceBooking(ctx context.Context, request servicebooking.ConfirmServiceBookingRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConfirmServiceBooking", ctx, request)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConfirmServiceBooking indicates an expected call of ConfirmServiceBooking.
+func (mr *MockServiceMockRecorder) ConfirmServiceBooking(ctx, request interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmServiceBooking", reflect.TypeOf((*MockService)(nil).ConfirmServiceBooking), ctx, request)
+}
+
 // RequestServiceBooking mocks base method.
 func (m *MockService) RequestServiceBooking(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
 	m.ctrl.T.Helper()

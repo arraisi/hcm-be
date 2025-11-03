@@ -96,8 +96,11 @@ func Run(cfg *config.Config) error {
 	serviceBookingSvc := servicebookingService.New(cfg, servicebookingService.ServiceContainer{
 		TransactionRepo:    txRepo,
 		Repo:               serviceBookingRepo,
+		CustomerRepo:       customerRepo,
 		CustomerSvc:        customerSvc,
 		CustomerVehicleSvc: customerVehicleSvc,
+		EmployeeRepo:       employeeRepo,
+		MockDIDXApi:        mockDIDXApiClient,
 	})
 
 	// init handlers

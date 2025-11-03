@@ -51,9 +51,9 @@ func (cv *CustomerVehicle) Columns() []string {
 // SelectColumns returns the list of columns to select in queries for the CustomerVehicle model
 func (cv *CustomerVehicle) SelectColumns() []string {
 	return []string{
-		"CAST(i_id AS NVARCHAR(36)) as i_id",
-		"CAST(i_customer_id AS NVARCHAR(36)) as i_customer_id",
-		"CAST(i_one_account_id AS NVARCHAR(36)) as i_one_account_id",
+		"i_id",
+		"i_customer_id",
+		"i_one_account_id",
 		"c_vin",
 		"c_model",
 		"c_katashiki_suffix",

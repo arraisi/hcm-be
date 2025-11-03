@@ -18,8 +18,40 @@ func (s *service) RequestTestDriveBooking(ctx context.Context, request testdrive
 		return errorx.ErrTestDriveStatusInvalid
 	}
 
+	if _, ok := constants.TestDriveLocationMap[request.Data.TestDrive.Location]; !ok {
+		return errorx.ErrTestDriveLocationInvalid
+	}
+
 	if _, ok := constants.LeadsFollowUpStatusMap[request.Data.Leads.LeadsFollowUpStatus]; !ok {
 		return errorx.ErrLeadsFollowUpStatusInvalid
+	}
+
+	if request.Data.Leads.LeadsType != constants.LeadsTypeTestDriveRequest {
+		return errorx.ErrLeadsTypeInvalid
+	}
+
+	if _, ok := constants.LeadsSourceMap[request.Data.Leads.LeadSource]; !ok {
+		return errorx.ErrLeadsSourceInvalid
+	}
+
+	// Validate cancellation reason when test drive status is CANCEL_SUBMITTED
+	if request.Data.TestDrive.TestDriveStatus == constants.TestDriveBookingStatusCancelSubmitted {
+		// Cancellation reason is required
+		if request.Data.TestDrive.CancellationReason == nil || *request.Data.TestDrive.CancellationReason == "" {
+			return errorx.ErrTestDriveCancellationReasonRequired
+		}
+
+		// Validate cancellation reason is one of the allowed values
+		if _, ok := constants.CancellationReasonMap[*request.Data.TestDrive.CancellationReason]; !ok {
+			return errorx.ErrTestDriveCancellationReasonInvalid
+		}
+
+		// If cancellation reason is OTHERS, other_cancellation_reason is required
+		if *request.Data.TestDrive.CancellationReason == constants.CancellationReasonOthers {
+			if request.Data.TestDrive.OtherCancellationReason == nil || *request.Data.TestDrive.OtherCancellationReason == "" {
+				return errorx.ErrTestDriveOtherCancellationReasonRequired
+			}
+		}
 	}
 
 	tx, err := s.transactionRepo.BeginTransaction(ctx)

@@ -14,7 +14,6 @@ type ServiceBookingPartItem struct {
 	CreatedBy            string    `db:"c_created_by"`
 	UpdatedAt            time.Time `db:"d_updated_at"`
 	UpdatedBy            string    `db:"c_updated_by"`
-	Deleted              bool      `db:"b_deleted"`
 }
 
 // TableName returns the database table name for the ServiceBookingPartItem model
@@ -40,9 +39,9 @@ func (pi *ServiceBookingPartItem) Columns() []string {
 // SelectColumns returns the list of columns to select in queries for the ServiceBookingPartItem model
 func (pi *ServiceBookingPartItem) SelectColumns() []string {
 	return []string{
-		"CAST(i_id AS NVARCHAR(36)) as i_id",
-		"CAST(i_service_booking_id AS NVARCHAR(36)) as i_service_booking_id",
-		"CAST(i_service_booking_part_id AS NVARCHAR(36)) as i_service_booking_part_id",
+		"i_id",
+		"i_service_booking_id",
+		"i_service_booking_part_id",
 		"c_part_number",
 		"n_part_name",
 		"d_created_at",

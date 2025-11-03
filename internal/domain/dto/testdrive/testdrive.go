@@ -21,7 +21,7 @@ type TestDriveRequest struct {
 	CreatedDatetime         int64   `json:"created_datetime" validate:"required"`
 	TestDriveDatetimeStart  int64   `json:"test_drive_datetime_start" validate:"required"`
 	TestDriveDatetimeEnd    int64   `json:"test_drive_datetime_end" validate:"required"`
-	Location                string  `json:"location" validate:"required"`
+	Location                string  `json:"location" validate:"required,oneof=HOME DEALER"`
 	OutletID                string  `json:"outlet_ID" validate:"required"`
 	OutletName              string  `json:"outlet_name" validate:"required"`
 	TestDriveStatus         string  `json:"test_drive_status" validate:"required,oneof=SUBMITTED CHANGE_REQUEST CANCEL_SUBMITTED"`
@@ -126,6 +126,9 @@ func (req GetTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
 }
 
 type ConfirmTestDriveBookingRequest struct {
-	TestDriveID string `json:"test_drive_id"`
-	EmployeeID  string `json:"employee_id"`
+	TestDriveID         string `json:"test_drive_id" validate:"required"`
+	EmployeeID          string `json:"employee_id" validate:"required"`
+	TestDriveStatus     string `json:"test_drive_status" validate:"required,oneof=CONFIRMED CANCELLED COMPLETED NOT_SHOW"`
+	LeadsType           string `json:"leads_type,omitempty"`
+	LeadsFollowUpStatus string `json:"leads_follow_up_status" validate:"required,oneof=NOT_YET_FOLLOWED_UP ON_CONSIDERATION NO_RESPONSE"`
 }

@@ -14,7 +14,6 @@ type ServiceBookingJob struct {
 	CreatedBy        string    `db:"c_created_by"`
 	UpdatedAt        time.Time `db:"d_updated_at"`
 	UpdatedBy        string    `db:"c_updated_by"`
-	Deleted          bool      `db:"b_deleted"`
 }
 
 // TableName returns the database table name for the ServiceBookingJob model
@@ -40,8 +39,8 @@ func (sbj *ServiceBookingJob) Columns() []string {
 // SelectColumns returns the list of columns to select in queries for the ServiceBookingJob model
 func (sbj *ServiceBookingJob) SelectColumns() []string {
 	return []string{
-		"CAST(i_id AS NVARCHAR(36)) as i_id",
-		"CAST(i_service_booking_id AS NVARCHAR(36)) as i_service_booking_id",
+		"i_id",
+		"i_service_booking_id",
 		"c_job_id",
 		"n_job_name",
 		"v_labor_est_price",

@@ -24,17 +24,18 @@ type DataRequest struct {
 	Job                   []JobRequest                           `json:"job"`
 	Part                  []PartRequest                          `json:"part"`
 	ServiceBookingRequest ServiceBookingRequest                  `json:"service_booking"`
+	VehicleInsurance      VehicleInsuranceRequest                `json:"vehicle_insurance"`
 }
 
 type ServiceBookingRequest struct {
 	Warranty                     []WarrantyRequest `json:"warranty"`
 	Recalls                      []RecallRequest   `json:"recalls"`
-	BookingId                    string            `json:"booking_ID"`
-	BookingNumber                string            `json:"booking_number"`
-	BookingSource                string            `json:"booking_source"`
-	BookingStatus                string            `json:"booking_status"`
-	CreatedDatetime              int64             `json:"created_datetime"`
-	ServiceCategory              string            `json:"service_category"`
+	BookingId                    string            `json:"booking_ID" validate:"required"`
+	BookingNumber                string            `json:"booking_number" validate:"required"`
+	BookingSource                string            `json:"booking_source" validate:"required"`
+	BookingStatus                string            `json:"booking_status" validate:"required"`
+	CreatedDatetime              int64             `json:"created_datetime" validate:"required"`
+	ServiceCategory              string            `json:"service_category" validate:"required"`
 	ServiceSequence              int32             `json:"service_sequence"`
 	SlotDatetimeStart            int64             `json:"slot_datetime_start"`
 	SlotDatetimeEnd              int64             `json:"slot_datetime_end"`
@@ -47,8 +48,8 @@ type ServiceBookingRequest struct {
 	PreferenceContactTimeStart   string            `json:"preference_contact_time_start"`
 	PreferenceContactTimeEnd     string            `json:"preference_contact_time_end"`
 	ServiceLocation              string            `json:"service_location"`
-	OutletID                     string            `json:"outlet_ID"`
-	OutletName                   string            `json:"outlet_name"`
+	OutletID                     string            `json:"outlet_ID" validate:"required"`
+	OutletName                   string            `json:"outlet_name" validate:"required"`
 	MobileServiceAddress         string            `json:"mobile_service_address"`
 	Province                     string            `json:"province"`
 	City                         string            `json:"city"`
@@ -59,124 +60,20 @@ type ServiceBookingRequest struct {
 	CancellationReason           string            `json:"cancellation_reason"`
 	OtherCancellationReason      string            `json:"other_cancellation_reason"`
 	ServicePricingCallFlag       bool              `json:"service_pricing_call_flag"`
-}
 
-type WarrantyRequest struct {
-	WarrantyName   string `json:"warranty_name"`
-	WarrantyStatus string `json:"warranty_status"`
-}
-
-func (wr WarrantyRequest) ToModel(serviceBookingID string) domain.ServiceBookingWarranty {
-	now := time.Now()
-	return domain.ServiceBookingWarranty{
-		ServiceBookingID: serviceBookingID,
-		WarrantyName:     wr.WarrantyName,
-		WarrantyStatus:   wr.WarrantyStatus,
-		CreatedAt:        now.UTC(),
-		CreatedBy:        constants.System,
-		UpdatedAt:        now.UTC(),
-		UpdatedBy:        constants.System,
-	}
-}
-
-type RecallRequest struct {
-	RecallID          string   `json:"recall_ID"`
-	RecallDate        string   `json:"recall_date"`
-	RecallDescription string   `json:"recall_description"`
-	AffectedParts     []string `json:"affected_parts"`
-}
-
-func (r *RecallRequest) ToModel(bookingID, part string) domain.ServiceBookingRecall {
-	now := time.Now()
-	return domain.ServiceBookingRecall{
-		ServiceBookingID:  bookingID,
-		RecallID:          r.RecallID,
-		RecallDate:        r.RecallDate,
-		RecallDescription: r.RecallDescription,
-		AffectedPart:      part,
-		CreatedAt:         now.UTC(),
-		CreatedBy:         constants.System,
-		UpdatedAt:         now.UTC(),
-		UpdatedBy:         constants.System,
-	}
-}
-
-type JobRequest struct {
-	JobID         string  `json:"job_ID"`
-	JobName       string  `json:"job_name"`
-	LaborEstPrice float32 `json:"labor_est_price"`
-}
-
-func (j *JobRequest) ToDomain(serviceBookingID string) domain.ServiceBookingJob {
-	now := time.Now()
-	return domain.ServiceBookingJob{
-		ServiceBookingID: serviceBookingID,
-		JobID:            j.JobID,
-		JobName:          j.JobName,
-		LaborEstPrice:    j.LaborEstPrice,
-		CreatedAt:        now.UTC(),
-		CreatedBy:        constants.System,
-		UpdatedAt:        now.UTC(),
-		UpdatedBy:        constants.System,
-	}
-}
-
-type PartRequest struct {
-	PartType                 string            `json:"part_type"`
-	PackageID                string            `json:"package_ID"`
-	PartNumber               string            `json:"part_number"`
-	PartName                 string            `json:"part_name"`
-	PartQuantity             int32             `json:"part_quantity"`
-	PackageParts             []PartItemRequest `json:"package_parts"`
-	PartSize                 string            `json:"part_size"`
-	PartColor                string            `json:"part_color"`
-	PartEstPrice             float32           `json:"part_est_price"`
-	PartInstallationEstPrice float32           `json:"part_installation_est_price"`
-	FlagPartNeedDownPayment  bool              `json:"flag_part_need_down_payment"`
-}
-
-func (p *PartRequest) ToDomain(serviceBookingID string) (domain.ServiceBookingPart, []domain.ServiceBookingPartItem) {
-	now := time.Now()
-
-	partItems := make([]domain.ServiceBookingPartItem, 0, len(p.PackageParts))
-	for _, item := range p.PackageParts {
-		partItems = append(partItems, domain.ServiceBookingPartItem{
-			PartNumber: item.PartNumber,
-			PartName:   item.PartName,
-			CreatedAt:  now.UTC(),
-			CreatedBy:  constants.System,
-			UpdatedAt:  now.UTC(),
-			UpdatedBy:  constants.System,
-		})
-	}
-
-	return domain.ServiceBookingPart{
-		ServiceBookingID:         serviceBookingID,
-		PartType:                 p.PartType,
-		PackageID:                p.PackageID,
-		PartNumber:               p.PartNumber,
-		PartName:                 p.PartName,
-		PartQuantity:             p.PartQuantity,
-		PartSize:                 p.PartSize,
-		PartColor:                p.PartColor,
-		PartEstPrice:             p.PartEstPrice,
-		PartInstallationEstPrice: p.PartInstallationEstPrice,
-		FlagPartNeedDownPayment:  p.FlagPartNeedDownPayment,
-		CreatedAt:                now.UTC(),
-		CreatedBy:                constants.System,
-		UpdatedAt:                now.UTC(),
-		UpdatedBy:                constants.System,
-	}, partItems
-}
-
-type PartItemRequest struct {
-	PartNumber string `json:"part_number"`
-	PartName   string `json:"part_name"`
+	// from service booking bp
+	AppointmentDatetimeStart          int64    `json:"appointment_datetime_start"`
+	AppointmentDatetimeEnd            int64    `json:"appointment_datetime_end"`
+	AppointmentRequestedDatetimeStart int64    `json:"appointment_requested_datetime_start"`
+	AppointmentRequestedDatetimeEnd   int64    `json:"appointment_requested_datetime_end"`
+	AdditionalVehicleProblem          string   `json:"additional_vehicle_problem"`
+	DamageImage                       []string `json:"damage_image"`
+	InsuranceClaim                    string   `json:"insurance_claim"`
 }
 
 // ToServiceBookingModel converts the DataRequest to the domain.TestDrive model
 func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicleID string) domain.ServiceBooking {
-	return domain.ServiceBooking{
+	serviceBooking := domain.ServiceBooking{
 		EventID:                      sb.EventID,
 		CustomerID:                   customerID,
 		CustomerVehicleID:            customerVehicleID,
@@ -186,7 +83,7 @@ func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicle
 		ServiceBookingStatus:         sb.Data.ServiceBookingRequest.BookingStatus,
 		CreatedDatetime:              utils.GetTimeUnix(sb.Data.ServiceBookingRequest.CreatedDatetime).UTC(),
 		ServiceCategory:              sb.Data.ServiceBookingRequest.ServiceCategory,
-		ServiceSequence:              sb.Data.ServiceBookingRequest.ServiceSequence,
+		ServiceSequence:              utils.ToPointer(sb.Data.ServiceBookingRequest.ServiceSequence),
 		SlotDatetimeStart:            utils.GetTimeUnix(sb.Data.ServiceBookingRequest.SlotDatetimeStart).UTC(),
 		SlotDatetimeEnd:              utils.GetTimeUnix(sb.Data.ServiceBookingRequest.SlotDatetimeEnd).UTC(),
 		SlotRequestedDatetimeStart:   utils.GetTimeUnix(sb.Data.ServiceBookingRequest.SlotRequestedDatetimeStart).UTC(),
@@ -197,16 +94,16 @@ func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicle
 		PreferenceContactPhoneNumber: sb.Data.ServiceBookingRequest.PreferenceContactPhoneNumber,
 		PreferenceContactTimeStart:   sb.Data.ServiceBookingRequest.PreferenceContactTimeStart,
 		PreferenceContactTimeEnd:     sb.Data.ServiceBookingRequest.PreferenceContactTimeEnd,
-		ServiceLocation:              sb.Data.ServiceBookingRequest.ServiceLocation,
+		ServiceLocation:              utils.ToPointer(sb.Data.ServiceBookingRequest.ServiceLocation),
 		OutletID:                     sb.Data.ServiceBookingRequest.OutletID,
 		OutletName:                   sb.Data.ServiceBookingRequest.OutletName,
-		MobileServiceAddress:         sb.Data.ServiceBookingRequest.MobileServiceAddress,
-		Province:                     sb.Data.ServiceBookingRequest.Province,
-		City:                         sb.Data.ServiceBookingRequest.City,
-		District:                     sb.Data.ServiceBookingRequest.District,
-		SubDistrict:                  sb.Data.ServiceBookingRequest.SubDistrict,
-		PostalCode:                   sb.Data.ServiceBookingRequest.PostalCode,
-		VehicleProblem:               sb.Data.ServiceBookingRequest.VehicleProblem,
+		MobileServiceAddress:         utils.ToPointer(sb.Data.ServiceBookingRequest.MobileServiceAddress),
+		Province:                     utils.ToPointer(sb.Data.ServiceBookingRequest.Province),
+		City:                         utils.ToPointer(sb.Data.ServiceBookingRequest.City),
+		District:                     utils.ToPointer(sb.Data.ServiceBookingRequest.District),
+		SubDistrict:                  utils.ToPointer(sb.Data.ServiceBookingRequest.SubDistrict),
+		PostalCode:                   utils.ToPointer(sb.Data.ServiceBookingRequest.PostalCode),
+		VehicleProblem:               utils.ToPointer(sb.Data.ServiceBookingRequest.VehicleProblem),
 		CancellationReason:           sb.Data.ServiceBookingRequest.CancellationReason,
 		OtherCancellationReason:      sb.Data.ServiceBookingRequest.OtherCancellationReason,
 		ServicePricingCallFlag:       sb.Data.ServiceBookingRequest.ServicePricingCallFlag,
@@ -214,14 +111,32 @@ func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicle
 		CreatedBy:                    constants.System, // or fetch from context if available
 		UpdatedAt:                    time.Now().UTC(),
 		UpdatedBy:                    constants.System, // or fetch from context if available
+		AdditionalVehicleProblem:     sb.Data.ServiceBookingRequest.AdditionalVehicleProblem,
+		InsuranceClaim:               sb.Data.ServiceBookingRequest.InsuranceClaim,
 	}
+	if sb.Data.ServiceBookingRequest.AppointmentDatetimeStart != 0 {
+		serviceBooking.SlotDatetimeStart = utils.GetTimeUnix(sb.Data.ServiceBookingRequest.AppointmentDatetimeStart).UTC()
+	}
+	if sb.Data.ServiceBookingRequest.AppointmentDatetimeEnd != 0 {
+		serviceBooking.SlotDatetimeEnd = utils.GetTimeUnix(sb.Data.ServiceBookingRequest.AppointmentDatetimeEnd).UTC()
+	}
+	if sb.Data.ServiceBookingRequest.AppointmentRequestedDatetimeStart != 0 {
+		serviceBooking.SlotRequestedDatetimeStart = utils.GetTimeUnix(sb.Data.ServiceBookingRequest.AppointmentRequestedDatetimeStart).UTC()
+	}
+	if sb.Data.ServiceBookingRequest.AppointmentRequestedDatetimeEnd != 0 {
+		serviceBooking.SlotRequestedDatetimeEnd = utils.GetTimeUnix(sb.Data.ServiceBookingRequest.AppointmentRequestedDatetimeEnd).UTC()
+	}
+	return serviceBooking
 }
 
 type GetServiceBooking struct {
 	ID                   *string
+	CustomerID           *string
 	ServiceBookingID     *string
 	ServiceBookingNumber *string
 	ServiceBookingSource *string
+	ServiceBookingStatus *string
+	ServiceCategory      *string
 	EventID              *string
 }
 
@@ -229,13 +144,80 @@ func (g *GetServiceBooking) Apply(q *sqrl.SelectBuilder) {
 	if g.ID != nil {
 		q.Where(sqrl.Eq{"i_id": g.ID})
 	}
+	if g.CustomerID != nil {
+		q.Where(sqrl.Eq{"i_customer_id": g.CustomerID})
+	}
 	if g.ServiceBookingID != nil {
 		q.Where(sqrl.Eq{"i_service_booking_id": g.ServiceBookingID})
 	}
 	if g.ServiceBookingNumber != nil {
 		q.Where(sqrl.Eq{"c_service_booking_number": g.ServiceBookingNumber})
 	}
+	if g.ServiceBookingStatus != nil {
+		q.Where(sqrl.Eq{"c_service_booking_status": g.ServiceBookingStatus})
+	}
+	if g.ServiceCategory != nil {
+		q.Where(sqrl.Eq{"c_service_category": g.ServiceCategory})
+	}
 	if g.EventID != nil {
 		q.Where(sqrl.Eq{"i_event_id": g.EventID})
+	}
+}
+
+type ConfirmServiceBookingRequest struct {
+	ServiceBookingID string `json:"service_booking_id" validate:"required"`
+	EmployeeID       string `json:"employee_id" validate:"required"`
+	Status           string `json:"status" validate:"required,oneof=MANUALLY_CONFIRMED CANCELLED COMPLETED NOT_SHOW SYSTEM_CONFIRMED"`
+	Location         string `json:"location" validate:"required,oneof=WORKSHOP MOBILE_SERVICES"`
+}
+
+// ServiceBookingEventData represents the data payload for confirm event
+type ServiceBookingEventData struct {
+	OneAccount     customer.OneAccountRequest `json:"one_account" validate:"required"`
+	ServiceBooking *ServiceBookingRequest     `json:"service_booking" validate:"required"`
+	PICAssignment  *PICAssignmentRequest      `json:"pic_assignment,omitempty"`
+}
+
+// PICAssignmentRequest represents the PIC assignment information
+type PICAssignmentRequest struct {
+	EmployeeID string `json:"employee_id" validate:"required"`
+	FirstName  string `json:"first_name" validate:"required"`
+}
+
+// NewServiceBookingRequest creates a ServiceBookingRequest from domain model
+func NewServiceBookingRequest(sb domain.ServiceBooking, warranties []WarrantyRequest, recalls []RecallRequest) ServiceBookingRequest {
+	return ServiceBookingRequest{
+		Warranty:                     warranties,
+		Recalls:                      recalls,
+		BookingId:                    sb.ServiceBookingID,
+		BookingNumber:                sb.ServiceBookingNumber,
+		BookingSource:                sb.ServiceBookingSource,
+		BookingStatus:                sb.ServiceBookingStatus,
+		CreatedDatetime:              sb.CreatedDatetime.Unix(),
+		ServiceCategory:              sb.ServiceCategory,
+		ServiceSequence:              utils.ToValue(sb.ServiceSequence),
+		SlotDatetimeStart:            sb.SlotDatetimeStart.Unix(),
+		SlotDatetimeEnd:              sb.SlotDatetimeEnd.Unix(),
+		SlotRequestedDatetimeStart:   sb.SlotRequestedDatetimeStart.Unix(),
+		SlotRequestedDatetimeEnd:     sb.SlotRequestedDatetimeEnd.Unix(),
+		SlotUnavailableFlag:          sb.SlotUnavailableFlag,
+		CarrierName:                  sb.CarrierName,
+		CarrierPhoneNumber:           sb.CarrierPhoneNumber,
+		PreferenceContactPhoneNumber: sb.PreferenceContactPhoneNumber,
+		PreferenceContactTimeStart:   sb.PreferenceContactTimeStart,
+		PreferenceContactTimeEnd:     sb.PreferenceContactTimeEnd,
+		ServiceLocation:              utils.ToValue(sb.ServiceLocation),
+		OutletID:                     sb.OutletID,
+		OutletName:                   sb.OutletName,
+		MobileServiceAddress:         utils.ToValue(sb.MobileServiceAddress),
+		Province:                     utils.ToValue(sb.Province),
+		City:                         utils.ToValue(sb.City),
+		District:                     utils.ToValue(sb.District),
+		SubDistrict:                  utils.ToValue(sb.SubDistrict),
+		PostalCode:                   utils.ToValue(sb.PostalCode),
+		VehicleProblem:               utils.ToValue(sb.VehicleProblem),
+		CancellationReason:           sb.CancellationReason,
+		OtherCancellationReason:      sb.OtherCancellationReason,
+		ServicePricingCallFlag:       sb.ServicePricingCallFlag,
 	}
 }
