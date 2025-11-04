@@ -100,18 +100,18 @@ func (be *OneAccountRequest) ToDomain() domain.Customer {
 	}
 }
 
-type OneAccountCreationEvent struct {
-	Process   string                      `json:"process" validate:"required"`
-	EventID   string                      `json:"event_ID" validate:"required,uuid4"` // UUID v4
-	Timestamp int64                       `json:"timestamp" validate:"required"`
-	Data      OneAccountCreationEventData `json:"data" validate:"required"`
+type OneAccountCreate struct {
+	Process   string               `json:"process" validate:"required"`
+	EventID   string               `json:"event_ID" validate:"required,uuid4"` // UUID v4
+	Timestamp int64                `json:"timestamp" validate:"required"`
+	Data      OneAccountCreateData `json:"data" validate:"required"`
 }
 
-type OneAccountCreationEventData struct {
-	OneAccount OneAccountCreationRequest `json:"one_account" validate:"required"`
+type OneAccountCreateData struct {
+	OneAccount OneAccountCreateRequest `json:"one_account" validate:"required"`
 }
 
-type OneAccountCreationRequest struct {
+type OneAccountCreateRequest struct {
 	OneAccountID        string `json:"one_account_ID" validate:"omitempty,max=32"`                                                 // Y Conditional
 	DealerCustomerID    string `json:"dealer_customer_ID" validate:"required,max=32"`                                              // Y
 	FirstName           string `json:"first_name" validate:"required,max=64"`                                                      // Y
@@ -138,21 +138,21 @@ type OneAccountCreationRequest struct {
 	DetailAddress       string `json:"detail_address" validate:"omitempty,max=256"`                                                // N
 }
 
-func (oa *OneAccountCreationRequest) GetTimeRegistrationDate() time.Time {
+func (oa *OneAccountCreateRequest) GetTimeRegistrationDate() time.Time {
 	if oa.RegistrationDate == 0 {
 		return time.Time{}
 	}
 	return time.Unix(oa.RegistrationDate, 0)
 }
 
-func (oa *OneAccountCreationRequest) GetTimeConsentGivenAt() time.Time {
+func (oa *OneAccountCreateRequest) GetTimeConsentGivenAt() time.Time {
 	if oa.ConsentGivenAt == 0 {
 		return time.Time{}
 	}
 	return time.Unix(oa.ConsentGivenAt, 0)
 }
 
-func (oa *OneAccountCreationRequest) GetTimeBirthDate() time.Time {
+func (oa *OneAccountCreateRequest) GetTimeBirthDate() time.Time {
 	if oa.BirthDate == "" {
 		return time.Time{}
 	}
@@ -163,7 +163,7 @@ func (oa *OneAccountCreationRequest) GetTimeBirthDate() time.Time {
 	return t
 }
 
-func (oa *OneAccountCreationEvent) ToCustomerModel() domain.Customer {
+func (oa *OneAccountCreate) ToCustomerModel() domain.Customer {
 	src := oa.Data.OneAccount
 	systemName := "webhook_one_access"
 	now := time.Now().UTC()

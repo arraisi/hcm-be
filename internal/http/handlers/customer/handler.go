@@ -1,5 +1,6 @@
 package customer
 
+//go:generate mockgen -package=customer -source=handlr.go -destination=handler_mock_test.go
 import (
 	"context"
 
@@ -16,7 +17,7 @@ type IdempotencyService interface {
 
 type Service interface {
 	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) ([]domain.Customer, error)
-	CreateOneAccount(ctx context.Context, request customer.OneAccountCreationEvent) error
+	CreateOneAccount(ctx context.Context, request customer.OneAccountCreate) error
 }
 
 // Handler handles HTTP requests for user operations

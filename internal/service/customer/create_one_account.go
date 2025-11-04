@@ -5,7 +5,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 )
 
-func (s *service) CreateOneAccount(ctx context.Context, request customer.OneAccountCreationEvent) error {
+func (s *service) CreateOneAccount(ctx context.Context, request customer.OneAccountCreate) error {
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err

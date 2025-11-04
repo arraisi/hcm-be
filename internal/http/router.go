@@ -78,7 +78,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Put("/service-booking/{service_booking_id}", handler.ServiceBookingHandler.ConfirmServiceBooking)
 			webhooks.Post("/service-booking", handler.ServiceBookingHandler.RequestServiceBooking)
 
-			webhooks.Post("/one-access-creation", handler.CustomerHandler.OneAccessCreationEvent)
+			webhooks.Post("/one-access-creation", handler.CustomerHandler.CreateOneAccess)
 		})
 	})
 
