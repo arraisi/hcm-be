@@ -325,3 +325,70 @@ func TestCustomerHandler_CreateOneAccess_IdempotencyFailed(t *testing.T) {
 
 	assert.Equal(t, "failed to store idempotency key", resp["message"])
 }
+
+func TestCustomerHandler_CreateOneAccess_ServiceFailed(t *testing.T) {
+	m := setupMock(t)
+	defer m.Ctrl.Finish()
+
+	eventID := "d4d7402f-dcab-443d-a829-f1817085f8da"
+	timestamp := time.Now().Unix()
+
+	ev := customer.OneAccessCreate{
+		Process:   "one access creation",
+		EventID:   eventID,
+		Timestamp: timestamp,
+		Data: customer.OneAccessCreateData{
+			OneAccount: customer.OneAccountCreateRequest{
+				DealerCustomerID:    "ASTVAJMF00552",
+				FirstName:           "Nkoc",
+				LastName:            "Maf",
+				PhoneNumber:         "081234567890",
+				VerificationChannel: "SMS",
+				KtpNumber:           "PRRJKAESWC086H",
+				RegistrationChannel: "MTOYOTA",
+				RegistrationDate:    timestamp,
+				ConsentGiven:        true,
+				ConsentGivenAt:      timestamp,
+				ConsentGivenDuring:  "REGISTRATION",
+			},
+		},
+	}
+	body, err := json.Marshal(ev)
+	require.NoError(t, err)
+
+	// Signature
+	h := hmac.New(sha256.New, []byte(m.Config.Webhook.HMACSecret))
+	h.Write(body)
+	signature := hex.EncodeToString(h.Sum(nil))
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
+	req.Header.Set("X-Signature", signature)
+	req.Header.Set("X-Event-Id", eventID)
+	req.Header.Set("X-Event-Timestamp", strconv.FormatInt(timestamp, 10))
+
+	// Inject headers into context
+	webhookHeaders := webhookDto.Headers{
+		ContentType: "application/json",
+		APIKey:      m.Config.Webhook.APIKey,
+		Signature:   signature,
+		EventID:     eventID,
+		Timestamp:   strconv.FormatInt(timestamp, 10),
+	}
+	req = req.WithContext(context.WithValue(req.Context(), middleware.WebhookHeadersKey{}, webhookHeaders))
+
+	rr := httptest.NewRecorder()
+
+	// Expectations:
+	m.mockIdempotencySvc.EXPECT().Store(eventID).Return(nil)
+	m.mockSvc.EXPECT().CreateOneAccess(gomock.Any(), ev).Return(assert.AnError) // simulate service error
+
+	m.handler.CreateOneAccess(rr, req)
+
+	assert.Equal(t, http.StatusInternalServerError, rr.Code)
+
+	var resp map[string]any
+	require.NoError(t, json.Unmarshal(rr.Body.Bytes(), &resp))
+	assert.NotEmpty(t, resp["message"])
+}
