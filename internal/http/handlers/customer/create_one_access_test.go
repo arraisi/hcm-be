@@ -111,6 +111,28 @@ func TestCustomerHandler_CreateOneAccess_Success(t *testing.T) {
 	assert.Equal(t, "RECEIVED", resp.Data.Status)
 }
 
+func TestCustomerHandler_CreateOneAccess_MissingHeaders(t *testing.T) {
+	m := setupMock(t)
+	defer m.Ctrl.Finish()
+
+	// Body can be anything; handler will fail early on missing headers-in-context
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewBufferString(`{}`))
+	rr := httptest.NewRecorder()
+
+	// Expectations: nothing should be called
+	m.mockIdempotencySvc.EXPECT().Store(gomock.Any()).Times(0)
+	m.mockSvc.EXPECT().CreateOneAccess(gomock.Any(), gomock.Any()).Times(0)
+
+	m.handler.CreateOneAccess(rr, req)
+
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+
+	// Optional: check message if your error text is stable
+	var resp map[string]any
+	require.NoError(t, json.Unmarshal(rr.Body.Bytes(), &resp))
+	assert.Equal(t, "header extraction failed", resp["message"])
+}
+
 func TestCustomerHandler_CreateOneAccess_IdempotencyFailed(t *testing.T) {
 	m := setupMock(t)
 	defer m.Ctrl.Finish()
