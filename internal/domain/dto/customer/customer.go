@@ -165,7 +165,7 @@ func (oa *OneAccountCreateRequest) GetTimeBirthDate() time.Time {
 
 func (oa *OneAccessCreate) ToCustomerModel() domain.Customer {
 	src := oa.Data.OneAccount
-	systemName := "webhook_one_access"
+	systemName := "webhook_one_access_creation"
 	now := time.Now().UTC()
 
 	return domain.Customer{

@@ -1,0 +1,41 @@
+### Create One Access (Success Case)
+POST http://localhost:8080/api/v1/hcm/webhooks/one-access-creation
+Content-Type: application/json
+X-API-Key: your-webhook-api-key
+X-Signature: your-hmac-secret-key
+X-Event-Id: d4d7402f-dcab-443d-a829-f1817085f8da
+X-Event-Timestamp: 1708782696
+
+{
+  "process": "one access creation",
+  "event_ID": "d4d7402f-dcab-443d-a829-f1817085f8da",
+  "timestamp": 1708782696,
+  "data": {
+    "one_account": {
+      "one_account_ID": "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
+      "dealer_customer_ID": "ASTVAJMF00552",
+      "first_name": "Nkoc",
+      "last_name": "Maf",
+      "phone_number": "081234567890",
+      "email": "nkoc.maf@example.com",
+      "birth_date": "1995-08-12",
+      "verification_channel": "SMS",
+      "ktp_number": "PRRJKAESWC086H",
+      "occupation": "Engineer",
+      "gender": "FEMALE",
+      "registration_channel": "MTOYOTA",
+      "registration_datetime": 1709085600,
+      "consent_given": true,
+      "consent_given_at": 1709085600,
+      "consent_given_during": "REGISTRATION",
+      "address_label": "Rumah",
+      "residence_address": "52EXP0ADG Q9G3AAD T, WI YktLIL ONb2 gSLTo a6pP YXZJ, NIl1n",
+      "province": "DKI Jakarta",
+      "city": "Jakarta Barat",
+      "district": "Pulo Gadung",
+      "subdistrict": "Jati",
+      "postal_code": "13220",
+      "detail_address": "gts89detiyt"
+    }
+  }
+}
