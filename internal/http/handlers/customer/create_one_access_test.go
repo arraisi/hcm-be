@@ -127,10 +127,56 @@ func TestCustomerHandler_CreateOneAccess_MissingHeaders(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, rr.Code)
 
-	// Optional: check message if your error text is stable
 	var resp map[string]any
 	require.NoError(t, json.Unmarshal(rr.Body.Bytes(), &resp))
 	assert.Equal(t, "header extraction failed", resp["message"])
+}
+
+func TestCustomerHandler_CreateOneAccess_InvalidJSON(t *testing.T) {
+	m := setupMock(t)
+	defer m.Ctrl.Finish()
+
+	eventID := "7f6a9a86-4b30-4b5f-9d73-2f5a9b8a9f00"
+	timestamp := time.Now().Unix()
+
+	// Malformed JSON
+	body := []byte(`{"data": invalid}`)
+
+	// Signature (not verified by handler, but we pass a plausible one)
+	h := hmac.New(sha256.New, []byte(m.Config.Webhook.HMACSecret))
+	h.Write(body)
+	signature := hex.EncodeToString(h.Sum(nil))
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
+	req.Header.Set("X-Signature", signature)
+	req.Header.Set("X-Event-Id", eventID)
+	req.Header.Set("X-Event-Timestamp", strconv.FormatInt(timestamp, 10))
+
+	// Inject headers into context (simulate middleware)
+	webhookHeaders := webhookDto.Headers{
+		ContentType: "application/json",
+		APIKey:      m.Config.Webhook.APIKey,
+		Signature:   signature,
+		EventID:     eventID,
+		Timestamp:   strconv.FormatInt(timestamp, 10),
+	}
+	req = req.WithContext(context.WithValue(req.Context(), middleware.WebhookHeadersKey{}, webhookHeaders))
+
+	rr := httptest.NewRecorder()
+
+	// Expectations: nothing else should be called (fails at JSON unmarshal)
+	m.mockIdempotencySvc.EXPECT().Store(gomock.Any()).Times(0)
+	m.mockSvc.EXPECT().CreateOneAccess(gomock.Any(), gomock.Any()).Times(0)
+
+	m.handler.CreateOneAccess(rr, req)
+
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+
+	var resp map[string]any
+	require.NoError(t, json.Unmarshal(rr.Body.Bytes(), &resp))
+	assert.Equal(t, "invalid JSON payload", resp["message"])
 }
 
 func TestCustomerHandler_CreateOneAccess_IdempotencyFailed(t *testing.T) {
