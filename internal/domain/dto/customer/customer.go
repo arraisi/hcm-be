@@ -101,13 +101,13 @@ func (be *OneAccountRequest) ToDomain() domain.Customer {
 }
 
 type OneAccessCreate struct {
-	Process   string               `json:"process" validate:"required"`
-	EventID   string               `json:"event_ID" validate:"required,uuid4"` // UUID v4
-	Timestamp int64                `json:"timestamp" validate:"required"`
-	Data      OneAccountCreateData `json:"data" validate:"required"`
+	Process   string              `json:"process" validate:"required"`
+	EventID   string              `json:"event_ID" validate:"required,uuid4"` // UUID v4
+	Timestamp int64               `json:"timestamp" validate:"required"`
+	Data      OneAccessCreateData `json:"data" validate:"required"`
 }
 
-type OneAccountCreateData struct {
+type OneAccessCreateData struct {
 	OneAccount OneAccountCreateRequest `json:"one_account" validate:"required"`
 }
 
