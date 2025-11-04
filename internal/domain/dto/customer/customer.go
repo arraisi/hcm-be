@@ -100,7 +100,7 @@ func (be *OneAccountRequest) ToDomain() domain.Customer {
 	}
 }
 
-type OneAccountCreate struct {
+type OneAccessCreate struct {
 	Process   string               `json:"process" validate:"required"`
 	EventID   string               `json:"event_ID" validate:"required,uuid4"` // UUID v4
 	Timestamp int64                `json:"timestamp" validate:"required"`
@@ -163,7 +163,7 @@ func (oa *OneAccountCreateRequest) GetTimeBirthDate() time.Time {
 	return t
 }
 
-func (oa *OneAccountCreate) ToCustomerModel() domain.Customer {
+func (oa *OneAccessCreate) ToCustomerModel() domain.Customer {
 	src := oa.Data.OneAccount
 	systemName := "webhook_one_access"
 	now := time.Now().UTC()

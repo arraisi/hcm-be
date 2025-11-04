@@ -18,7 +18,7 @@ type IdempotencyService interface {
 
 type Service interface {
 	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) ([]domain.Customer, error)
-	CreateOneAccount(ctx context.Context, request customer.OneAccountCreate) error
+	CreateOneAccess(ctx context.Context, request customer.OneAccessCreate) error
 }
 
 // Handler handles HTTP requests for user operations

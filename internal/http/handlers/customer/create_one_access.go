@@ -31,7 +31,7 @@ func (h *Handler) CreateOneAccess(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse JSON body
-	var oneAccountCreate customer.OneAccountCreate
+	var oneAccountCreate customer.OneAccessCreate
 	if err := json.Unmarshal(body, &oneAccountCreate); err != nil {
 		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookInvalidPayload, errors.ErrListWebhook)
 		response.ErrorResponseJSON(w, errorResponse)
@@ -52,7 +52,7 @@ func (h *Handler) CreateOneAccess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.svc.CreateOneAccount(r.Context(), oneAccountCreate)
+	err = h.svc.CreateOneAccess(r.Context(), oneAccountCreate)
 	if err != nil {
 		// Combine webhook and test drive error lists
 		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListWebhook)

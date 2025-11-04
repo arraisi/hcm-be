@@ -88,9 +88,9 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // CreateOneAccount mocks base method.
-func (m *MockService) CreateOneAccount(ctx context.Context, request customer.OneAccountCreate) error {
+func (m *MockService) CreateOneAccess(ctx context.Context, request customer.OneAccessCreate) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateOneAccount", ctx, request)
+	ret := m.ctrl.Call(m, "CreateOneAccess", ctx, request)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
@@ -98,7 +98,7 @@ func (m *MockService) CreateOneAccount(ctx context.Context, request customer.One
 // CreateOneAccount indicates an expected call of CreateOneAccount.
 func (mr *MockServiceMockRecorder) CreateOneAccount(ctx, request interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOneAccount", reflect.TypeOf((*MockService)(nil).CreateOneAccount), ctx, request)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOneAccess", reflect.TypeOf((*MockService)(nil).CreateOneAccess), ctx, request)
 }
 
 // GetCustomers mocks base method.
