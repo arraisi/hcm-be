@@ -1,8 +1,9 @@
 package customer
 
-//go:generate mockgen -package=customer -source=handlr.go -destination=handler_mock_test.go
+//go:generate mockgen -package=customer -source=handler.go -destination=handler_mock_test.go
 import (
 	"context"
+	"github.com/arraisi/hcm-be/internal/config"
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
@@ -22,6 +23,7 @@ type Service interface {
 
 // Handler handles HTTP requests for user operations
 type Handler struct {
+	cfg            *config.Config
 	svc            Service
 	idempotencySvc IdempotencyService
 }
