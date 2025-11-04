@@ -179,6 +179,75 @@ func TestCustomerHandler_CreateOneAccess_InvalidJSON(t *testing.T) {
 	assert.Equal(t, "invalid JSON payload", resp["message"])
 }
 
+func TestCustomerHandler_CreateOneAccess_ValidationError(t *testing.T) {
+	m := setupMock(t)
+	defer m.Ctrl.Finish()
+
+	eventID := "c6f3f6c2-7a4a-42c0-a0d3-4f8a3f6b9d77"
+	timestamp := time.Now().Unix()
+
+	// Build a payload that violates validation (e.g., FirstName = "")
+	ev := customer.OneAccessCreate{
+		Process:   "one access creation",
+		EventID:   eventID,
+		Timestamp: timestamp,
+		Data: customer.OneAccessCreateData{
+			OneAccount: customer.OneAccountCreateRequest{
+				// FirstName missing/empty violates `validate:"required"`
+				FirstName:           "",
+				LastName:            "Maf",
+				DealerCustomerID:    "ASTVAJMF00552",
+				PhoneNumber:         "081234567890",
+				VerificationChannel: "SMS",
+				KtpNumber:           "PRRJKAESWC086H",
+				RegistrationChannel: "MTOYOTA",
+				RegistrationDate:    timestamp,
+				ConsentGiven:        true,
+				ConsentGivenAt:      timestamp,
+				ConsentGivenDuring:  "REGISTRATION",
+			},
+		},
+	}
+	body, err := json.Marshal(ev)
+	require.NoError(t, err)
+
+	// Signature
+	h := hmac.New(sha256.New, []byte(m.Config.Webhook.HMACSecret))
+	h.Write(body)
+	signature := hex.EncodeToString(h.Sum(nil))
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
+	req.Header.Set("X-Signature", signature)
+	req.Header.Set("X-Event-Id", eventID)
+	req.Header.Set("X-Event-Timestamp", strconv.FormatInt(timestamp, 10))
+
+	// Inject headers into context
+	webhookHeaders := webhookDto.Headers{
+		ContentType: "application/json",
+		APIKey:      m.Config.Webhook.APIKey,
+		Signature:   signature,
+		EventID:     eventID,
+		Timestamp:   strconv.FormatInt(timestamp, 10),
+	}
+	req = req.WithContext(context.WithValue(req.Context(), middleware.WebhookHeadersKey{}, webhookHeaders))
+
+	rr := httptest.NewRecorder()
+
+	// Expectations: should fail before idempotency/store/service
+	m.mockIdempotencySvc.EXPECT().Store(gomock.Any()).Times(0)
+	m.mockSvc.EXPECT().CreateOneAccess(gomock.Any(), gomock.Any()).Times(0)
+
+	m.handler.CreateOneAccess(rr, req)
+
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+
+	var resp map[string]any
+	require.NoError(t, json.Unmarshal(rr.Body.Bytes(), &resp))
+	assert.NotEmpty(t, resp["message"])
+}
+
 func TestCustomerHandler_CreateOneAccess_IdempotencyFailed(t *testing.T) {
 	m := setupMock(t)
 	defer m.Ctrl.Finish()
