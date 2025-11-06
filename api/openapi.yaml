@@ -464,6 +464,122 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /webhooks/one-access:
+    post:
+      summary: One Access Account Creation Webhook
+      description: Webhook endpoint to receive One Access account creation events from external systems
+      tags:
+        - Webhooks
+      security:
+        - WebhookApiKey: [ ]
+      parameters:
+        - name: X-API-Key
+          in: header
+          required: true
+          schema:
+            type: string
+          description: API key for webhook authentication
+        - name: X-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+          description: HMAC signature for payload verification
+        - name: X-Event-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Unique event identifier for idempotency
+        - name: X-Event-Timestamp
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Unix timestamp of the event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OneAccessEvent'
+            example:
+              process: "one access create"
+              event_ID: "05dbe854-74a4-4e0d-be00-da098d3569d6"
+              timestamp: 1698345600
+              data:
+                one_account:
+                  one_account_ID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y"
+                  dealer_customer_ID: "DLC-20241107-001"
+                  first_name: "John"
+                  last_name: "Doe"
+                  phone_number: "081234567890"
+                  email: "john.doe@example.com"
+                  birth_date: "1990-05-21"
+                  verification_channel: "WHATSAPP"
+                  ktp_number: "3273012105900001"
+                  occupation: "Engineer"
+                  gender: "MALE"
+                  registration_channel: "DEALER_SYSTEM"
+                  registration_datetime: 1698349200
+                  consent_given: true
+                  consent_given_at: 1698349300
+                  consent_given_during: "REGISTRATION"
+                  address_label: "Rumah"
+                  residence_address: "Jalan Merdeka No. 10"
+                  province: "DKI Jakarta"
+                  city: "Jakarta Pusat"
+                  district: "Menteng"
+                  subdistrict: "Pegangsaan"
+                  postal_code: "10320"
+                  detail_address: "RT 05 / RW 02"
+      responses:
+        '202':
+          description: One Access event accepted for processing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                        format: uuid
+                        description: The event ID that was processed
+                      status:
+                        type: string
+                        enum: [ RECEIVED ]
+                        description: Status of the event processing
+                  message:
+                    type: string
+                    example: 'accepted'
+        '400':
+          description: Bad request - invalid payload or headers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - duplicate event ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -762,6 +878,150 @@ components:
         vehicle_age_criteria:
           type: string
           description: Vehicle age criteria
+
+    OneAccessEvent:
+      type: object
+      required:
+        - process
+        - event_ID
+        - timestamp
+        - data
+      properties:
+        process:
+          type: string
+          description: Process type identifier
+          example: "one access create"
+        event_ID:
+          type: string
+          format: uuid
+          description: Unique event identifier (UUID v4)
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp of the event
+        data:
+          $ref: '#/components/schemas/OneAccessEventData'
+
+    OneAccessEventData:
+      type: object
+      required:
+        - one_account
+      properties:
+        one_account:
+          $ref: '#/components/schemas/OneAccountCreateRequest'
+
+    OneAccountCreateRequest:
+      type: object
+      properties:
+        one_account_ID:
+          type: string
+          description: One Account unique identifier
+          maxLength: 32
+        dealer_customer_ID:
+          type: string
+          description: Dealer customer identifier
+          maxLength: 32
+        first_name:
+          type: string
+          description: Customer first name
+          maxLength: 64
+        last_name:
+          type: string
+          description: Customer last name
+          maxLength: 64
+        phone_number:
+          type: string
+          description: Customer phone number
+          maxLength: 16
+        email:
+          type: string
+          format: email
+          description: Customer email address
+          maxLength: 64
+        birth_date:
+          type: string
+          description: Birth date (YYYY-MM-DD)
+          maxLength: 32
+          example: "1990-05-21"
+        verification_channel:
+          type: string
+          description: Verification channel
+          enum: [ SMS, WHATSAPP, EMAIL ]
+        ktp_number:
+          type: string
+          description: Indonesian KTP number
+          maxLength: 16
+        occupation:
+          type: string
+          description: Occupation
+          maxLength: 64
+        gender:
+          type: string
+          description: Gender
+          enum: [ FEMALE, MALE, OTHER ]
+        registration_channel:
+          type: string
+          description: Registration channel
+          enum: [ MTOYOTA, DXMI, DEALER_SYSTEM ]
+        registration_datetime:
+          type: integer
+          format: int64
+          description: Registration timestamp (Unix)
+        consent_given:
+          type: boolean
+          description: Whether consent was given
+        consent_given_at:
+          type: integer
+          format: int64
+          description: Consent timestamp (Unix)
+        consent_given_during:
+          type: string
+          description: Flow where consent was obtained
+          enum: [ REGISTRATION, SPK, SERVICE, ADD_VEHICLE ]
+        address_label:
+          type: string
+          description: Address label
+          maxLength: 256
+        residence_address:
+          type: string
+          description: Residence address
+          maxLength: 256
+        province:
+          type: string
+          description: Province
+          maxLength: 64
+        city:
+          type: string
+          description: City
+          maxLength: 64
+        district:
+          type: string
+          description: District
+          maxLength: 64
+        subdistrict:
+          type: string
+          description: Subdistrict
+          maxLength: 64
+        postal_code:
+          type: string
+          description: Postal code (5 digits)
+          pattern: '^\d{5}$'
+        detail_address:
+          type: string
+          description: Address details
+          maxLength: 256
+      required:
+        - dealer_customer_ID
+        - first_name
+        - last_name
+        - phone_number
+        - verification_channel
+        - ktp_number
+        - registration_channel
+        - registration_datetime
+        - consent_given
+        - consent_given_at
+        - consent_given_during
 
     ErrorResponse:
       type: object
