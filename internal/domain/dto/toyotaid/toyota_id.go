@@ -1,8 +1,9 @@
 package toyotaid
 
 import (
-	"encoding/base64"
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/constants"
+	"github.com/arraisi/hcm-be/pkg/utils"
 	"strings"
 	"time"
 )
@@ -52,15 +53,6 @@ type OneAccount struct {
 
 // ToDomainCustomer converts a OneAccount DTO into a domain.Customer entity.
 func (dto *OneAccount) ToDomainCustomer() (domain.Customer, error) {
-	var birthDate time.Time
-	if dto.BirthDate != "" {
-		parsed, err := time.Parse("2006-01-02", dto.BirthDate)
-		if err != nil {
-			return domain.Customer{}, err
-		}
-		birthDate = parsed
-	}
-
 	now := time.Now().UTC()
 
 	customer := domain.Customer{
@@ -86,22 +78,29 @@ func (dto *OneAccount) ToDomainCustomer() (domain.Customer, error) {
 		ConsentGiven:         dto.ConsentGiven,
 		ConsentGivenDuring:   dto.ConsentGivenDuring,
 		ToyotaIDSingleStatus: dto.ToyotaSingleIDStatus,
-		BirthDate:            birthDate,
 		IsValid:              true,
 		IsNew:                true,
 		IsOmnichannel:        false,
 		IsMerge:              false,
-		CreatedBy:            "system",
+		CreatedBy:            constants.System,
 		CreatedAt:            now,
 		UpdatedAt:            now,
 	}
 
 	// Handle time fields if available (UNIX timestamps)
 	if dto.RegistrationDatetime > 0 {
-		customer.RegistrationDatetime = time.Unix(dto.RegistrationDatetime, 0).UTC()
+		customer.RegistrationDatetime = utils.GetTimeUnix(dto.RegistrationDatetime)
 	}
 	if dto.ConsentGivenAt > 0 {
-		customer.ConsentGivenAt = time.Unix(dto.ConsentGivenAt, 0).UTC()
+		customer.ConsentGivenAt = utils.GetTimeUnix(dto.ConsentGivenAt)
+	}
+
+	if dto.BirthDate != "" {
+		birthDate, err := utils.ParseDateString(dto.BirthDate)
+		if err != nil {
+			return domain.Customer{}, err
+		}
+		customer.BirthDate = birthDate
 	}
 
 	return customer, nil
@@ -128,24 +127,6 @@ type CustomerVehicle struct {
 
 // ToDomainCustomerVehicle converts CustomerVehicle DTO into domain.CustomerVehicle entity.
 func (dto *CustomerVehicle) ToDomainCustomerVehicle(customerID, oneAccountID string) (domain.CustomerVehicle, error) {
-	var stnkExpiry *time.Time
-	if dto.STNKExpiryDate > 0 {
-		t := time.Unix(dto.STNKExpiryDate, 0).UTC()
-		stnkExpiry = &t
-	}
-
-	var stnkImage []byte
-	if dto.STNKImage != "" {
-		data, err := base64.StdEncoding.DecodeString(dto.STNKImage)
-		if err != nil {
-			return domain.CustomerVehicle{}, err
-		}
-		stnkImage = data
-	}
-
-	// join slice to string for DB
-	customerType := strings.Join(dto.CustomerType, ",")
-
 	now := time.Now().UTC()
 
 	entity := domain.CustomerVehicle{
@@ -161,15 +142,25 @@ func (dto *CustomerVehicle) ToDomainCustomerVehicle(customerID, oneAccountID str
 		VehicleCategory: dto.VehicleCategory,
 		StnkNumber:      dto.STNKNumber,
 		StnkName:        dto.STNKName,
-		StnkExpiryDate:  stnkExpiry,
 		StnkAddress:     dto.STNKAddress,
-		StnkImage:       stnkImage,
-		CustomerType:    customerType,
+		CustomerType:    strings.Join(dto.CustomerType, ","),
 		PrimaryUser:     dto.PrimaryUser,
 		CreatedAt:       now,
 		UpdatedAt:       now,
-		CreatedBy:       "system",
-		UpdatedBy:       "system",
+		CreatedBy:       constants.System,
+		UpdatedBy:       constants.System,
+	}
+
+	if dto.STNKExpiryDate > 0 {
+		entity.StnkExpiryDate = utils.ToPointer(utils.GetTimeUnix(dto.STNKExpiryDate))
+	}
+
+	if dto.STNKImage != "" {
+		data, err := utils.DecodeBase64String(dto.STNKImage)
+		if err != nil {
+			return domain.CustomerVehicle{}, err
+		}
+		entity.StnkImage = data
 	}
 
 	return entity, nil
