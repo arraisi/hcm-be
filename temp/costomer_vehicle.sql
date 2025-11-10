@@ -20,7 +20,7 @@ CREATE TABLE dbo.tm_customer_vehicle
     e_invoice_file              VARBINARY(MAX) NULL,
     b_main_vehicle_flag         BIT NULL,
     v_distance_travelled        INT NULL,
-    c_customer_type             VARCHAR(8) NULL,
+    c_customer_type             VARCHAR(32) NULL,
     c_primary_user              VARCHAR(6) NULL,
     c_digital_catalog_flag      BIT NULL,
     c_order_number_tco          VARCHAR(17) NULL,
