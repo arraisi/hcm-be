@@ -72,7 +72,7 @@ func TestCustomerHandler_CreateOneAccess_Success(t *testing.T) {
 	signature := hex.EncodeToString(h.Sum(nil))
 
 	// ---- Build HTTP request ----
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
@@ -116,7 +116,7 @@ func TestCustomerHandler_CreateOneAccess_MissingHeaders(t *testing.T) {
 	defer m.Ctrl.Finish()
 
 	// Body can be anything; handler will fail early on missing headers-in-context
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewBufferString(`{}`))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewBufferString(`{}`))
 	rr := httptest.NewRecorder()
 
 	// Expectations: nothing should be called
@@ -147,7 +147,7 @@ func TestCustomerHandler_CreateOneAccess_InvalidJSON(t *testing.T) {
 	h.Write(body)
 	signature := hex.EncodeToString(h.Sum(nil))
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
@@ -216,7 +216,7 @@ func TestCustomerHandler_CreateOneAccess_ValidationError(t *testing.T) {
 	h.Write(body)
 	signature := hex.EncodeToString(h.Sum(nil))
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
@@ -288,7 +288,7 @@ func TestCustomerHandler_CreateOneAccess_IdempotencyFailed(t *testing.T) {
 	signature := hex.EncodeToString(h.Sum(nil))
 
 	// ---- Build HTTP request ----
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
@@ -361,7 +361,7 @@ func TestCustomerHandler_CreateOneAccess_ServiceFailed(t *testing.T) {
 	h.Write(body)
 	signature := hex.EncodeToString(h.Sum(nil))
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
