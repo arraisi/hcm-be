@@ -11,7 +11,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (s *service) UpsertCustomerVehicleV2(ctx context.Context, tx *sqlx.Tx, customerID string, req domain.CustomerVehicle) (string, error) {
+func (s *service) UpsertCustomerVehicleV2(ctx context.Context, tx *sqlx.Tx, req domain.CustomerVehicle) (string, error) {
 	existingCV, err := s.repo.GetCustomerVehicle(ctx, customervehicle.GetCustomerVehicleRequest{
 		Vin:          utils.ToPointer(req.Vin),
 		PoliceNumber: utils.ToPointer(req.PoliceNumber),
@@ -19,7 +19,6 @@ func (s *service) UpsertCustomerVehicleV2(ctx context.Context, tx *sqlx.Tx, cust
 	if err == nil {
 		// Found → update
 		req.ID = existingCV.ID
-		req.CustomerID = customerID
 
 		err = s.repo.UpdateCustomerVehicle(ctx, tx, req)
 		if err != nil {
@@ -30,7 +29,6 @@ func (s *service) UpsertCustomerVehicleV2(ctx context.Context, tx *sqlx.Tx, cust
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		req.CustomerID = customerID
 		err := s.repo.CreateCustomerVehicle(ctx, tx, &req)
 		if err != nil {
 			return req.ID, err
