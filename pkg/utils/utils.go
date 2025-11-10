@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/base64"
 	"fmt"
 	"time"
 )
@@ -23,4 +24,27 @@ func GetTimeUnix(unix int64) time.Time {
 
 func ToString[T any](v T) string {
 	return fmt.Sprintf("%v", v)
+}
+
+// ParseDateString converts a "2006-01-02" formatted string to time.Time (UTC).
+func ParseDateString(dateStr string) (time.Time, error) {
+	if dateStr == "" {
+		return time.Time{}, nil // return zero time if empty
+	}
+	t, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return t.UTC(), nil
+}
+
+func DecodeBase64String(s string) ([]byte, error) {
+	if s == "" {
+		return nil, nil // gracefully handle empty input
+	}
+	data, err := base64.StdEncoding.DecodeString(s)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }

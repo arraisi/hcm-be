@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
@@ -24,7 +25,9 @@ import (
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	servicebookingService "github.com/arraisi/hcm-be/internal/service/servicebooking"
 	testdriveService "github.com/arraisi/hcm-be/internal/service/testdrive"
+	toyotaidService "github.com/arraisi/hcm-be/internal/service/toyotaid"
 	userService "github.com/arraisi/hcm-be/internal/service/user"
+
 	"github.com/arraisi/hcm-be/pkg/utils"
 
 	"github.com/jmoiron/sqlx"
@@ -102,12 +105,18 @@ func Run(cfg *config.Config) error {
 		EmployeeRepo:       employeeRepo,
 		MockDIDXApi:        mockDIDXApiClient,
 	})
+	toyotaIDSvc := toyotaidService.New(cfg, toyotaidService.ServiceContainer{
+		TransactionRepo:    txRepo,
+		CustomerSvc:        customerSvc,
+		CustomerVehicleSvc: customerVehicleSvc,
+	})
 
 	// init handlers
 	userHandler := user.NewUserHandler(userSvc)
 	customerHandler := customer.New(customerSvc, idempotencyStore)
 	serviceBookingHandler := servicebooking.New(cfg, serviceBookingSvc, idempotencyStore)
 	testDriveHandler := testdrive.New(cfg, testDriveSvc, idempotencyStore)
+	toyotaIDHandler := toyotaid.New(cfg, toyotaIDSvc, idempotencyStore)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                cfg,
@@ -115,6 +124,7 @@ func Run(cfg *config.Config) error {
 		CustomerHandler:       customerHandler,
 		ServiceBookingHandler: serviceBookingHandler,
 		TestDriveHandler:      testDriveHandler,
+		ToyotaIDHandler:       toyotaIDHandler,
 	})
 
 	return apphttp.NewServer(cfg, router)
