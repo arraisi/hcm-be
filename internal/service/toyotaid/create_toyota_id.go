@@ -5,7 +5,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/toyotaid"
 )
 
-func (s *service) CreateOneAccess(ctx context.Context, request toyotaid.Request) error {
+func (s *service) CreateToyotaID(ctx context.Context, request toyotaid.Request) error {
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err
