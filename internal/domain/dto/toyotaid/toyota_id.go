@@ -1,5 +1,12 @@
 package toyotaid
 
+import (
+	"encoding/base64"
+	"github.com/arraisi/hcm-be/internal/domain"
+	"strings"
+	"time"
+)
+
 type Request struct {
 	Process   string `json:"process" validate:"required"`
 	EventID   string `json:"event_ID" validate:"required,uuid4"`
@@ -43,6 +50,63 @@ type OneAccount struct {
 	KTPImage             string `json:"ktp_image" validate:"omitempty,base64"`
 }
 
+// ToDomainCustomer converts a OneAccount DTO into a domain.Customer entity.
+func (dto *OneAccount) ToDomainCustomer() (domain.Customer, error) {
+	var birthDate time.Time
+	if dto.BirthDate != "" {
+		parsed, err := time.Parse("2006-01-02", dto.BirthDate)
+		if err != nil {
+			return domain.Customer{}, err
+		}
+		birthDate = parsed
+	}
+
+	now := time.Now().UTC()
+
+	customer := domain.Customer{
+		OneAccountID:         dto.OneAccountID,
+		DealerCustomerID:     dto.DealerCustomerID,
+		FirstName:            dto.FirstName,
+		LastName:             dto.LastName,
+		Gender:               dto.Gender,
+		PhoneNumber:          dto.PhoneNumber,
+		Email:                dto.Email,
+		KTPNumber:            dto.KTPNumber,
+		Occupation:           dto.Occupation,
+		CustomerCategory:     dto.CustomerCategory,
+		AddressLabel:         dto.AddressLabel,
+		ResidenceAddress:     dto.ResidenceAddress,
+		ResidenceProvince:    dto.Province,
+		ResidenceCity:        dto.City,
+		ResidenceDistrict:    dto.District,
+		ResidenceSubdistrict: dto.Subdistrict,
+		ResidencePostalCode:  dto.PostalCode,
+		DetailAddress:        dto.DetailAddress,
+		RegistrationChannel:  dto.RegistrationChannel,
+		ConsentGiven:         dto.ConsentGiven,
+		ConsentGivenDuring:   dto.ConsentGivenDuring,
+		ToyotaIDSingleStatus: dto.ToyotaSingleIDStatus,
+		BirthDate:            birthDate,
+		IsValid:              true,
+		IsNew:                true,
+		IsOmnichannel:        false,
+		IsMerge:              false,
+		CreatedBy:            "system",
+		CreatedAt:            now,
+		UpdatedAt:            now,
+	}
+
+	// Handle time fields if available (UNIX timestamps)
+	if dto.RegistrationDatetime > 0 {
+		customer.RegistrationDatetime = time.Unix(dto.RegistrationDatetime, 0).UTC()
+	}
+	if dto.ConsentGivenAt > 0 {
+		customer.ConsentGivenAt = time.Unix(dto.ConsentGivenAt, 0).UTC()
+	}
+
+	return customer, nil
+}
+
 // CustomerVehicle represents vehicle information for the OneAccount
 type CustomerVehicle struct {
 	PrimaryUser     string   `json:"primary_user" validate:"omitempty,oneof=MASTER MEMBER"`
@@ -60,4 +124,53 @@ type CustomerVehicle struct {
 	CustomerType    []string `json:"customer_type" validate:"required,dive,oneof=OWNER BUYER USER"`
 	VehicleCategory string   `json:"vehicle_category" validate:"required,oneof=RETAIL FLEET"`
 	STNKImage       string   `json:"stnk_image" validate:"omitempty,base64"`
+}
+
+// ToDomainCustomerVehicle converts CustomerVehicle DTO into domain.CustomerVehicle entity.
+func (dto *CustomerVehicle) ToDomainCustomerVehicle(customerID, oneAccountID string) (domain.CustomerVehicle, error) {
+	var stnkExpiry *time.Time
+	if dto.STNKExpiryDate > 0 {
+		t := time.Unix(dto.STNKExpiryDate, 0).UTC()
+		stnkExpiry = &t
+	}
+
+	var stnkImage []byte
+	if dto.STNKImage != "" {
+		data, err := base64.StdEncoding.DecodeString(dto.STNKImage)
+		if err != nil {
+			return domain.CustomerVehicle{}, err
+		}
+		stnkImage = data
+	}
+
+	// join slice to string for DB
+	customerType := strings.Join(dto.CustomerType, ",")
+
+	now := time.Now().UTC()
+
+	entity := domain.CustomerVehicle{
+		CustomerID:      customerID,
+		OneAccountID:    oneAccountID,
+		Vin:             dto.VIN,
+		KatashikiSuffix: dto.KatashikiSuffix,
+		ColorCode:       dto.ColorCode,
+		Model:           dto.Model,
+		Variant:         dto.Variant,
+		Color:           dto.Color,
+		PoliceNumber:    dto.PoliceNumber,
+		VehicleCategory: dto.VehicleCategory,
+		StnkNumber:      dto.STNKNumber,
+		StnkName:        dto.STNKName,
+		StnkExpiryDate:  stnkExpiry,
+		StnkAddress:     dto.STNKAddress,
+		StnkImage:       stnkImage,
+		CustomerType:    customerType,
+		PrimaryUser:     dto.PrimaryUser,
+		CreatedAt:       now,
+		UpdatedAt:       now,
+		CreatedBy:       "system",
+		UpdatedBy:       "system",
+	}
+
+	return entity, nil
 }
