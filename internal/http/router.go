@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 	"net/http"
 	stdprof "net/http/pprof"
 
@@ -22,6 +23,7 @@ type Handler struct {
 	CustomerHandler       customer.Handler
 	ServiceBookingHandler servicebooking.Handler
 	TestDriveHandler      testdrive.Handler
+	ToyotaIDHandler       toyotaid.Handler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -79,6 +81,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Post("/service-booking", handler.ServiceBookingHandler.RequestServiceBooking)
 
 			webhooks.Post("/one-access", handler.CustomerHandler.CreateOneAccess)
+
+			webhooks.Post("/toyota-id", handler.ToyotaIDHandler.CreateToyotaID)
 		})
 	})
 
