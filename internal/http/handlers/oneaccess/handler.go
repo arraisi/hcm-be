@@ -1,12 +1,10 @@
-package customer
+package oneaccess
 
-//go:generate mockgen -package=customer -source=handler.go -destination=handler_mock_test.go
+//go:generate mockgen -package=oneaccess -source=handler.go -destination=handler_mock_test.go
 import (
 	"context"
 	"github.com/arraisi/hcm-be/internal/config"
-
-	"github.com/arraisi/hcm-be/internal/domain"
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
+	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
 )
 
 type IdempotencyService interface {
@@ -17,7 +15,7 @@ type IdempotencyService interface {
 }
 
 type Service interface {
-	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) ([]domain.Customer, error)
+	CreateOneAccess(ctx context.Context, request oneaccess.Request) error
 }
 
 // Handler handles HTTP requests for user operations
@@ -28,6 +26,6 @@ type Handler struct {
 }
 
 // New creates a new CustomerHandler instance
-func New(svc Service, idempotencySvc IdempotencyService) Handler {
-	return Handler{svc: svc, idempotencySvc: idempotencySvc}
+func New(cfg *config.Config, svc Service, idempotencySvc IdempotencyService) Handler {
+	return Handler{cfg: cfg, svc: svc, idempotencySvc: idempotencySvc}
 }

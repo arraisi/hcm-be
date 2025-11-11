@@ -1,8 +1,8 @@
-package customer
+package oneaccess
 
 import (
 	"encoding/json"
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
+	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/arraisi/hcm-be/pkg/errors"
@@ -31,7 +31,7 @@ func (h *Handler) CreateOneAccess(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse JSON body
-	var oneAccountCreate customer.OneAccessCreate
+	var oneAccountCreate oneaccess.Request
 	if err := json.Unmarshal(body, &oneAccountCreate); err != nil {
 		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookInvalidPayload, errors.ErrListWebhook)
 		response.ErrorResponseJSON(w, errorResponse)

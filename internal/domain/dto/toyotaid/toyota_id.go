@@ -51,8 +51,8 @@ type OneAccount struct {
 	KTPImage             string `json:"ktp_image" validate:"omitempty,base64"`
 }
 
-// ToDomainCustomer converts a OneAccount DTO into a domain.Customer entity.
-func (dto *OneAccount) ToDomainCustomer() (domain.Customer, error) {
+// ToCustomerModel converts a OneAccount DTO into a domain.Customer entity.
+func (dto *OneAccount) ToCustomerModel() (domain.Customer, error) {
 	now := time.Now().UTC()
 
 	customer := domain.Customer{
@@ -125,8 +125,8 @@ type CustomerVehicle struct {
 	STNKImage       string   `json:"stnk_image" validate:"omitempty,base64"`
 }
 
-// ToDomainCustomerVehicle converts CustomerVehicle DTO into domain.CustomerVehicle entity.
-func (dto *CustomerVehicle) ToDomainCustomerVehicle(customerID, oneAccountID string) (domain.CustomerVehicle, error) {
+// ToCustomerVehicleModel converts CustomerVehicle DTO into domain.CustomerVehicle entity.
+func (dto *CustomerVehicle) ToCustomerVehicleModel(customerID, oneAccountID string) (domain.CustomerVehicle, error) {
 	now := time.Now().UTC()
 
 	entity := domain.CustomerVehicle{
