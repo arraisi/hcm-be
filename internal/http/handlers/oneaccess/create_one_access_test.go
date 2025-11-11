@@ -1,4 +1,4 @@
-package customer
+package oneaccess
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
+	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/golang/mock/gomock"
@@ -28,12 +28,12 @@ func TestCustomerHandler_CreateOneAccess_Success(t *testing.T) {
 	timestamp := time.Now().Unix()
 
 	// ---- Create payload ----
-	event := customer.OneAccessCreate{
+	event := oneaccess.Request{
 		Process:   "one access creation",
 		EventID:   eventID,
 		Timestamp: timestamp,
-		Data: customer.OneAccessCreateData{
-			OneAccount: customer.OneAccountCreateRequest{
+		Data: oneaccess.RequestData{
+			OneAccount: oneaccess.OneAccount{
 				OneAccountID:        "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 				DealerCustomerID:    "ASTVAJMF00552",
 				FirstName:           "Nkoc",
@@ -72,7 +72,7 @@ func TestCustomerHandler_CreateOneAccess_Success(t *testing.T) {
 	signature := hex.EncodeToString(h.Sum(nil))
 
 	// ---- Build HTTP request ----
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
@@ -116,7 +116,7 @@ func TestCustomerHandler_CreateOneAccess_MissingHeaders(t *testing.T) {
 	defer m.Ctrl.Finish()
 
 	// Body can be anything; handler will fail early on missing headers-in-context
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewBufferString(`{}`))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewBufferString(`{}`))
 	rr := httptest.NewRecorder()
 
 	// Expectations: nothing should be called
@@ -147,7 +147,7 @@ func TestCustomerHandler_CreateOneAccess_InvalidJSON(t *testing.T) {
 	h.Write(body)
 	signature := hex.EncodeToString(h.Sum(nil))
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
@@ -187,12 +187,12 @@ func TestCustomerHandler_CreateOneAccess_ValidationError(t *testing.T) {
 	timestamp := time.Now().Unix()
 
 	// Build a payload that violates validation (e.g., FirstName = "")
-	ev := customer.OneAccessCreate{
+	ev := oneaccess.Request{
 		Process:   "one access creation",
 		EventID:   eventID,
 		Timestamp: timestamp,
-		Data: customer.OneAccessCreateData{
-			OneAccount: customer.OneAccountCreateRequest{
+		Data: oneaccess.RequestData{
+			OneAccount: oneaccess.OneAccount{
 				// FirstName missing/empty violates `validate:"required"`
 				FirstName:           "",
 				LastName:            "Maf",
@@ -216,7 +216,7 @@ func TestCustomerHandler_CreateOneAccess_ValidationError(t *testing.T) {
 	h.Write(body)
 	signature := hex.EncodeToString(h.Sum(nil))
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
@@ -256,12 +256,12 @@ func TestCustomerHandler_CreateOneAccess_IdempotencyFailed(t *testing.T) {
 	timestamp := time.Now().Unix()
 
 	// ---- Create payload ----
-	event := customer.OneAccessCreate{
+	event := oneaccess.Request{
 		Process:   "one access creation",
 		EventID:   eventID,
 		Timestamp: timestamp,
-		Data: customer.OneAccessCreateData{
-			OneAccount: customer.OneAccountCreateRequest{
+		Data: oneaccess.RequestData{
+			OneAccount: oneaccess.OneAccount{
 				OneAccountID:        "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 				DealerCustomerID:    "ASTVAJMF00552",
 				FirstName:           "Nkoc",
@@ -288,7 +288,7 @@ func TestCustomerHandler_CreateOneAccess_IdempotencyFailed(t *testing.T) {
 	signature := hex.EncodeToString(h.Sum(nil))
 
 	// ---- Build HTTP request ----
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)
@@ -333,12 +333,12 @@ func TestCustomerHandler_CreateOneAccess_ServiceFailed(t *testing.T) {
 	eventID := "d4d7402f-dcab-443d-a829-f1817085f8da"
 	timestamp := time.Now().Unix()
 
-	ev := customer.OneAccessCreate{
+	ev := oneaccess.Request{
 		Process:   "one access creation",
 		EventID:   eventID,
 		Timestamp: timestamp,
-		Data: customer.OneAccessCreateData{
-			OneAccount: customer.OneAccountCreateRequest{
+		Data: oneaccess.RequestData{
+			OneAccount: oneaccess.OneAccount{
 				DealerCustomerID:    "ASTVAJMF00552",
 				FirstName:           "Nkoc",
 				LastName:            "Maf",
@@ -361,7 +361,7 @@ func TestCustomerHandler_CreateOneAccess_ServiceFailed(t *testing.T) {
 	h.Write(body)
 	signature := hex.EncodeToString(h.Sum(nil))
 
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access-creation", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/hcm/webhooks/one-access", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", m.Config.Webhook.APIKey)
 	req.Header.Set("X-Signature", signature)

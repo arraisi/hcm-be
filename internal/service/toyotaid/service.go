@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/domain"
-	mockDIDXApi "github.com/arraisi/hcm-be/internal/external/didx"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -25,7 +24,6 @@ type ServiceContainer struct {
 	TransactionRepo    transactionRepository
 	CustomerSvc        CustomerService
 	CustomerVehicleSvc CustomerVehicleService
-	MockDIDXApi        *mockDIDXApi.Client
 }
 
 type service struct {

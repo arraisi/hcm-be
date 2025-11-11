@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
 	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 	"net/http"
 	stdprof "net/http/pprof"
@@ -23,6 +24,7 @@ type Handler struct {
 	CustomerHandler       customer.Handler
 	ServiceBookingHandler servicebooking.Handler
 	TestDriveHandler      testdrive.Handler
+	OneAccessHandler      oneaccess.Handler
 	ToyotaIDHandler       toyotaid.Handler
 }
 
@@ -80,7 +82,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Put("/service-booking/{service_booking_id}", handler.ServiceBookingHandler.ConfirmServiceBooking)
 			webhooks.Post("/service-booking", handler.ServiceBookingHandler.RequestServiceBooking)
 
-			webhooks.Post("/one-access", handler.CustomerHandler.CreateOneAccess)
+			webhooks.Post("/one-access", handler.OneAccessHandler.CreateOneAccess)
 
 			webhooks.Post("/toyota-id", handler.ToyotaIDHandler.CreateToyotaID)
 		})
