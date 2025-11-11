@@ -37,3 +37,6 @@ http:
     apiKey: 'your-mockapi-key'
     timeout: 10s
     retryCount: 2
+condition:
+  outletIDs:
+    - ALL

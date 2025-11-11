@@ -36,7 +36,7 @@ func TestCustomerReminderHandler_CreateCustomerReminder_Success(t *testing.T) {
 			OutletID: "AST010329",
 			Reminders: []customerreminder.Reminder{
 				{
-					OneAccount: customerreminder.ReminderOneAccount{
+					OneAccount: customerreminder.OneAccount{
 						OneAccountID:     "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 						DealerCustomerID: "ASTVAJMF00552",
 						FirstName:        "Nkoc",
@@ -66,7 +66,7 @@ func TestCustomerReminderHandler_CreateCustomerReminder_Success(t *testing.T) {
 						ProgramTab:                "T_CARE",
 						NextServiceStage:          7,
 					},
-					CustomerVehicle: customerreminder.ReminderCustomerVehicle{
+					CustomerVehicle: customerreminder.CustomerVehicle{
 						VIN:             "MKFZE81SCJ115045",
 						PoliceNumber:    "V+096+XXP",
 						KatashikiSuffix: "NSP170R-MWYQKD02",
@@ -216,7 +216,7 @@ func TestCustomerReminderHandler_CreateCustomerReminder_ValidationError(t *testi
 			OutletID: "", // required
 			Reminders: []customerreminder.Reminder{
 				{
-					OneAccount: customerreminder.ReminderOneAccount{
+					OneAccount: customerreminder.OneAccount{
 						OneAccountID:     "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 						DealerCustomerID: "ASTVAJMF00552",
 						FirstName:        "", // required
@@ -233,7 +233,7 @@ func TestCustomerReminderHandler_CreateCustomerReminder_ValidationError(t *testi
 						ActivityPlanScheduledDate: timestamp,
 						ReminderMessage:           "some message",
 					},
-					CustomerVehicle: customerreminder.ReminderCustomerVehicle{
+					CustomerVehicle: customerreminder.CustomerVehicle{
 						VIN:          "MKFZE81SCJ115045",
 						PoliceNumber: "B1234ABC",
 						Model:        "Innova Zenix",
@@ -301,7 +301,7 @@ func TestCustomerReminderHandler_CreateCustomerReminder_IdempotencyFailed(t *tes
 			OutletID: "AST010329",
 			Reminders: []customerreminder.Reminder{
 				{
-					OneAccount: customerreminder.ReminderOneAccount{
+					OneAccount: customerreminder.OneAccount{
 						OneAccountID:     "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 						DealerCustomerID: "ASTVAJMF00552",
 						FirstName:        "Nkoc",
@@ -319,7 +319,7 @@ func TestCustomerReminderHandler_CreateCustomerReminder_IdempotencyFailed(t *tes
 						ActivityPlanScheduledDate: timestamp,
 						ReminderMessage:           "Handover mobil dengan kode pesanan <kode_pesanan> akan segera dilakukan!",
 					},
-					CustomerVehicle: customerreminder.ReminderCustomerVehicle{
+					CustomerVehicle: customerreminder.CustomerVehicle{
 						VIN:          "MKFZE81SCJ115045",
 						PoliceNumber: "B1234ABC",
 						Model:        "Innova Zenix",
@@ -396,7 +396,7 @@ func TestCustomerReminderHandler_CreateCustomerReminder_ServiceFailed(t *testing
 			OutletID: "AST010329",
 			Reminders: []customerreminder.Reminder{
 				{
-					OneAccount: customerreminder.ReminderOneAccount{
+					OneAccount: customerreminder.OneAccount{
 						OneAccountID:     "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 						DealerCustomerID: "ASTVAJMF00552",
 						FirstName:        "Nkoc",
@@ -414,7 +414,7 @@ func TestCustomerReminderHandler_CreateCustomerReminder_ServiceFailed(t *testing
 						ActivityPlanScheduledDate: timestamp,
 						ReminderMessage:           "Handover mobil dengan kode pesanan <kode_pesanan> akan segera dilakukan!",
 					},
-					CustomerVehicle: customerreminder.ReminderCustomerVehicle{
+					CustomerVehicle: customerreminder.CustomerVehicle{
 						VIN:          "MKFZE81SCJ115045",
 						PoliceNumber: "B1234ABC",
 						Model:        "Innova Zenix",
