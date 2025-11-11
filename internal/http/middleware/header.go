@@ -71,7 +71,6 @@ func (wm *WebhookMiddleware) extractHeaders(r *http.Request) (webhookDto.Headers
 		EventID:     r.Header.Get("X-Event-Id"),
 		Timestamp:   r.Header.Get("X-Event-Timestamp"),
 	}
-
 	// Check if any required header is missing
 	if headers.ContentType == "" {
 		return headers, errors.ErrWebhookInvalidHeaders
@@ -79,13 +78,13 @@ func (wm *WebhookMiddleware) extractHeaders(r *http.Request) (webhookDto.Headers
 	if headers.APIKey == "" {
 		return headers, errors.ErrWebhookInvalidHeaders
 	}
-	if headers.Signature == "" {
+	if wm.config.FeatureFlag.WebhookConfig.EnableSignatureValidation && headers.Signature == "" {
 		return headers, errors.ErrWebhookInvalidHeaders
 	}
-	if headers.EventID == "" {
+	if wm.config.FeatureFlag.WebhookConfig.EnableDuplicateEventIDValidation && headers.EventID == "" {
 		return headers, errors.ErrWebhookInvalidHeaders
 	}
-	if headers.Timestamp == "" {
+	if wm.config.FeatureFlag.WebhookConfig.EnableTimestampValidation && headers.Timestamp == "" {
 		return headers, errors.ErrWebhookInvalidHeaders
 	}
 
