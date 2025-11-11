@@ -14,7 +14,7 @@ func (s *service) CreateToyotaID(ctx context.Context, request toyotaid.Request) 
 		_ = tx.Rollback()
 	}()
 
-	c, err := request.Data.OneAccount.ToDomainCustomer()
+	c, err := request.Data.OneAccount.ToCustomerModel()
 	if err != nil {
 		return err
 	}
@@ -23,7 +23,7 @@ func (s *service) CreateToyotaID(ctx context.Context, request toyotaid.Request) 
 		return err
 	}
 
-	cv, err := request.Data.CustomerVehicle.ToDomainCustomerVehicle(customerID, c.OneAccountID)
+	cv, err := request.Data.CustomerVehicle.ToCustomerVehicleModel(customerID, c.OneAccountID)
 	_, err = s.customerVehicleSvc.UpsertCustomerVehicleV2(ctx, tx, cv)
 	if err != nil {
 		return err

@@ -1,7 +1,6 @@
 package app
 
 import (
-	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
@@ -9,8 +8,10 @@ import (
 	"github.com/arraisi/hcm-be/internal/external/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
+	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
+	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/platform/httpclient"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
@@ -23,6 +24,7 @@ import (
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	customervehicleService "github.com/arraisi/hcm-be/internal/service/customervehicle"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
+	oneaccessService "github.com/arraisi/hcm-be/internal/service/oneaccess"
 	servicebookingService "github.com/arraisi/hcm-be/internal/service/servicebooking"
 	testdriveService "github.com/arraisi/hcm-be/internal/service/testdrive"
 	toyotaidService "github.com/arraisi/hcm-be/internal/service/toyotaid"
@@ -105,6 +107,10 @@ func Run(cfg *config.Config) error {
 		EmployeeRepo:       employeeRepo,
 		MockDIDXApi:        mockDIDXApiClient,
 	})
+	oneAccessSvc := oneaccessService.New(cfg, oneaccessService.ServiceContainer{
+		TransactionRepo: txRepo,
+		CustomerSvc:     customerSvc,
+	})
 	toyotaIDSvc := toyotaidService.New(cfg, toyotaidService.ServiceContainer{
 		TransactionRepo:    txRepo,
 		CustomerSvc:        customerSvc,
@@ -117,6 +123,7 @@ func Run(cfg *config.Config) error {
 	serviceBookingHandler := servicebooking.New(cfg, serviceBookingSvc, idempotencyStore)
 	testDriveHandler := testdrive.New(cfg, testDriveSvc, idempotencyStore)
 	toyotaIDHandler := toyotaid.New(cfg, toyotaIDSvc, idempotencyStore)
+	oneAccessHandler := oneaccess.New(cfg, oneAccessSvc, idempotencyStore)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                cfg,
@@ -124,6 +131,7 @@ func Run(cfg *config.Config) error {
 		CustomerHandler:       customerHandler,
 		ServiceBookingHandler: serviceBookingHandler,
 		TestDriveHandler:      testDriveHandler,
+		OneAccessHandler:      oneAccessHandler,
 		ToyotaIDHandler:       toyotaIDHandler,
 	})
 
