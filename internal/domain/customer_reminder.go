@@ -43,6 +43,7 @@ func (r *CustomerReminder) Columns() []string {
 		"i_id",
 		"i_customer_id",
 		"i_customer_vehicle_id",
+		"i_outlet_id",
 		"i_reminder_id",
 		"c_activity",
 		"d_activity_plan_scheduled_date",
@@ -69,6 +70,7 @@ func (r *CustomerReminder) Columns() []string {
 func (r *CustomerReminder) SelectColumns() []string {
 	return []string{
 		"i_id",
+		"i_outlet_id",
 		"i_customer_id",
 		"i_customer_vehicle_id",
 		"i_reminder_id",
@@ -86,6 +88,10 @@ func (r *CustomerReminder) ToCreateMap() (columns []string, values []interface{}
 	columns = make([]string, 0, len(r.Columns()))
 	values = make([]interface{}, 0, len(r.Columns()))
 
+	if r.OutletID != "" {
+		columns = append(columns, "i_outlet_id")
+		values = append(values, r.OutletID)
+	}
 	if r.CustomerID != "" {
 		columns = append(columns, "i_customer_id")
 		values = append(values, r.CustomerID)
