@@ -58,7 +58,7 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 		},
 	}
 
-	err = s.mockDIDXApiClient.ConfirmTestDrive(ctx, tdEventConfirmRequest)
+	err = s.apimDIDXSvc.ConfirmTestDrive(ctx, tdEventConfirmRequest)
 	if err != nil {
 		return err
 	}

@@ -85,7 +85,7 @@ func (s *service) ConfirmServiceBooking(ctx context.Context, request servicebook
 	}
 	fmt.Printf("Service Booking Confirm Request: %s\n", string(marshal))
 
-	err = s.mockDIDXApiClient.ConfirmServiceBooking(ctx, sbEventConfirmRequest)
+	err = s.apimDIDXSvc.ConfirmServiceBooking(ctx, sbEventConfirmRequest)
 	if err != nil {
 		return err
 	}

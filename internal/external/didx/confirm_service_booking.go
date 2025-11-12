@@ -9,11 +9,10 @@ import (
 )
 
 func (c *Client) ConfirmServiceBooking(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
-	url := fmt.Sprintf("%s/v1/service-booking", c.cfg.Http.MockDIDXApi.BaseUrl)
 	header := map[string]string{}
-	token := c.cfg.Http.MockDIDXApi.APIKey
+	token := c.cfg.Http.ApimDIDXApi.APIKey
 
-	result, err := c.httpUtil.Post(ctx, url, request, token, header)
+	result, err := c.httpUtil.Post(ctx, c.cfg.Http.ApimDIDXApi.BaseUrl, request, token, header)
 	if err != nil {
 		return err
 	}

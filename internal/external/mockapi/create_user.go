@@ -11,11 +11,10 @@ import (
 func (c *Client) CreateUser(ctx context.Context, request domain.User) error {
 	var user domain.User
 
-	url := fmt.Sprintf("%s/v1/users", c.cfg.Http.MockDIDXApi.BaseUrl)
 	header := map[string]string{}
-	token := c.cfg.Http.MockApi.APIKey
+	token := c.cfg.Http.ApimDIDXApi.APIKey
 
-	result, err := c.httpUtil.Post(ctx, url, request, token, header)
+	result, err := c.httpUtil.Post(ctx, c.cfg.Http.MockApi.BaseUrl, request, token, header)
 	if err != nil {
 		return err
 	}
