@@ -1,0 +1,62 @@
+### Create Customer Reminder - Success Case
+@timestamp = 1731392400
+@timestamp_minus_86400 = 1731306000
+@timestamp_plus_86400 = 1731478800
+POST http://localhost:8080/api/v1/hcm/webhooks/customer-reminder
+Content-Type: application/json
+X-API-Key: your-webhook-api-key
+X-Signature: your-hmac-secret-key
+X-Event-Id: d4d7402f-dcab-443d-a829-f1817085f8da
+X-Event-Timestamp: {{timestamp}}
+
+{
+  "process": "customer_reminder",
+  "event_ID": "d4d7402f-dcab-443d-a829-f1817085f8da",
+  "timestamp": {{timestamp}},
+  "data": {
+    "outlet_ID": "AST010329",
+    "reminders": [
+      {
+        "one_account": {
+          "one_account_ID": "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
+          "dealer_customer_ID": "ASTVAJMF00552",
+          "first_name": "Nkoc",
+          "last_name": "Maf",
+          "phone_number": "081234567890",
+          "email": "nkoc.maf@example.com",
+          "preferred_contact_channel": [
+            "WHATSAPP_OR_SMS",
+            "MTOYOTA",
+            "PHONE_CALL"
+          ]
+        },
+        "reminder": {
+          "reminder_ID": "53dcde92-220b-4982-a053-ae3eaa1f0c42",
+          "activity": "SERVICE_BOOKING",
+          "activity_plan_scheduled_date": {{timestamp}},
+          "auto_reminder_status": "DELIVERED",
+          "reminder_message": "Handover mobil dengan kode pesanan <kode_pesanan> akan segera dilakukan!",
+          "priority_call": 1,
+          "extended_warranty_status": "ELIGIBLE",
+          "customer_habit": "MILEAGE",
+          "last_habit": "PUNCTUAL",
+          "next_service_status": "PUNCTUAL",
+          "last_service_date": {{timestamp_minus_86400}},
+          "next_service_date": {{timestamp_plus_86400}},
+          "ncs_status": "SAME_OUTLET",
+          "program_tab": "T_CARE",
+          "next_service_stage": 7
+        },
+        "customer_vehicle": {
+          "vin": "MKFZE81SCJ115045",
+          "police_number": "V+096+XXP",
+          "katashiki_suffix": "NSP170R-MWYQKD02",
+          "model": "Innova Zenix",
+          "variant": "2.0 Q A/T",
+          "color_code": "3R6",
+          "color": "Putih"
+        }
+      }
+    ]
+  }
+}
