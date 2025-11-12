@@ -4,6 +4,7 @@ CREATE TABLE dbo.tr_customer_reminder
     i_id                        VARCHAR(36)                NOT NULL,  -- PK UUID
     i_customer_id               VARCHAR(36)                NOT NULL,  -- FK to tr_customer
     i_customer_vehicle_id       VARCHAR(36)                NULL,      -- FK to tm_customer_vehicle
+    i_outlet_id                 VARCHAR(36)                NOT NULL,  -- outlet ID
     i_reminder_id               VARCHAR(36)                NOT NULL,  -- external reminder ID
     c_activity                  VARCHAR(64)                NOT NULL,  -- e.g., SERVICE_BOOKING, NCS, etc.
     d_activity_plan_scheduled_date DATETIME                NULL,

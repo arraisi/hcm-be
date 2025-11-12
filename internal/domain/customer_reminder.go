@@ -8,6 +8,7 @@ type CustomerReminder struct {
 	CustomerVehicleID string `db:"i_customer_vehicle_id"` // FK to tm_customer_vehicle (optional)
 
 	// Reminder detail (from Toyota webhook)
+	OutletID                string     `db:"i_outlet_id"`
 	ExternalReminderID      string     `db:"i_reminder_id"` // "reminder_ID" from payload
 	Activity                string     `db:"c_activity"`    // SERVICE_BOOKING, etc
 	ActivityPlanScheduledAt time.Time  `db:"d_activity_plan_scheduled_date"`

@@ -40,6 +40,7 @@ func (s *service) CreateCustomerReminder(ctx context.Context, request customerre
 		cr := reminder.ReminderDetail.ToDomainCustomerReminder()
 		cr.CustomerID = customerID
 		cr.CustomerVehicleID = customerVehicleID
+		cr.OutletID = request.Data.OutletID
 		if _, err := s.UpsertCustomerReminder(ctx, tx, cr); err != nil {
 			return err
 		}
