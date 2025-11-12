@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) UpdateCustomer(ctx context.Context, tx *sqlx.Tx, req domain.CustomerReminder) error {
+func (r *repository) UpdateCustomerReminder(ctx context.Context, tx *sqlx.Tx, req domain.CustomerReminder) error {
 	query, args, err := sqrl.Update(req.TableName()).
 		SetMap(req.ToUpdateMap()).
 		Where(sqrl.Or{

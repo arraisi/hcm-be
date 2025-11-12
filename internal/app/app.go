@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
@@ -15,6 +16,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/platform/httpclient"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
+	customerreminderRepository "github.com/arraisi/hcm-be/internal/repository/customerreminder"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
 	employeeRepository "github.com/arraisi/hcm-be/internal/repository/employee"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
@@ -22,6 +24,7 @@ import (
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
+	customerreminderService "github.com/arraisi/hcm-be/internal/service/customerreminder"
 	customervehicleService "github.com/arraisi/hcm-be/internal/service/customervehicle"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	oneaccessService "github.com/arraisi/hcm-be/internal/service/oneaccess"
@@ -77,6 +80,7 @@ func Run(cfg *config.Config) error {
 	serviceBookingRepo := servicebookingRepository.New(cfg, db)
 	customerVehicleRepo := customervehicleRepository.New(cfg, db)
 	employeeRepo := employeeRepository.New(cfg, db)
+	customerReminderRepo := customerreminderRepository.New(cfg, db)
 
 	// init services
 	userSvc := userService.NewUserService(mockApiClient)
@@ -116,6 +120,12 @@ func Run(cfg *config.Config) error {
 		CustomerSvc:        customerSvc,
 		CustomerVehicleSvc: customerVehicleSvc,
 	})
+	customerReminderSvc := customerreminderService.New(cfg, customerreminderService.ServiceContainer{
+		TransactionRepo:    txRepo,
+		Repo:               customerReminderRepo,
+		CustomerSvc:        customerSvc,
+		CustomerVehicleSvc: customerVehicleSvc,
+	})
 
 	// init handlers
 	userHandler := user.NewUserHandler(userSvc)
@@ -124,15 +134,17 @@ func Run(cfg *config.Config) error {
 	testDriveHandler := testdrive.New(cfg, testDriveSvc, idempotencyStore)
 	toyotaIDHandler := toyotaid.New(cfg, toyotaIDSvc, idempotencyStore)
 	oneAccessHandler := oneaccess.New(cfg, oneAccessSvc, idempotencyStore)
+	customerReminderHandler := customerreminder.New(cfg, customerReminderSvc, idempotencyStore)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
-		Config:                cfg,
-		UserHandler:           userHandler,
-		CustomerHandler:       customerHandler,
-		ServiceBookingHandler: serviceBookingHandler,
-		TestDriveHandler:      testDriveHandler,
-		OneAccessHandler:      oneAccessHandler,
-		ToyotaIDHandler:       toyotaIDHandler,
+		Config:                  cfg,
+		UserHandler:             userHandler,
+		CustomerHandler:         customerHandler,
+		ServiceBookingHandler:   serviceBookingHandler,
+		TestDriveHandler:        testDriveHandler,
+		OneAccessHandler:        oneAccessHandler,
+		ToyotaIDHandler:         toyotaIDHandler,
+		CustomerReminderHandler: customerReminderHandler,
 	})
 
 	return apphttp.NewServer(cfg, router)

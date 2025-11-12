@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateCustomer(ctx context.Context, tx *sqlx.Tx, req *domain.CustomerReminder) error {
+func (r *repository) CreateCustomerReminder(ctx context.Context, tx *sqlx.Tx, req *domain.CustomerReminder) error {
 	columns, values := req.ToCreateMap()
 
 	// Generate a new UUID for the customer ID
