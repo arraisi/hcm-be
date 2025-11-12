@@ -40,7 +40,7 @@ type EmployeeRepository interface {
 }
 
 type ApimDIDXService interface {
-	ConfirmTestDrive(ctx context.Context, request testdrive.TestDriveEvent) error
+	Confirm(ctx context.Context, body any) error
 }
 
 type Repository interface {

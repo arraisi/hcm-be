@@ -80,7 +80,7 @@ type Repository interface {
 }
 
 type ApimDIDXService interface {
-	ConfirmServiceBooking(ctx context.Context, request servicebooking.ServiceBookingEvent) error
+	Confirm(ctx context.Context, body any) error
 }
 
 type ServiceContainer struct {

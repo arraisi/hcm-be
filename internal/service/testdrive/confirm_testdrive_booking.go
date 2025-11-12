@@ -44,7 +44,7 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 	}
 
 	tdEventConfirmRequest := testdrive.TestDriveEvent{
-		Process:   "test_drive_confirm",
+		Process:   constants.ProcessTestDriveConfirmed,
 		EventID:   testDrive.EventID,
 		Timestamp: time.Now().Unix(),
 		Data: testdrive.TestDriveEventData{
@@ -58,7 +58,7 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 		},
 	}
 
-	err = s.apimDIDXSvc.ConfirmTestDrive(ctx, tdEventConfirmRequest)
+	err = s.apimDIDXSvc.Confirm(ctx, tdEventConfirmRequest)
 	if err != nil {
 		return err
 	}

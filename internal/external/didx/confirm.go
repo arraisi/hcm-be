@@ -4,15 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
-	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 )
 
-func (c *Client) ConfirmServiceBooking(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
+func (c *Client) Confirm(ctx context.Context, body any) error {
 	header := map[string]string{}
 	token := c.cfg.Http.ApimDIDXApi.APIKey
 
-	result, err := c.httpUtil.Post(ctx, c.cfg.Http.ApimDIDXApi.BaseUrl, request, token, header)
+	result, err := c.httpUtil.Post(ctx, c.cfg.Http.ApimDIDXApi.BaseUrl, body, token, header)
 	if err != nil {
 		return err
 	}
