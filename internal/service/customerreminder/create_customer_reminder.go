@@ -31,6 +31,7 @@ func (s *service) CreateCustomerReminder(ctx context.Context, request customerre
 		// 2) Upsert customer vehicle
 		cv := reminder.CustomerVehicle.ToCustomerVehicleModel()
 		cv.CustomerID = customerID
+		cv.OneAccountID = c.OneAccountID
 		customerVehicleID, err := s.customerVehicleSvc.UpsertCustomerVehicleV2(ctx, tx, cv)
 		if err != nil {
 			return err
