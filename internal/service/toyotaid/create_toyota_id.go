@@ -2,6 +2,7 @@ package toyotaid
 
 import (
 	"context"
+
 	"github.com/arraisi/hcm-be/internal/domain/dto/toyotaid"
 )
 
@@ -24,6 +25,10 @@ func (s *service) CreateToyotaID(ctx context.Context, request toyotaid.Request) 
 	}
 
 	cv, err := request.Data.CustomerVehicle.ToCustomerVehicleModel(customerID, c.OneAccountID)
+	if err != nil {
+		return err
+	}
+
 	_, err = s.customerVehicleSvc.UpsertCustomerVehicleV2(ctx, tx, cv)
 	if err != nil {
 		return err

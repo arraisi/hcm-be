@@ -9,7 +9,6 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
 	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
-	mockDIDXApi "github.com/arraisi/hcm-be/internal/external/didx"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -80,6 +79,10 @@ type Repository interface {
 	DeleteServiceBookingImage(ctx context.Context, tx *sqlx.Tx, req servicebooking.DeleteServiceBookingDamageImage) error
 }
 
+type ApimDIDXService interface {
+	Confirm(ctx context.Context, body any) error
+}
+
 type ServiceContainer struct {
 	TransactionRepo    transactionRepository
 	Repo               Repository
@@ -87,7 +90,7 @@ type ServiceContainer struct {
 	CustomerSvc        CustomerService
 	CustomerVehicleSvc CustomerVehicleService
 	EmployeeRepo       EmployeeRepository
-	MockDIDXApi        *mockDIDXApi.Client
+	ApimDIDXSvc        ApimDIDXService
 }
 
 type service struct {
@@ -98,7 +101,7 @@ type service struct {
 	customerSvc        CustomerService
 	customerVehicleSvc CustomerVehicleService
 	employeeRepo       EmployeeRepository
-	mockDIDXApiClient  *mockDIDXApi.Client
+	apimDIDXSvc        ApimDIDXService
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -110,6 +113,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		customerSvc:        container.CustomerSvc,
 		customerVehicleSvc: container.CustomerVehicleSvc,
 		employeeRepo:       container.EmployeeRepo,
-		mockDIDXApiClient:  container.MockDIDXApi,
+		apimDIDXSvc:        container.ApimDIDXSvc,
 	}
 }

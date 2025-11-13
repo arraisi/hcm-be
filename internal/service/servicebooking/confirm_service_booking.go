@@ -66,7 +66,7 @@ func (s *service) ConfirmServiceBooking(ctx context.Context, request servicebook
 	}
 
 	sbEventConfirmRequest := servicebooking.ServiceBookingEvent{
-		Process:   "service_booking_confirm",
+		Process:   constants.ProcessServiceBookingGrConfirm, // TODO: handle different process if needed
 		EventID:   serviceBooking.EventID,
 		Timestamp: int(time.Now().Unix()),
 		Data: servicebooking.DataRequest{
@@ -85,7 +85,7 @@ func (s *service) ConfirmServiceBooking(ctx context.Context, request servicebook
 	}
 	fmt.Printf("Service Booking Confirm Request: %s\n", string(marshal))
 
-	err = s.mockDIDXApiClient.ConfirmServiceBooking(ctx, sbEventConfirmRequest)
+	err = s.apimDIDXSvc.Confirm(ctx, sbEventConfirmRequest)
 	if err != nil {
 		return err
 	}

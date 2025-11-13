@@ -24,7 +24,7 @@ func (c *Client) GetUsers(ctx context.Context, request user.GetUserRequest) ([]d
 		query.Add("page", strconv.Itoa(request.Offset))
 	}
 
-	baseUrl := fmt.Sprintf("%s/v1/users", c.cfg.Http.MockDIDXApi.BaseUrl)
+	baseUrl := fmt.Sprintf("%s/v1/users", c.cfg.Http.MockApi.BaseUrl)
 	urlWithQuery := baseUrl + "?" + query.Encode()
 
 	header := map[string]string{}

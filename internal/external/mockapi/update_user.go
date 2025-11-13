@@ -11,7 +11,7 @@ import (
 func (c *Client) UpdateUser(ctx context.Context, userID int64, request domain.User) error {
 	var user domain.User
 
-	url := fmt.Sprintf("%s/v1/test-drive/%d", c.cfg.Http.MockDIDXApi.BaseUrl, userID)
+	url := fmt.Sprintf(c.cfg.Http.MockApi.BaseUrl, userID)
 	header := map[string]string{}
 	token := c.cfg.Http.MockApi.APIKey
 

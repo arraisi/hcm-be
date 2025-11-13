@@ -66,11 +66,11 @@ func Run(cfg *config.Config) error {
 	})
 	mockApiClient := mockapi.New(cfg, mockApiHttpUtil)
 
-	mockDIDXApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
-		Timeout: cfg.Http.MockDIDXApi.Timeout,
-		Retries: cfg.Http.MockDIDXApi.RetryCount,
+	apimDIDXApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.ApimDIDXApi.Timeout,
+		Retries: cfg.Http.ApimDIDXApi.RetryCount,
 	})
-	mockDIDXApiClient := didx.New(cfg, mockDIDXApiHttpUtil)
+	apimDIDXApiClient := didx.New(cfg, apimDIDXApiHttpUtil)
 
 	// init repositories
 	txRepo := transactionRepository.New(db)
@@ -95,7 +95,7 @@ func Run(cfg *config.Config) error {
 		LeadRepo:        leadRepo,
 		CustomerSvc:     customerSvc,
 		EmployeeRepo:    employeeRepo,
-		MockDIDXApi:     mockDIDXApiClient,
+		ApimDIDXSvc:     apimDIDXApiClient,
 	})
 	idempotencyStore := idempotencyService.NewInMemoryIdempotencyStore(24 * time.Hour) // 24 hour TTL
 	customerVehicleSvc := customervehicleService.New(cfg, customervehicleService.ServiceContainer{
@@ -109,7 +109,7 @@ func Run(cfg *config.Config) error {
 		CustomerSvc:        customerSvc,
 		CustomerVehicleSvc: customerVehicleSvc,
 		EmployeeRepo:       employeeRepo,
-		MockDIDXApi:        mockDIDXApiClient,
+		ApimDIDXSvc:        apimDIDXApiClient,
 	})
 	oneAccessSvc := oneaccessService.New(cfg, oneaccessService.ServiceContainer{
 		TransactionRepo: txRepo,
