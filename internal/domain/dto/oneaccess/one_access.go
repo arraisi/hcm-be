@@ -53,7 +53,7 @@ func (oa *OneAccount) ToCustomerModel() (domain.Customer, error) {
 		HasjratID:            "", // not present in payload
 		FirstName:            oa.FirstName,
 		LastName:             oa.LastName,
-		Gender:               oa.Gender,
+		Gender:               &oa.Gender,
 		PhoneNumber:          oa.PhoneNumber,
 		Email:                oa.Email,
 		IsNew:                true,  // business rule guess: first time we see this event

@@ -60,7 +60,7 @@ func (dto *OneAccount) ToCustomerModel() (domain.Customer, error) {
 		DealerCustomerID:     dto.DealerCustomerID,
 		FirstName:            dto.FirstName,
 		LastName:             dto.LastName,
-		Gender:               dto.Gender,
+		Gender:               &dto.Gender,
 		PhoneNumber:          dto.PhoneNumber,
 		Email:                dto.Email,
 		KTPNumber:            dto.KTPNumber,
