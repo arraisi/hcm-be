@@ -580,6 +580,263 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /webhooks/toyota-id:
+    post:
+      summary: Toyota ID Creation Webhook
+      description: Webhook endpoint to receive Toyota ID (One Account + Customer Vehicle) creation events.
+      tags:
+        - Webhooks
+      security:
+        - WebhookApiKey: [ ]
+      parameters:
+        - name: X-API-Key
+          in: header
+          required: true
+          schema:
+            type: string
+          description: API key for webhook authentication
+        - name: X-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+          description: HMAC SHA-256 of the raw request body, hex-encoded
+        - name: X-Event-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Unique event identifier for idempotency
+        - name: X-Event-Timestamp
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Unix timestamp of the event as string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToyotaIdRequest'
+            example:
+              process: "toyota id creation"
+              event_ID: "d4d7402f-dcab-443d-a829-f1817085f8da"
+              timestamp: 1731229200
+              data:
+                one_account:
+                  one_account_ID: "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y"
+                  dealer_customer_ID: "ASTVAJMF00552"
+                  first_name: "Nkoc"
+                  last_name: "Maf"
+                  phone_number: "081234567890"
+                  email: "nkoc.maf@example.com"
+                  birth_date: "1995-08-12"
+                  verification_channel: "SMS"
+                  ktp_number: "PRRJKAESWC086H"
+                  occupation: "Engineer"
+                  gender: "FEMALE"
+                  address_label: "Rumah"
+                  residence_address: "52EXP0ADG Q9G3AAD T, WI YktLIL ONb2 gSLTo a6pP YXZJ, NIl1n"
+                  province: "DKI Jakarta"
+                  city: "Jakarta Barat"
+                  district: "Pulo Gadung"
+                  subdistrict: "Jati"
+                  postal_code: "13220"
+                  detail_address: "gts89detiyt"
+                  registration_channel: "MTOYOTA"
+                  registration_datetime: 1731229200
+                  consent_given: true
+                  consent_given_at: 1731229200
+                  consent_given_during: "REGISTRATION"
+                  toyota_single_ID_status: "ACTIVE"
+                  customer_category: "INDIVIDUAL"
+                customer_vehicle:
+                  primary_user: "MASTER"
+                  vin: "MKFZKE81SCJ115045"
+                  police_number: "B1234ABC"
+                  katashiki_suffix: "NSP170R-MWYQKD02"
+                  color_code: "59"
+                  model: "Innova Zenix"
+                  variant: "2.0 Q A/T"
+                  color: "Putih"
+                  stnk_number: "aVZGjcOK"
+                  stnk_name: "uHwG2zT"
+                  stnk_expiry_date: 1731229200
+                  stnk_address: "52EXP0ADG Q9G3AAD T, WI YktLIL ONb2 gSLTo a6pP YXZJ"
+                  customer_type: [ "BUYER", "OWNER" ]
+                  vehicle_category: "RETAIL"
+      responses:
+        '202':
+          description: Event accepted for processing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                        format: uuid
+                      status:
+                        type: string
+                        enum: [ RECEIVED ]
+                  message:
+                    type: string
+                    example: accepted
+        '400':
+          description: Bad request - invalid payload or headers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - duplicate event ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /webhooks/customer-reminder:
+    post:
+      summary: Customer Reminder Webhook
+      description: Receives customer reminder events (One Account + Reminder detail + Customer Vehicle) from external systems.
+      tags:
+        - Webhooks
+      security:
+        - WebhookApiKey: [ ]
+      parameters:
+        - name: X-API-Key
+          in: header
+          required: true
+          schema:
+            type: string
+          description: API key for webhook authentication
+        - name: X-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+          description: HMAC SHA-256 of the raw request body, hex-encoded
+        - name: X-Event-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Unique event identifier for idempotency
+        - name: X-Event-Timestamp
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Unix timestamp of the event as string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerReminderRequest'
+            example:
+              process: "customer_reminder"
+              event_ID: "d4d7402f-dcab-443d-a829-f1817085f8da"
+              timestamp: 1731392400
+              data:
+                outlet_ID: "AST010329"
+                reminders:
+                  - one_account:
+                      one_account_ID: "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y"
+                      dealer_customer_ID: "ASTVAJMF00552"
+                      first_name: "Nkoc"
+                      last_name: "Maf"
+                      phone_number: "081234567890"
+                      email: "nkoc.maf@example.com"
+                      preferred_contact_channel:
+                        - WHATSAPP_OR_SMS
+                        - MTOYOTA
+                        - PHONE_CALL
+                    reminder:
+                      reminder_ID: "53dcde92-220b-4982-a053-ae3eaa1f0c42"
+                      activity: "SERVICE_BOOKING"
+                      activity_plan_scheduled_date: 1731392400
+                      auto_reminder_status: "DELIVERED"
+                      reminder_message: "Handover mobil dengan kode pesanan <kode_pesanan> akan segera dilakukan!"
+                      priority_call: 1
+                      extended_warranty_status: "ELIGIBLE"
+                      customer_habit: "MILEAGE"
+                      last_habit: "PUNCTUAL"
+                      next_service_status: "PUNCTUAL"
+                      last_service_date: 1731306000
+                      next_service_date: 1731478800
+                      ncs_status: "SAME_OUTLET"
+                      program_tab: "T_CARE"
+                      next_service_stage: 7
+                    customer_vehicle:
+                      vin: "MKFZE81SCJ115045"
+                      police_number: "V+096+XXP"
+                      katashiki_suffix: "NSP170R-MWYQKD02"
+                      model: "Innova Zenix"
+                      variant: "2.0 Q A/T"
+                      color_code: "3R6"
+                      color: "Putih"
+      responses:
+        '202':
+          description: Event accepted for processing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                        format: uuid
+                      status:
+                        type: string
+                        enum: [ RECEIVED ]
+                  message:
+                    type: string
+                    example: accepted
+        '400':
+          description: Bad request - invalid payload or headers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - duplicate event ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -1022,6 +1279,367 @@ components:
         - consent_given
         - consent_given_at
         - consent_given_during
+    ToyotaIdRequest:
+      type: object
+      required: [ process, event_ID, timestamp, data ]
+      properties:
+        process:
+          type: string
+          description: Process type identifier
+          example: "toyota id creation"
+        event_ID:
+          type: string
+          format: uuid
+          description: Unique event identifier (UUID v4)
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp of the event
+        data:
+          $ref: '#/components/schemas/ToyotaIdData'
+
+    ToyotaIdData:
+      type: object
+      required: [ one_account, customer_vehicle ]
+      properties:
+        one_account:
+          $ref: '#/components/schemas/ToyotaIdOneAccount'
+        customer_vehicle:
+          $ref: '#/components/schemas/ToyotaIdCustomerVehicle'
+
+    ToyotaIdOneAccount:
+      type: object
+      properties:
+        one_account_ID:
+          type: string
+          maxLength: 32
+        dealer_customer_ID:
+          type: string
+          maxLength: 32
+        first_name:
+          type: string
+          maxLength: 64
+        last_name:
+          type: string
+          maxLength: 64
+        phone_number:
+          type: string
+          maxLength: 16
+        email:
+          type: string
+          format: email
+          maxLength: 64
+        birth_date:
+          type: string
+          description: Birth date (YYYY-MM-DD)
+          example: "1995-08-12"
+        verification_channel:
+          type: string
+          enum: [ SMS, WHATSAPP, EMAIL ]
+        ktp_number:
+          type: string
+          maxLength: 32
+        occupation:
+          type: string
+          maxLength: 64
+        gender:
+          type: string
+          enum: [ FEMALE, MALE, OTHER ]
+        address_label:
+          type: string
+          maxLength: 256
+        residence_address:
+          type: string
+          maxLength: 256
+        province:
+          type: string
+          maxLength: 64
+        city:
+          type: string
+          maxLength: 64
+        district:
+          type: string
+          maxLength: 64
+        subdistrict:
+          type: string
+          maxLength: 64
+        postal_code:
+          type: string
+          maxLength: 16
+        detail_address:
+          type: string
+          maxLength: 256
+        registration_channel:
+          type: string
+          enum: [ MTOYOTA, DXMI, DEALER_SYSTEM ]
+        registration_datetime:
+          type: integer
+          format: int64
+        consent_given:
+          type: boolean
+        consent_given_at:
+          type: integer
+          format: int64
+        consent_given_during:
+          type: string
+          enum: [ REGISTRATION, SPK, SERVICE, ADD_VEHICLE ]
+        toyota_single_ID_status:
+          type: string
+          enum: [ ACTIVE, INACTIVE, DELETED ]
+        customer_category:
+          type: string
+          enum: [ INDIVIDUAL, COMPANY ]
+        ktp_image:
+          type: string
+          description: Base64-encoded image (optional)
+      required:
+        - one_account_ID
+        - dealer_customer_ID
+        - first_name
+        - last_name
+        - phone_number
+        - verification_channel
+        - ktp_number
+
+    ToyotaIdCustomerVehicle:
+      type: object
+      properties:
+        primary_user:
+          type: string
+          enum: [ MASTER, MEMBER ]
+        vin:
+          type: string
+          maxLength: 17
+        police_number:
+          type: string
+          maxLength: 16
+        katashiki_suffix:
+          type: string
+          maxLength: 64
+        color_code:
+          type: string
+          maxLength: 16
+        model:
+          type: string
+          maxLength: 64
+        variant:
+          type: string
+          maxLength: 128
+        color:
+          type: string
+          maxLength: 64
+        stnk_number:
+          type: string
+          maxLength: 32
+        stnk_name:
+          type: string
+          maxLength: 64
+        stnk_expiry_date:
+          type: integer
+          format: int64
+        stnk_address:
+          type: string
+          maxLength: 256
+        customer_type:
+          type: array
+          items:
+            type: string
+            enum: [ OWNER, BUYER, USER ]
+          minItems: 1
+          uniqueItems: true
+        vehicle_category:
+          type: string
+          enum: [ RETAIL, FLEET ]
+        stnk_image:
+          type: string
+          description: Base64-encoded image (optional)
+      required:
+        - vin
+        - police_number
+        - katashiki_suffix
+        - color_code
+        - model
+        - variant
+        - color
+        - customer_type
+        - vehicle_category
+    CustomerReminderRequest:
+      type: object
+      required: [ process, event_ID, timestamp, data ]
+      properties:
+        process:
+          type: string
+          example: "customer_reminder"
+        event_ID:
+          type: string
+          format: uuid
+        timestamp:
+          type: integer
+          format: int64
+        data:
+          $ref: '#/components/schemas/CustomerReminderData'
+
+    CustomerReminderData:
+      type: object
+      required: [ outlet_ID, reminders ]
+      properties:
+        outlet_ID:
+          type: string
+          maxLength: 32
+        reminders:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/CustomerReminderItem'
+
+    CustomerReminderItem:
+      type: object
+      required: [ one_account, reminder, customer_vehicle ]
+      properties:
+        one_account:
+          $ref: '#/components/schemas/CustomerReminderOneAccount'
+        reminder:
+          $ref: '#/components/schemas/CustomerReminderDetail'
+        customer_vehicle:
+          $ref: '#/components/schemas/CustomerReminderVehicle'
+
+    CustomerReminderOneAccount:
+      type: object
+      required:
+        - one_account_ID
+        - dealer_customer_ID
+        - first_name
+        - last_name
+        - phone_number
+        - email
+        - preferred_contact_channel
+      properties:
+        one_account_ID:
+          type: string
+          maxLength: 32
+        dealer_customer_ID:
+          type: string
+          maxLength: 32
+        first_name:
+          type: string
+          maxLength: 64
+        last_name:
+          type: string
+          maxLength: 64
+        phone_number:
+          type: string
+          maxLength: 16
+        email:
+          type: string
+          format: email
+          maxLength: 64
+        preferred_contact_channel:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            enum: [ MTOYOTA, WHATSAPP_OR_SMS, EMAIL, PHONE_CALL ]
+
+    CustomerReminderVehicle:
+      type: object
+      properties:
+        vin:
+          type: string
+          maxLength: 17
+        police_number:
+          type: string
+          maxLength: 16
+        katashiki_suffix:
+          type: string
+          maxLength: 64
+        model:
+          type: string
+          maxLength: 64
+        variant:
+          type: string
+          maxLength: 128
+        color_code:
+          type: string
+          maxLength: 16
+        color:
+          type: string
+          maxLength: 64
+
+    CustomerReminderDetail:
+      type: object
+      required:
+        - reminder_ID
+        - activity
+        - activity_plan_scheduled_date
+        - reminder_message
+      properties:
+        reminder_ID:
+          type: string
+          format: uuid
+        activity:
+          type: string
+          enum:
+            - SERVICE_BOOKING
+            - APPRAISAL_BOOKING
+            - TEST_DRIVE_BOOKING
+            - DISTRIBUTE_LEADS
+            - TRACK_ORDER_STATUS
+            - SERVICE_REMINDER
+            - DELIVERY_AMEND_REQUEST
+            - PRE_DEC
+            - TCO
+            - ACCOUNT_MANAGEMENT
+            - MONITOR_SERVICE_PROGRESS
+            - OTHERS
+        activity_plan_scheduled_date:
+          type: integer
+          format: int64
+        auto_reminder_status:
+          type: string
+          enum: [ DELIVERED, READ, NON_MTOYOTA ]
+          nullable: true
+        reminder_message:
+          type: string
+          maxLength: 256
+        priority_call:
+          type: integer
+          nullable: true
+        extended_warranty_status:
+          type: string
+          enum: [ ELIGIBLE, NOT_ELIGIBLE, NOT_APPLICABLE ]
+          nullable: true
+        customer_habit:
+          type: string
+          enum: [ TIME_BASED, MILEAGE ]
+          nullable: true
+        last_habit:
+          type: string
+          enum: [ PUNCTUAL, EARLY, LATE, INACTIVE, PASSIVE ]
+          nullable: true
+        next_service_status:
+          type: string
+          enum: [ PUNCTUAL, EARLY, LATE, INACTIVE, PASSIVE ]
+          nullable: true
+        last_service_date:
+          type: integer
+          format: int64
+          nullable: true
+        next_service_date:
+          type: integer
+          format: int64
+          nullable: true
+        ncs_status:
+          type: string
+          enum: [ SAME_OUTLET, DIFFERENT ]
+          nullable: true
+        program_tab:
+          type: string
+          enum: [ T_CARE, GBSB, REGULAR ]
+          nullable: true
+        next_service_stage:
+          type: integer
+          nullable: true
 
     ErrorResponse:
       type: object

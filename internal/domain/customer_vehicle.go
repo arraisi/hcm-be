@@ -8,33 +8,33 @@ type CustomerVehicle struct {
 	ID                     string     `db:"i_id"`
 	CustomerID             string     `db:"i_customer_id"`
 	OneAccountID           string     `db:"i_one_account_id"`
-	Vin                    string     `db:"c_vin"`
-	KatashikiSuffix        string     `db:"c_katashiki_suffix"`
-	ColorCode              string     `db:"c_color_code"`
-	Model                  string     `db:"c_model"`
-	Variant                string     `db:"c_variant"`
-	Color                  string     `db:"n_color"`
-	PoliceNumber           string     `db:"c_police_number"`
-	ActualMileage          int32      `db:"v_actual_mileage"`
-	VehicleCategory        string     `db:"c_vehicle_category"`
-	StnkNumber             string     `db:"c_stnk_number"`
-	StnkName               string     `db:"n_stnk_name"`
+	Vin                    *string    `db:"c_vin"`
+	KatashikiSuffix        *string    `db:"c_katashiki_suffix"`
+	ColorCode              *string    `db:"c_color_code"`
+	Model                  *string    `db:"c_model"`
+	Variant                *string    `db:"c_variant"`
+	Color                  *string    `db:"n_color"`
+	PoliceNumber           *string    `db:"c_police_number"`
+	ActualMileage          *int32     `db:"v_actual_mileage"`
+	VehicleCategory        *string    `db:"c_vehicle_category"`
+	StnkNumber             *string    `db:"c_stnk_number"`
+	StnkName               *string    `db:"n_stnk_name"`
 	StnkExpiryDate         *time.Time `db:"d_stnk_expiry_date"`
-	StnkAddress            string     `db:"e_stnk_address"`
+	StnkAddress            *string    `db:"e_stnk_address"`
 	StnkImage              []byte     `db:"e_stnk_image"`
 	InvoiceFile            []byte     `db:"e_invoice_file"`
 	MainVehicleFlag        *bool      `db:"b_main_vehicle_flag"`
 	DistanceTravelled      *int32     `db:"v_distance_travelled"`
-	CustomerType           string     `db:"c_customer_type"`
-	PrimaryUser            string     `db:"c_primary_user"`
+	CustomerType           *string    `db:"c_customer_type"`
+	PrimaryUser            *string    `db:"c_primary_user"`
 	DigitalCatalogFlag     *bool      `db:"c_digital_catalog_flag"`
-	OrderNumberTCO         string     `db:"c_order_number_tco"`
-	CustomerInterestToCare string     `db:"c_customer_interest_to_care"`
-	CustomerInterestToBuy  string     `db:"c_customer_interest_to_buy"`
+	OrderNumberTCO         *string    `db:"c_order_number_tco"`
+	CustomerInterestToCare *string    `db:"c_customer_interest_to_care"`
+	CustomerInterestToBuy  *string    `db:"c_customer_interest_to_buy"`
 	CreatedAt              time.Time  `db:"d_created_at"`
-	CreatedBy              string     `db:"c_created_by"`
-	UpdatedAt              time.Time  `db:"d_updated_at"`
-	UpdatedBy              string     `db:"c_updated_by"`
+	CreatedBy              *string    `db:"c_created_by"`
+	UpdatedAt              *time.Time `db:"d_updated_at"`
+	UpdatedBy              *string    `db:"c_updated_by"`
 }
 
 // TableName returns the database table name for the CustomerVehicle model
@@ -98,57 +98,57 @@ func (cv *CustomerVehicle) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "i_one_account_id")
 		values = append(values, cv.OneAccountID)
 	}
-	if cv.Vin != "" {
+	if cv.Vin != nil && *cv.Vin != "" {
 		columns = append(columns, "c_vin")
-		values = append(values, cv.Vin)
+		values = append(values, *cv.Vin)
 	}
-	if cv.PoliceNumber != "" {
+	if cv.PoliceNumber != nil && *cv.PoliceNumber != "" {
 		columns = append(columns, "c_police_number")
-		values = append(values, cv.PoliceNumber)
+		values = append(values, *cv.PoliceNumber)
 	}
-	if cv.KatashikiSuffix != "" {
+	if cv.KatashikiSuffix != nil && *cv.KatashikiSuffix != "" {
 		columns = append(columns, "c_katashiki_suffix")
-		values = append(values, cv.KatashikiSuffix)
+		values = append(values, *cv.KatashikiSuffix)
 	}
-	if cv.ColorCode != "" {
+	if cv.ColorCode != nil && *cv.ColorCode != "" {
 		columns = append(columns, "c_color_code")
-		values = append(values, cv.ColorCode)
+		values = append(values, *cv.ColorCode)
 	}
-	if cv.Model != "" {
+	if cv.Model != nil && *cv.Model != "" {
 		columns = append(columns, "c_model")
-		values = append(values, cv.Model)
+		values = append(values, *cv.Model)
 	}
-	if cv.Variant != "" {
+	if cv.Variant != nil && *cv.Variant != "" {
 		columns = append(columns, "c_variant")
-		values = append(values, cv.Variant)
+		values = append(values, *cv.Variant)
 	}
-	if cv.Color != "" {
+	if cv.Color != nil && *cv.Color != "" {
 		columns = append(columns, "n_color")
-		values = append(values, cv.Color)
+		values = append(values, *cv.Color)
 	}
-	if cv.ActualMileage != 0 {
+	if cv.ActualMileage != nil && *cv.ActualMileage != 0 {
 		columns = append(columns, "v_actual_mileage")
-		values = append(values, cv.ActualMileage)
+		values = append(values, *cv.ActualMileage)
 	}
-	if cv.VehicleCategory != "" {
+	if cv.VehicleCategory != nil && *cv.VehicleCategory != "" {
 		columns = append(columns, "c_vehicle_category")
-		values = append(values, cv.VehicleCategory)
+		values = append(values, *cv.VehicleCategory)
 	}
-	if cv.StnkNumber != "" {
+	if cv.StnkNumber != nil && *cv.StnkNumber != "" {
 		columns = append(columns, "c_stnk_number")
-		values = append(values, cv.StnkNumber)
+		values = append(values, *cv.StnkNumber)
 	}
-	if cv.StnkName != "" {
+	if cv.StnkName != nil && *cv.StnkName != "" {
 		columns = append(columns, "n_stnk_name")
-		values = append(values, cv.StnkName)
+		values = append(values, *cv.StnkName)
 	}
 	if cv.StnkExpiryDate != nil {
 		columns = append(columns, "d_stnk_expiry_date")
 		values = append(values, *cv.StnkExpiryDate)
 	}
-	if cv.StnkAddress != "" {
+	if cv.StnkAddress != nil && *cv.StnkAddress != "" {
 		columns = append(columns, "e_stnk_address")
-		values = append(values, cv.StnkAddress)
+		values = append(values, *cv.StnkAddress)
 	}
 	if len(cv.StnkImage) > 0 {
 		columns = append(columns, "e_stnk_image")
@@ -166,37 +166,45 @@ func (cv *CustomerVehicle) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "v_distance_travelled")
 		values = append(values, *cv.DistanceTravelled)
 	}
-	if cv.CustomerType != "" {
+	if cv.CustomerType != nil && *cv.CustomerType != "" {
 		columns = append(columns, "c_customer_type")
-		values = append(values, cv.CustomerType)
+		values = append(values, *cv.CustomerType)
 	}
-	if cv.PrimaryUser != "" {
+	if cv.PrimaryUser != nil && *cv.PrimaryUser != "" {
 		columns = append(columns, "c_primary_user")
-		values = append(values, cv.PrimaryUser)
+		values = append(values, *cv.PrimaryUser)
 	}
 	if cv.DigitalCatalogFlag != nil {
 		columns = append(columns, "c_digital_catalog_flag")
 		values = append(values, *cv.DigitalCatalogFlag)
 	}
-	if cv.OrderNumberTCO != "" {
+	if cv.OrderNumberTCO != nil && *cv.OrderNumberTCO != "" {
 		columns = append(columns, "c_order_number_tco")
-		values = append(values, cv.OrderNumberTCO)
+		values = append(values, *cv.OrderNumberTCO)
 	}
-	if cv.CustomerInterestToCare != "" {
+	if cv.CustomerInterestToCare != nil && *cv.CustomerInterestToCare != "" {
 		columns = append(columns, "c_customer_interest_to_care")
-		values = append(values, cv.CustomerInterestToCare)
+		values = append(values, *cv.CustomerInterestToCare)
 	}
-	if cv.CustomerInterestToBuy != "" {
+	if cv.CustomerInterestToBuy != nil && *cv.CustomerInterestToBuy != "" {
 		columns = append(columns, "c_customer_interest_to_buy")
-		values = append(values, cv.CustomerInterestToBuy)
+		values = append(values, *cv.CustomerInterestToBuy)
 	}
 
 	// audit fields (created_by / updated_by);
 	// d_created_at / d_updated_at rely on DB defaults
 	columns = append(columns, "c_created_by")
-	values = append(values, cv.CreatedBy)
+	if cv.CreatedBy != nil {
+		values = append(values, *cv.CreatedBy)
+	} else {
+		values = append(values, nil)
+	}
 	columns = append(columns, "c_updated_by")
-	values = append(values, cv.CreatedBy)
+	if cv.CreatedBy != nil {
+		values = append(values, *cv.CreatedBy)
+	} else {
+		values = append(values, nil)
+	}
 
 	return columns, values
 }
@@ -211,44 +219,44 @@ func (cv *CustomerVehicle) ToUpdateMap() map[string]interface{} {
 	if cv.OneAccountID != "" {
 		updateMap["i_one_account_id"] = cv.OneAccountID
 	}
-	if cv.Vin != "" {
-		updateMap["c_vin"] = cv.Vin
+	if cv.Vin != nil && *cv.Vin != "" {
+		updateMap["c_vin"] = *cv.Vin
 	}
-	if cv.PoliceNumber != "" {
-		updateMap["c_police_number"] = cv.PoliceNumber
+	if cv.PoliceNumber != nil && *cv.PoliceNumber != "" {
+		updateMap["c_police_number"] = *cv.PoliceNumber
 	}
-	if cv.KatashikiSuffix != "" {
-		updateMap["c_katashiki_suffix"] = cv.KatashikiSuffix
+	if cv.KatashikiSuffix != nil && *cv.KatashikiSuffix != "" {
+		updateMap["c_katashiki_suffix"] = *cv.KatashikiSuffix
 	}
-	if cv.ColorCode != "" {
-		updateMap["c_color_code"] = cv.ColorCode
+	if cv.ColorCode != nil && *cv.ColorCode != "" {
+		updateMap["c_color_code"] = *cv.ColorCode
 	}
-	if cv.Model != "" {
-		updateMap["c_model"] = cv.Model
+	if cv.Model != nil && *cv.Model != "" {
+		updateMap["c_model"] = *cv.Model
 	}
-	if cv.Variant != "" {
-		updateMap["c_variant"] = cv.Variant
+	if cv.Variant != nil && *cv.Variant != "" {
+		updateMap["c_variant"] = *cv.Variant
 	}
-	if cv.Color != "" {
-		updateMap["n_color"] = cv.Color
+	if cv.Color != nil && *cv.Color != "" {
+		updateMap["n_color"] = *cv.Color
 	}
-	if cv.ActualMileage != 0 {
-		updateMap["v_actual_mileage"] = cv.ActualMileage
+	if cv.ActualMileage != nil && *cv.ActualMileage != 0 {
+		updateMap["v_actual_mileage"] = *cv.ActualMileage
 	}
-	if cv.VehicleCategory != "" {
-		updateMap["c_vehicle_category"] = cv.VehicleCategory
+	if cv.VehicleCategory != nil && *cv.VehicleCategory != "" {
+		updateMap["c_vehicle_category"] = *cv.VehicleCategory
 	}
-	if cv.StnkNumber != "" {
-		updateMap["c_stnk_number"] = cv.StnkNumber
+	if cv.StnkNumber != nil && *cv.StnkNumber != "" {
+		updateMap["c_stnk_number"] = *cv.StnkNumber
 	}
-	if cv.StnkName != "" {
-		updateMap["n_stnk_name"] = cv.StnkName
+	if cv.StnkName != nil && *cv.StnkName != "" {
+		updateMap["n_stnk_name"] = *cv.StnkName
 	}
 	if cv.StnkExpiryDate != nil {
 		updateMap["d_stnk_expiry_date"] = *cv.StnkExpiryDate
 	}
-	if cv.StnkAddress != "" {
-		updateMap["e_stnk_address"] = cv.StnkAddress
+	if cv.StnkAddress != nil && *cv.StnkAddress != "" {
+		updateMap["e_stnk_address"] = *cv.StnkAddress
 	}
 	if len(cv.StnkImage) > 0 {
 		updateMap["e_stnk_image"] = cv.StnkImage
@@ -262,27 +270,31 @@ func (cv *CustomerVehicle) ToUpdateMap() map[string]interface{} {
 	if cv.DistanceTravelled != nil {
 		updateMap["v_distance_travelled"] = *cv.DistanceTravelled
 	}
-	if cv.CustomerType != "" {
-		updateMap["c_customer_type"] = cv.CustomerType
+	if cv.CustomerType != nil && *cv.CustomerType != "" {
+		updateMap["c_customer_type"] = *cv.CustomerType
 	}
-	if cv.PrimaryUser != "" {
-		updateMap["c_primary_user"] = cv.PrimaryUser
+	if cv.PrimaryUser != nil && *cv.PrimaryUser != "" {
+		updateMap["c_primary_user"] = *cv.PrimaryUser
 	}
 	if cv.DigitalCatalogFlag != nil {
 		updateMap["c_digital_catalog_flag"] = *cv.DigitalCatalogFlag
 	}
-	if cv.OrderNumberTCO != "" {
-		updateMap["c_order_number_tco"] = cv.OrderNumberTCO
+	if cv.OrderNumberTCO != nil && *cv.OrderNumberTCO != "" {
+		updateMap["c_order_number_tco"] = *cv.OrderNumberTCO
 	}
-	if cv.CustomerInterestToCare != "" {
-		updateMap["c_customer_interest_to_care"] = cv.CustomerInterestToCare
+	if cv.CustomerInterestToCare != nil && *cv.CustomerInterestToCare != "" {
+		updateMap["c_customer_interest_to_care"] = *cv.CustomerInterestToCare
 	}
-	if cv.CustomerInterestToBuy != "" {
-		updateMap["c_customer_interest_to_buy"] = cv.CustomerInterestToBuy
+	if cv.CustomerInterestToBuy != nil && *cv.CustomerInterestToBuy != "" {
+		updateMap["c_customer_interest_to_buy"] = *cv.CustomerInterestToBuy
 	}
 
 	updateMap["d_updated_at"] = time.Now()
-	updateMap["c_updated_by"] = cv.UpdatedBy
+	if cv.UpdatedBy != nil {
+		updateMap["c_updated_by"] = *cv.UpdatedBy
+	} else {
+		updateMap["c_updated_by"] = nil
+	}
 
 	return updateMap
 }

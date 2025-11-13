@@ -48,3 +48,15 @@ func DecodeBase64String(s string) ([]byte, error) {
 	}
 	return data, nil
 }
+
+// JoinSCommaSeparatedString joins string values into comma-separated string
+func JoinSCommaSeparatedString(values []string) string {
+	if len(values) == 0 {
+		return ""
+	}
+	result := values[0]
+	for i := 1; i < len(values); i++ {
+		result += "," + values[i]
+	}
+	return result
+}

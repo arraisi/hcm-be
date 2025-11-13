@@ -60,7 +60,7 @@ func (dto *OneAccount) ToCustomerModel() (domain.Customer, error) {
 		DealerCustomerID:     dto.DealerCustomerID,
 		FirstName:            dto.FirstName,
 		LastName:             dto.LastName,
-		Gender:               dto.Gender,
+		Gender:               &dto.Gender,
 		PhoneNumber:          dto.PhoneNumber,
 		Email:                dto.Email,
 		KTPNumber:            dto.KTPNumber,
@@ -132,23 +132,27 @@ func (dto *CustomerVehicle) ToCustomerVehicleModel(customerID, oneAccountID stri
 	entity := domain.CustomerVehicle{
 		CustomerID:      customerID,
 		OneAccountID:    oneAccountID,
-		Vin:             dto.VIN,
-		KatashikiSuffix: dto.KatashikiSuffix,
-		ColorCode:       dto.ColorCode,
-		Model:           dto.Model,
-		Variant:         dto.Variant,
-		Color:           dto.Color,
-		PoliceNumber:    dto.PoliceNumber,
-		VehicleCategory: dto.VehicleCategory,
-		StnkNumber:      dto.STNKNumber,
-		StnkName:        dto.STNKName,
-		StnkAddress:     dto.STNKAddress,
-		CustomerType:    strings.Join(dto.CustomerType, ","),
-		PrimaryUser:     dto.PrimaryUser,
+		Vin:             &dto.VIN,
+		KatashikiSuffix: &dto.KatashikiSuffix,
+		ColorCode:       &dto.ColorCode,
+		Model:           &dto.Model,
+		Variant:         &dto.Variant,
+		Color:           &dto.Color,
+		PoliceNumber:    &dto.PoliceNumber,
+		VehicleCategory: &dto.VehicleCategory,
+		StnkNumber:      &dto.STNKNumber,
+		StnkName:        &dto.STNKName,
+		StnkAddress:     &dto.STNKAddress,
+		PrimaryUser:     &dto.PrimaryUser,
 		CreatedAt:       now,
-		UpdatedAt:       now,
-		CreatedBy:       constants.System,
-		UpdatedBy:       constants.System,
+		UpdatedAt:       &now,
+		CreatedBy:       utils.ToPointer(constants.System),
+		UpdatedBy:       utils.ToPointer(constants.System),
+	}
+
+	if len(dto.CustomerType) > 0 {
+		customerType := strings.Join(dto.CustomerType, ",")
+		entity.CustomerType = &customerType
 	}
 
 	if dto.STNKExpiryDate > 0 {

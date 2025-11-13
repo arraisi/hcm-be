@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
 	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
 	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 	"net/http"
@@ -19,13 +20,14 @@ import (
 )
 
 type Handler struct {
-	Config                *config.Config
-	UserHandler           user.Handler
-	CustomerHandler       customer.Handler
-	ServiceBookingHandler servicebooking.Handler
-	TestDriveHandler      testdrive.Handler
-	OneAccessHandler      oneaccess.Handler
-	ToyotaIDHandler       toyotaid.Handler
+	Config                  *config.Config
+	UserHandler             user.Handler
+	CustomerHandler         customer.Handler
+	ServiceBookingHandler   servicebooking.Handler
+	TestDriveHandler        testdrive.Handler
+	OneAccessHandler        oneaccess.Handler
+	ToyotaIDHandler         toyotaid.Handler
+	CustomerReminderHandler customerreminder.Handler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -85,6 +87,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Post("/one-access", handler.OneAccessHandler.CreateOneAccess)
 
 			webhooks.Post("/toyota-id", handler.ToyotaIDHandler.CreateToyotaID)
+
+			webhooks.Post("/customer-reminder", handler.CustomerReminderHandler.CreateCustomerReminder)
 		})
 	})
 
