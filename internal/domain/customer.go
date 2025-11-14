@@ -10,7 +10,7 @@ type Customer struct {
 	HasjratID            string    `json:"hasjrat_id" db:"i_hasjrat_id"`
 	FirstName            string    `json:"first_name" db:"n_first_name"`
 	LastName             string    `json:"last_name" db:"n_last_name"`
-	Gender               string    `json:"gender" db:"n_gender"`
+	Gender               *string   `json:"gender" db:"n_gender"`
 	PhoneNumber          string    `json:"phone_number" db:"c_phone_number"`
 	Email                string    `json:"email" db:"e_email"`
 	IsNew                bool      `json:"is_new" db:"c_isnew"`
@@ -134,7 +134,7 @@ func (u *Customer) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "n_last_name")
 		values = append(values, u.LastName)
 	}
-	if u.Gender != "" {
+	if u.Gender != nil {
 		columns = append(columns, "n_gender")
 		values = append(values, u.Gender)
 	}
@@ -264,7 +264,7 @@ func (u *Customer) ToUpdateMap() map[string]interface{} {
 	if u.LastName != "" {
 		updateMap["n_last_name"] = u.LastName
 	}
-	if u.Gender != "" {
+	if u.Gender != nil {
 		updateMap["n_gender"] = u.Gender
 	}
 	if u.PhoneNumber != "" {

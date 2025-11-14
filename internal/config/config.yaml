@@ -38,7 +38,7 @@ http:
     timeout: 10s
     retryCount: 2
   apimDIDXApi:
-    baseURL: 'https://apim-didx-stg.toyota.astra.co.id/p2/api/webhook/external/receive'
-    apiKey: 'your-mockapi-key'
+    baseURL: 'https://syra.mpurwadi.site/api/v1/hcm/webhook/receive'
+    apiKey: ''
     timeout: 10s
     retryCount: 3

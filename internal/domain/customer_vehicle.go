@@ -16,16 +16,16 @@ type CustomerVehicle struct {
 	Color                  string     `db:"n_color"`
 	PoliceNumber           string     `db:"c_police_number"`
 	ActualMileage          int32      `db:"v_actual_mileage"`
-	VehicleCategory        string     `db:"c_vehicle_category"`
-	StnkNumber             string     `db:"c_stnk_number"`
-	StnkName               string     `db:"n_stnk_name"`
+	VehicleCategory        *string    `db:"c_vehicle_category"`
+	StnkNumber             *string    `db:"c_stnk_number"`
+	StnkName               *string    `db:"n_stnk_name"`
 	StnkExpiryDate         *time.Time `db:"d_stnk_expiry_date"`
-	StnkAddress            string     `db:"e_stnk_address"`
+	StnkAddress            *string    `db:"e_stnk_address"`
 	StnkImage              []byte     `db:"e_stnk_image"`
 	InvoiceFile            []byte     `db:"e_invoice_file"`
 	MainVehicleFlag        *bool      `db:"b_main_vehicle_flag"`
 	DistanceTravelled      *int32     `db:"v_distance_travelled"`
-	CustomerType           string     `db:"c_customer_type"`
+	CustomerType           *string    `db:"c_customer_type"`
 	PrimaryUser            string     `db:"c_primary_user"`
 	DigitalCatalogFlag     *bool      `db:"c_digital_catalog_flag"`
 	OrderNumberTCO         string     `db:"c_order_number_tco"`
@@ -130,15 +130,15 @@ func (cv *CustomerVehicle) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "v_actual_mileage")
 		values = append(values, cv.ActualMileage)
 	}
-	if cv.VehicleCategory != "" {
+	if cv.VehicleCategory != nil {
 		columns = append(columns, "c_vehicle_category")
 		values = append(values, cv.VehicleCategory)
 	}
-	if cv.StnkNumber != "" {
+	if cv.StnkNumber != nil {
 		columns = append(columns, "c_stnk_number")
 		values = append(values, cv.StnkNumber)
 	}
-	if cv.StnkName != "" {
+	if cv.StnkName != nil {
 		columns = append(columns, "n_stnk_name")
 		values = append(values, cv.StnkName)
 	}
@@ -146,7 +146,7 @@ func (cv *CustomerVehicle) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "d_stnk_expiry_date")
 		values = append(values, *cv.StnkExpiryDate)
 	}
-	if cv.StnkAddress != "" {
+	if cv.StnkAddress != nil {
 		columns = append(columns, "e_stnk_address")
 		values = append(values, cv.StnkAddress)
 	}
@@ -166,7 +166,7 @@ func (cv *CustomerVehicle) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "v_distance_travelled")
 		values = append(values, *cv.DistanceTravelled)
 	}
-	if cv.CustomerType != "" {
+	if cv.CustomerType != nil {
 		columns = append(columns, "c_customer_type")
 		values = append(values, cv.CustomerType)
 	}
@@ -235,19 +235,19 @@ func (cv *CustomerVehicle) ToUpdateMap() map[string]interface{} {
 	if cv.ActualMileage != 0 {
 		updateMap["v_actual_mileage"] = cv.ActualMileage
 	}
-	if cv.VehicleCategory != "" {
+	if cv.VehicleCategory != nil {
 		updateMap["c_vehicle_category"] = cv.VehicleCategory
 	}
-	if cv.StnkNumber != "" {
+	if cv.StnkNumber != nil {
 		updateMap["c_stnk_number"] = cv.StnkNumber
 	}
-	if cv.StnkName != "" {
+	if cv.StnkName != nil {
 		updateMap["n_stnk_name"] = cv.StnkName
 	}
 	if cv.StnkExpiryDate != nil {
 		updateMap["d_stnk_expiry_date"] = *cv.StnkExpiryDate
 	}
-	if cv.StnkAddress != "" {
+	if cv.StnkAddress != nil {
 		updateMap["e_stnk_address"] = cv.StnkAddress
 	}
 	if len(cv.StnkImage) > 0 {
@@ -262,7 +262,7 @@ func (cv *CustomerVehicle) ToUpdateMap() map[string]interface{} {
 	if cv.DistanceTravelled != nil {
 		updateMap["v_distance_travelled"] = *cv.DistanceTravelled
 	}
-	if cv.CustomerType != "" {
+	if cv.CustomerType != nil {
 		updateMap["c_customer_type"] = cv.CustomerType
 	}
 	if cv.PrimaryUser != "" {

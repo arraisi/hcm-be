@@ -196,7 +196,7 @@ func (s *service) checkActivePeriodicMaintenance(ctx context.Context, customerID
 
 func (s *service) handleServiceBookingVehicleInsurance(ctx context.Context, tx *sqlx.Tx, serviceBookingID string, event servicebooking.ServiceBookingEvent) error {
 	// If no vehicle insurance data is provided, skip processing
-	if event.Data.VehicleInsurance.InsuranceProvider == "" && event.Data.VehicleInsurance.InsuranceProviderOther == "" {
+	if event.Data.VehicleInsurance == nil {
 		return nil
 	}
 
