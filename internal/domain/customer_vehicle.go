@@ -26,11 +26,11 @@ type CustomerVehicle struct {
 	MainVehicleFlag        *bool      `db:"b_main_vehicle_flag"`
 	DistanceTravelled      *int32     `db:"v_distance_travelled"`
 	CustomerType           *string    `db:"c_customer_type"`
-	PrimaryUser            string     `db:"c_primary_user"`
+	PrimaryUser            *string    `db:"c_primary_user"`
 	DigitalCatalogFlag     *bool      `db:"c_digital_catalog_flag"`
-	OrderNumberTCO         string     `db:"c_order_number_tco"`
-	CustomerInterestToCare string     `db:"c_customer_interest_to_care"`
-	CustomerInterestToBuy  string     `db:"c_customer_interest_to_buy"`
+	OrderNumberTCO         *string    `db:"c_order_number_tco"`
+	CustomerInterestToCare *string    `db:"c_customer_interest_to_care"`
+	CustomerInterestToBuy  *string    `db:"c_customer_interest_to_buy"`
 	CreatedAt              time.Time  `db:"d_created_at"`
 	CreatedBy              string     `db:"c_created_by"`
 	UpdatedAt              time.Time  `db:"d_updated_at"`
@@ -170,7 +170,7 @@ func (cv *CustomerVehicle) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "c_customer_type")
 		values = append(values, cv.CustomerType)
 	}
-	if cv.PrimaryUser != "" {
+	if cv.PrimaryUser != nil {
 		columns = append(columns, "c_primary_user")
 		values = append(values, cv.PrimaryUser)
 	}
@@ -178,15 +178,15 @@ func (cv *CustomerVehicle) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "c_digital_catalog_flag")
 		values = append(values, *cv.DigitalCatalogFlag)
 	}
-	if cv.OrderNumberTCO != "" {
+	if cv.OrderNumberTCO != nil {
 		columns = append(columns, "c_order_number_tco")
 		values = append(values, cv.OrderNumberTCO)
 	}
-	if cv.CustomerInterestToCare != "" {
+	if cv.CustomerInterestToCare != nil {
 		columns = append(columns, "c_customer_interest_to_care")
 		values = append(values, cv.CustomerInterestToCare)
 	}
-	if cv.CustomerInterestToBuy != "" {
+	if cv.CustomerInterestToBuy != nil {
 		columns = append(columns, "c_customer_interest_to_buy")
 		values = append(values, cv.CustomerInterestToBuy)
 	}
@@ -265,19 +265,19 @@ func (cv *CustomerVehicle) ToUpdateMap() map[string]interface{} {
 	if cv.CustomerType != nil {
 		updateMap["c_customer_type"] = cv.CustomerType
 	}
-	if cv.PrimaryUser != "" {
+	if cv.PrimaryUser != nil {
 		updateMap["c_primary_user"] = cv.PrimaryUser
 	}
 	if cv.DigitalCatalogFlag != nil {
 		updateMap["c_digital_catalog_flag"] = *cv.DigitalCatalogFlag
 	}
-	if cv.OrderNumberTCO != "" {
+	if cv.OrderNumberTCO != nil {
 		updateMap["c_order_number_tco"] = cv.OrderNumberTCO
 	}
-	if cv.CustomerInterestToCare != "" {
+	if cv.CustomerInterestToCare != nil {
 		updateMap["c_customer_interest_to_care"] = cv.CustomerInterestToCare
 	}
-	if cv.CustomerInterestToBuy != "" {
+	if cv.CustomerInterestToBuy != nil {
 		updateMap["c_customer_interest_to_buy"] = cv.CustomerInterestToBuy
 	}
 

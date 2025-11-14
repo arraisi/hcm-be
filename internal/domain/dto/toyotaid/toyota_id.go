@@ -145,7 +145,7 @@ func (dto *CustomerVehicle) ToCustomerVehicleModel(customerID, oneAccountID stri
 		StnkName:        utils.ToPointer(dto.STNKName),
 		StnkAddress:     utils.ToPointer(dto.STNKAddress),
 		CustomerType:    utils.ToPointer(strings.Join(dto.CustomerType, ",")),
-		PrimaryUser:     dto.PrimaryUser,
+		PrimaryUser:     utils.ToPointer(dto.PrimaryUser),
 		CreatedAt:       now,
 		UpdatedAt:       now,
 		CreatedBy:       constants.System,
