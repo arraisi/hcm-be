@@ -42,6 +42,12 @@ http:
     apiKey: ''
     timeout: 10s
     retryCount: 3
+asynq:
+  redisAddr: 'localhost:6379' # use 'localhost:6379' for local development, 'redis:6379' for Docker
+  redisDB: 0
+  redisPassword: ''
+  queue: 'default'
+  concurrency: 10
 condition:
   outletIDs:
     - ALL

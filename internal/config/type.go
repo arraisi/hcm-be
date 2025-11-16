@@ -51,6 +51,7 @@ type Config struct {
 	Webhook       Webhook       `yaml:"webhook"`
 	FeatureFlag   FeatureFlag   `yaml:"featureFlag"`
 	Http          HttpConfig    `yaml:"http"`
+	Asynq         AsynqConfig   `yaml:"asynq"`
 	Condition     Condition     `yaml:"condition"`
 }
 
@@ -64,6 +65,14 @@ type HttpClientConfig struct {
 	APIKey     string        `yaml:"apiKey"`
 	Timeout    time.Duration `yaml:"timeout"`
 	RetryCount int           `yaml:"retryCount"`
+}
+
+type AsynqConfig struct {
+	RedisAddr     string `yaml:"redisAddr"`
+	RedisDB       int    `yaml:"redisDB"`
+	RedisPassword string `yaml:"redisPassword"`
+	Queue         string `yaml:"queue"`
+	Concurrency   int    `yaml:"concurrency"`
 }
 
 type Condition struct {

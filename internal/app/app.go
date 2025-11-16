@@ -74,6 +74,17 @@ func Run(cfg *config.Config) error {
 	})
 	apimDIDXApiClient := didx.New(cfg, apimDIDXApiHttpUtil)
 
+	// init Asynq client and worker
+	queueClient := asynqclient.New(cfg.Asynq)
+	queueWorker := asynqworker.New(cfg.Asynq, apimDIDXApiClient)
+
+	// Start Asynq worker in a goroutine
+	go func() {
+		if err := queueWorker.Run(); err != nil {
+			panic(err)
+		}
+	}()
+
 	// init repositories
 	txRepo := transactionRepository.New(db)
 	customerRepo := customerRepository.New(cfg, db)
@@ -112,6 +123,7 @@ func Run(cfg *config.Config) error {
 		CustomerVehicleSvc: customerVehicleSvc,
 		EmployeeRepo:       employeeRepo,
 		ApimDIDXSvc:        apimDIDXApiClient,
+		QueueClient:        queueClient,
 	})
 	oneAccessSvc := oneaccessService.New(cfg, oneaccessService.ServiceContainer{
 		TransactionRepo: txRepo,
