@@ -1,6 +1,6 @@
 APP_NAME=hcm-be
 
-.PHONY: tidy run build test lint fmt docker-build docker-up docker-down gen
+.PHONY: tidy run run-worker build build-worker build-all test lint fmt docker-build docker-up docker-down gen
 
 tidy:
 	@go mod tidy
@@ -8,8 +8,17 @@ tidy:
 run:
 	@go run ./cmd/server
 
+run-worker:
+	@go run ./cmd/worker
+
 build:
 	@go build -o bin/$(APP_NAME) ./cmd/server
+
+build-worker:
+	@go build -o bin/worker ./cmd/worker
+
+build-all: build build-worker
+	@echo "Built server and worker binaries"
 
 test:
 	@go test ./... -cover

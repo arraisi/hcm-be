@@ -15,6 +15,8 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/platform/httpclient"
+	"github.com/arraisi/hcm-be/internal/queue/asynqclient"
+	"github.com/arraisi/hcm-be/internal/queue/asynqworker"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
 	customerreminderRepository "github.com/arraisi/hcm-be/internal/repository/customerreminder"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
