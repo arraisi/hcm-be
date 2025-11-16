@@ -10,6 +10,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
+	"github.com/arraisi/hcm-be/internal/queue"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/utils"
 )
@@ -85,10 +86,20 @@ func (s *service) ConfirmServiceBooking(ctx context.Context, request servicebook
 	}
 	fmt.Printf("Service Booking Confirm Request: %s\n", string(marshal))
 
-	err = s.apimDIDXSvc.Confirm(ctx, sbEventConfirmRequest)
-	if err != nil {
-		return err
+	// Enqueue the task to Asynq instead of calling DIDX directly
+	// Use context.Background() to ensure the enqueue operation completes
+	// even if the parent request context is cancelled
+	payload := queue.DIDXConfirmPayload{
+		ServiceBookingEvent: sbEventConfirmRequest,
 	}
+
+	err = s.queueClient.EnqueueDIDXConfirm(context.Background(), payload)
+	if err != nil {
+		return fmt.Errorf("failed to enqueue DIDX confirm task: %w", err)
+	}
+
+	fmt.Printf("Successfully enqueued DIDX confirm task for ServiceBookingID: %s, EventID: %s\n",
+		serviceBooking.ID, serviceBooking.EventID)
 
 	return nil
 }

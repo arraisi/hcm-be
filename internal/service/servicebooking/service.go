@@ -83,6 +83,10 @@ type ApimDIDXService interface {
 	Confirm(ctx context.Context, body any) error
 }
 
+type QueueClient interface {
+	EnqueueDIDXConfirm(ctx context.Context, payload interface{}) error
+}
+
 type ServiceContainer struct {
 	TransactionRepo    transactionRepository
 	Repo               Repository
@@ -91,6 +95,7 @@ type ServiceContainer struct {
 	CustomerVehicleSvc CustomerVehicleService
 	EmployeeRepo       EmployeeRepository
 	ApimDIDXSvc        ApimDIDXService
+	QueueClient        QueueClient
 }
 
 type service struct {
@@ -102,6 +107,7 @@ type service struct {
 	customerVehicleSvc CustomerVehicleService
 	employeeRepo       EmployeeRepository
 	apimDIDXSvc        ApimDIDXService
+	queueClient        QueueClient
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -114,5 +120,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		customerVehicleSvc: container.CustomerVehicleSvc,
 		employeeRepo:       container.EmployeeRepo,
 		apimDIDXSvc:        container.ApimDIDXSvc,
+		queueClient:        container.QueueClient,
 	}
 }
