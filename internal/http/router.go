@@ -1,17 +1,18 @@
 package http
 
 import (
-	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
-	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
-	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 	"net/http"
 	stdprof "net/http/pprof"
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
+	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
+	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
+	"github.com/arraisi/hcm-be/internal/http/handlers/queue"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
+	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 
@@ -28,6 +29,7 @@ type Handler struct {
 	OneAccessHandler        oneaccess.Handler
 	ToyotaIDHandler         toyotaid.Handler
 	CustomerReminderHandler customerreminder.Handler
+	QueueHandler            *queue.Handler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -89,6 +91,21 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Post("/toyota-id", handler.ToyotaIDHandler.CreateToyotaID)
 
 			webhooks.Post("/customer-reminder", handler.CustomerReminderHandler.CreateCustomerReminder)
+		})
+
+		// Queue monitoring endpoints
+		api.Route("/queue", func(qr chi.Router) {
+			qr.Get("/stats", handler.QueueHandler.GetQueueStats)
+			qr.Get("/pending", handler.QueueHandler.ListPendingTasks)
+			qr.Get("/active", handler.QueueHandler.ListActiveTasks)
+			qr.Get("/retry", handler.QueueHandler.ListRetryTasks)
+			qr.Get("/archived", handler.QueueHandler.ListArchivedTasks)
+			qr.Get("/all-stats", handler.QueueHandler.GetAllStats)
+
+			qr.Post("/pause", handler.QueueHandler.PauseQueue)
+			qr.Post("/unpause", handler.QueueHandler.UnpauseQueue)
+			qr.Delete("/archived", handler.QueueHandler.DeleteArchivedTasks)
+			qr.Post("/archived/run", handler.QueueHandler.RunArchivedTasks)
 		})
 	})
 

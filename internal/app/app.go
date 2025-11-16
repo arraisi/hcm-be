@@ -1,7 +1,6 @@
 package app
 
 import (
-	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
@@ -9,7 +8,9 @@ import (
 	"github.com/arraisi/hcm-be/internal/external/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
+	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
 	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
+	"github.com/arraisi/hcm-be/internal/http/handlers/queue"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
 	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
@@ -17,6 +18,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/platform/httpclient"
 	"github.com/arraisi/hcm-be/internal/queue/asynqclient"
 	"github.com/arraisi/hcm-be/internal/queue/asynqworker"
+	"github.com/arraisi/hcm-be/internal/queue/inspector"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
 	customerreminderRepository "github.com/arraisi/hcm-be/internal/repository/customerreminder"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
@@ -77,6 +79,7 @@ func Run(cfg *config.Config) error {
 	// init Asynq client and worker
 	queueClient := asynqclient.New(cfg.Asynq)
 	queueWorker := asynqworker.New(cfg.Asynq, apimDIDXApiClient)
+	queueInspector := inspector.New(cfg.Asynq)
 
 	// Start Asynq worker in a goroutine
 	go func() {
@@ -149,6 +152,7 @@ func Run(cfg *config.Config) error {
 	toyotaIDHandler := toyotaid.New(cfg, toyotaIDSvc, idempotencyStore)
 	oneAccessHandler := oneaccess.New(cfg, oneAccessSvc, idempotencyStore)
 	customerReminderHandler := customerreminder.New(cfg, customerReminderSvc, idempotencyStore)
+	queueHandler := queue.NewHandler(queueInspector)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                  cfg,
@@ -159,6 +163,7 @@ func Run(cfg *config.Config) error {
 		OneAccessHandler:        oneAccessHandler,
 		ToyotaIDHandler:         toyotaIDHandler,
 		CustomerReminderHandler: customerReminderHandler,
+		QueueHandler:            queueHandler,
 	})
 
 	return apphttp.NewServer(cfg, router)
