@@ -21,9 +21,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: server
     container_name: hcm-app
-    # Configuration is now loaded from config.yaml inside the container
-    # No environment variables needed as the app uses internal/config/config.yaml
+    environment:
+      # Override config.yaml values for Docker deployment
+      - APP_ENV=production
+      - ASYNQ_REDISADDR=redis:6379
     ports:
       - '8080:8080'
     networks:
@@ -38,6 +41,24 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  # Asynq Worker Service
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+    container_name: hcm-worker
+    environment:
+      # Override config.yaml values for Docker deployment
+      - APP_ENV=production
+      - ASYNQ_REDISADDR=redis:6379
+    networks:
+      - hcm-network
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   redis-data:

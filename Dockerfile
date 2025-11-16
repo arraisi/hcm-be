@@ -19,13 +19,19 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build the application
+# Build both server and worker binaries
 RUN CGO_ENABLED=0 GOOS=linux go build \
     -ldflags "-s -w" \
     -o hcm-be ./cmd/server
 
-# Runtime stage
-FROM alpine:3.20
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -ldflags "-s -w" \
+    -o hcm-worker ./cmd/worker
+
+# ============================================
+# Server runtime stage
+# ============================================
+FROM alpine:3.20 AS server
 
 # Install ca-certificates for HTTPS calls and create non-root user
 RUN apk --no-cache add ca-certificates \
@@ -35,7 +41,7 @@ RUN apk --no-cache add ca-certificates \
 # Set working directory
 WORKDIR /app
 
-# Copy the binary from builder stage
+# Copy the server binary from builder stage
 COPY --from=builder /src/hcm-be .
 
 # Copy config file to the expected relative path
@@ -57,5 +63,36 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/healthz || exit 1
 
-# Run the application
+# Run the server application
 CMD ["./hcm-be"]
+
+# ============================================
+# Worker runtime stage
+# ============================================
+FROM alpine:3.20 AS worker
+
+# Install ca-certificates for HTTPS calls and create non-root user
+RUN apk --no-cache add ca-certificates \
+    && addgroup -g 1001 -S appgroup \
+    && adduser -u 1001 -S appuser -G appgroup
+
+# Set working directory
+WORKDIR /app
+
+# Copy the worker binary from builder stage
+COPY --from=builder /src/hcm-worker .
+
+# Copy config file to the expected relative path
+COPY --from=builder /src/internal/config/config.yaml ./internal/config/config.yaml
+
+# Set environment variable for config path
+ENV APP_CONFIG=./internal/config/config.yaml
+
+# Change ownership to non-root user
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Run the worker application
+CMD ["./hcm-worker"]

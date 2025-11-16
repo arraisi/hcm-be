@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -34,6 +35,11 @@ func Load(object interface{}) error {
 	viper.SetConfigName("config")
 	// Config File Type
 	viper.SetConfigType("yaml")
+
+	// Enable environment variable override
+	// Environment variables should use underscore instead of dots
+	// Example: ASYNQ_REDISADDR will override asynq.redisAddr
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()

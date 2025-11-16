@@ -81,12 +81,15 @@ func Run(cfg *config.Config) error {
 	queueWorker := asynqworker.New(cfg.Asynq, apimDIDXApiClient)
 	queueInspector := inspector.New(cfg.Asynq)
 
-	// Start Asynq worker in a goroutine
-	go func() {
-		if err := queueWorker.Run(); err != nil {
-			panic(err)
-		}
-	}()
+	// Start Asynq worker in a goroutine (local development only)
+	// In production, worker runs as a separate process/container
+	if cfg.App.Env == "development" || cfg.App.Env == "local" {
+		go func() {
+			if err := queueWorker.Run(); err != nil {
+				panic(err)
+			}
+		}()
+	}
 
 	// init repositories
 	txRepo := transactionRepository.New(db)
