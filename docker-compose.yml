@@ -4,7 +4,7 @@ services:
     image: redis:7-alpine
     #container_name: hcm-redis
     ports:
-      - '6379:6379'
+      - '6380:6379'
     networks:
       - hcm-network
     restart: unless-stopped
@@ -26,6 +26,9 @@ services:
     # No environment variables needed as the app uses internal/config/config.yaml
     ports:
       - '8080:8080'
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis:6380 
     networks:
       - hcm-network
     depends_on:
