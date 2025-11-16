@@ -67,8 +67,9 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			users.Delete("/{id}", handler.UserHandler.Delete)
 		})
 
-		api.Route("/customers", func(users chi.Router) {
-			users.Get("/", handler.CustomerHandler.GetCustomers)
+		api.Route("/customers", func(customers chi.Router) {
+			customers.Get("/", handler.CustomerHandler.GetCustomers)
+			customers.Post("/inquiry", handler.CustomerHandler.InquiryCustomer)
 		})
 
 		api.Route("/webhooks", func(webhooks chi.Router) {

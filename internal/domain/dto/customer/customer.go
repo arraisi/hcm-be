@@ -99,3 +99,9 @@ func (be *OneAccountRequest) ToDomain() domain.Customer {
 		UpdatedBy:    utils.ToPointer(constants.System),
 	}
 }
+
+type CustomerInquiryRequest struct {
+	NIK      *string `json:"nik" validate:"omitempty,min=16,max=16"`
+	NoHp     *string `json:"nohp" validate:"omitempty,min=10,max=13"`
+	FlagNoHp *bool   `json:"flag_nohp" validate:"required"`
+}
