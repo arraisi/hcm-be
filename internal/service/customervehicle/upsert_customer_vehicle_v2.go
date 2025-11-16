@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/utils"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
 	"github.com/jmoiron/sqlx"
@@ -12,8 +13,8 @@ import (
 
 func (s *service) UpsertCustomerVehicleV2(ctx context.Context, tx *sqlx.Tx, req domain.CustomerVehicle) (string, error) {
 	existingCV, err := s.repo.GetCustomerVehicle(ctx, customervehicle.GetCustomerVehicleRequest{
-		Vin:          req.Vin,
-		PoliceNumber: req.PoliceNumber,
+		Vin:          utils.ToPointer(req.Vin),
+		PoliceNumber: utils.ToPointer(req.PoliceNumber),
 	})
 	if err == nil {
 		// Found → update

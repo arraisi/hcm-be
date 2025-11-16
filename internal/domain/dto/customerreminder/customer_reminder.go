@@ -77,17 +77,17 @@ func (dto *CustomerVehicle) ToCustomerVehicleModel() domain.CustomerVehicle {
 	now := time.Now().UTC()
 
 	return domain.CustomerVehicle{
-		Vin:             &dto.VIN,
-		KatashikiSuffix: &dto.KatashikiSuffix,
-		ColorCode:       &dto.ColorCode,
-		Model:           &dto.Model,
-		Variant:         &dto.Variant,
-		Color:           &dto.Color,
-		PoliceNumber:    &dto.PoliceNumber,
+		Vin:             dto.VIN,
+		KatashikiSuffix: dto.KatashikiSuffix,
+		ColorCode:       dto.ColorCode,
+		Model:           dto.Model,
+		Variant:         dto.Variant,
+		Color:           dto.Color,
+		PoliceNumber:    dto.PoliceNumber,
 		CreatedAt:       now,
-		CreatedBy:       utils.ToPointer(constants.System),
-		UpdatedAt:       &now,
-		UpdatedBy:       utils.ToPointer(constants.System),
+		CreatedBy:       constants.System,
+		UpdatedAt:       now,
+		UpdatedBy:       constants.System,
 	}
 }
 

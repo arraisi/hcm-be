@@ -3,7 +3,6 @@ package customervehicle
 import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/pkg/constants"
-	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
 )
 
@@ -47,14 +46,14 @@ type CustomerVehicleRequest struct {
 
 func NewCustomerVehicleRequest(domain domain.CustomerVehicle) CustomerVehicleRequest {
 	return CustomerVehicleRequest{
-		Vin:             *domain.Vin,
-		KatashikiSuffix: *domain.KatashikiSuffix,
-		ColorCode:       *domain.ColorCode,
-		Model:           *domain.Model,
-		Variant:         *domain.Variant,
-		Color:           *domain.Color,
-		PoliceNumber:    *domain.PoliceNumber,
-		ActualMileage:   *domain.ActualMileage,
+		Vin:             domain.Vin,
+		KatashikiSuffix: domain.KatashikiSuffix,
+		ColorCode:       domain.ColorCode,
+		Model:           domain.Model,
+		Variant:         domain.Variant,
+		Color:           domain.Color,
+		PoliceNumber:    domain.PoliceNumber,
+		ActualMileage:   domain.ActualMileage,
 	}
 }
 
@@ -62,15 +61,15 @@ func (req CustomerVehicleRequest) ToDomain(customerID, oneAccountID string) doma
 	return domain.CustomerVehicle{
 		CustomerID:      customerID,
 		OneAccountID:    oneAccountID,
-		Vin:             &req.Vin,
-		KatashikiSuffix: &req.KatashikiSuffix,
-		ColorCode:       &req.ColorCode,
-		Model:           &req.Model,
-		Variant:         &req.Variant,
-		Color:           &req.Color,
-		PoliceNumber:    &req.PoliceNumber,
-		ActualMileage:   &req.ActualMileage,
-		CreatedBy:       utils.ToPointer(constants.System),
-		UpdatedBy:       utils.ToPointer(constants.System),
+		Vin:             req.Vin,
+		KatashikiSuffix: req.KatashikiSuffix,
+		ColorCode:       req.ColorCode,
+		Model:           req.Model,
+		Variant:         req.Variant,
+		Color:           req.Color,
+		PoliceNumber:    req.PoliceNumber,
+		ActualMileage:   req.ActualMileage,
+		CreatedBy:       constants.System,
+		UpdatedBy:       constants.System,
 	}
 }
