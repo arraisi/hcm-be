@@ -90,7 +90,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 
 			webhooks.Post("/customer-reminder", handler.CustomerReminderHandler.CreateCustomerReminder)
 
-			webhooks.Post("/customer-inquiry", handler.CustomerHandler.InquiryCustomer)
+			webhooks.Get("/customer-inquiry", handler.CustomerHandler.InquiryCustomer)
 		})
 	})
 

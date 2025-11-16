@@ -40,12 +40,22 @@ type GetCustomerRequest struct {
 	Order        string
 	OneAccountID string
 	CustomerID   string
+	KTPNumber    string
+	PhoneNumber  string
 }
 
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetCustomerRequest) Apply(q *sqrl.SelectBuilder) {
 	if req.OneAccountID != "" {
 		q.Where(sqrl.Eq{"i_one_account_id": req.OneAccountID})
+	}
+
+	if req.KTPNumber != "" {
+		q.Where(sqrl.Eq{"c_ktp_number": req.KTPNumber})
+	}
+
+	if req.PhoneNumber != "" {
+		q.Where(sqrl.Eq{"c_phone_number": req.PhoneNumber})
 	}
 
 	if req.Limit > 0 {

@@ -40,7 +40,7 @@ func (h *Handler) InquiryCustomer(w http.ResponseWriter, r *http.Request) {
 	result, err := h.svc.InquiryCustomer(ctx, req)
 	if err != nil {
 		// Use NewErrorResponseFromList to determine HTTP status code
-		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListUser)
+		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListCustomer)
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}

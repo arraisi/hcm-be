@@ -20,7 +20,7 @@ X-Event-Timestamp: 1708782696
       "email": "nkoc.maf@example.com",
       "birth_date": "1995-08-12",
       "verification_channel": "SMS",
-      "ktp_number": "PRRJKAESWC086H",
+      "ktp_number": "1234567890123456",
       "occupation": "Engineer",
       "gender": "FEMALE",
       "registration_channel": "MTOYOTA",
