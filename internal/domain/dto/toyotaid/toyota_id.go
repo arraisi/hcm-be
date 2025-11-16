@@ -1,11 +1,12 @@
 package toyotaid
 
 import (
+	"strings"
+	"time"
+
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/utils"
-	"strings"
-	"time"
 )
 
 type Request struct {
@@ -60,7 +61,7 @@ func (dto *OneAccount) ToCustomerModel() (domain.Customer, error) {
 		DealerCustomerID:     dto.DealerCustomerID,
 		FirstName:            dto.FirstName,
 		LastName:             dto.LastName,
-		Gender:               &dto.Gender,
+		Gender:               utils.ToPointer(dto.Gender),
 		PhoneNumber:          dto.PhoneNumber,
 		Email:                dto.Email,
 		KTPNumber:            dto.KTPNumber,
@@ -132,27 +133,23 @@ func (dto *CustomerVehicle) ToCustomerVehicleModel(customerID, oneAccountID stri
 	entity := domain.CustomerVehicle{
 		CustomerID:      customerID,
 		OneAccountID:    oneAccountID,
-		Vin:             &dto.VIN,
-		KatashikiSuffix: &dto.KatashikiSuffix,
-		ColorCode:       &dto.ColorCode,
-		Model:           &dto.Model,
-		Variant:         &dto.Variant,
-		Color:           &dto.Color,
-		PoliceNumber:    &dto.PoliceNumber,
-		VehicleCategory: &dto.VehicleCategory,
-		StnkNumber:      &dto.STNKNumber,
-		StnkName:        &dto.STNKName,
-		StnkAddress:     &dto.STNKAddress,
-		PrimaryUser:     &dto.PrimaryUser,
+		Vin:             dto.VIN,
+		KatashikiSuffix: dto.KatashikiSuffix,
+		ColorCode:       dto.ColorCode,
+		Model:           dto.Model,
+		Variant:         dto.Variant,
+		Color:           dto.Color,
+		PoliceNumber:    dto.PoliceNumber,
+		VehicleCategory: utils.ToPointer(dto.VehicleCategory),
+		StnkNumber:      utils.ToPointer(dto.STNKNumber),
+		StnkName:        utils.ToPointer(dto.STNKName),
+		StnkAddress:     utils.ToPointer(dto.STNKAddress),
+		CustomerType:    utils.ToPointer(strings.Join(dto.CustomerType, ",")),
+		PrimaryUser:     utils.ToPointer(dto.PrimaryUser),
 		CreatedAt:       now,
-		UpdatedAt:       &now,
-		CreatedBy:       utils.ToPointer(constants.System),
-		UpdatedBy:       utils.ToPointer(constants.System),
-	}
-
-	if len(dto.CustomerType) > 0 {
-		customerType := strings.Join(dto.CustomerType, ",")
-		entity.CustomerType = &customerType
+		UpdatedAt:       now,
+		CreatedBy:       constants.System,
+		UpdatedBy:       constants.System,
 	}
 
 	if dto.STNKExpiryDate > 0 {

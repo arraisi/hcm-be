@@ -10,6 +10,9 @@ func (c *Client) Confirm(ctx context.Context, body any) error {
 	header := map[string]string{}
 	token := c.cfg.Http.ApimDIDXApi.APIKey
 
+	p, _ := json.Marshal(body)
+	fmt.Println(string(p))
+
 	result, err := c.httpUtil.Post(ctx, c.cfg.Http.ApimDIDXApi.BaseUrl, body, token, header)
 	if err != nil {
 		return err

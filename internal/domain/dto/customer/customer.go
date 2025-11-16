@@ -25,7 +25,7 @@ func NewOneAccountRequest(customer domain.Customer) OneAccountRequest {
 		OneAccountID: customer.OneAccountID,
 		FirstName:    customer.FirstName,
 		LastName:     customer.LastName,
-		Gender:       *customer.Gender,
+		Gender:       utils.ToValue(customer.Gender),
 		PhoneNumber:  customer.PhoneNumber,
 		Email:        customer.Email,
 	}
@@ -92,7 +92,7 @@ func (be *OneAccountRequest) ToDomain() domain.Customer {
 		LastName:     be.LastName,
 		Email:        be.Email,
 		PhoneNumber:  be.PhoneNumber,
-		Gender:       &be.Gender,
+		Gender:       utils.ToPointer(be.Gender),
 		CreatedAt:    time.Now(),
 		CreatedBy:    constants.System,
 		UpdatedAt:    time.Now(),

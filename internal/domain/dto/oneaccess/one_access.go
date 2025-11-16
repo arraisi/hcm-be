@@ -1,10 +1,11 @@
 package oneaccess
 
 import (
+	"time"
+
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/utils"
-	"time"
 )
 
 type Request struct {
@@ -53,7 +54,7 @@ func (oa *OneAccount) ToCustomerModel() (domain.Customer, error) {
 		HasjratID:            "", // not present in payload
 		FirstName:            oa.FirstName,
 		LastName:             oa.LastName,
-		Gender:               &oa.Gender,
+		Gender:               utils.ToPointer(oa.Gender),
 		PhoneNumber:          oa.PhoneNumber,
 		Email:                oa.Email,
 		IsNew:                true,  // business rule guess: first time we see this event
