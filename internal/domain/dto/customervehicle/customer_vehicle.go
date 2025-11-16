@@ -53,7 +53,7 @@ func NewCustomerVehicleRequest(domain domain.CustomerVehicle) CustomerVehicleReq
 		Variant:         domain.Variant,
 		Color:           domain.Color,
 		PoliceNumber:    domain.PoliceNumber,
-		ActualMileage:   domain.ActualMileage,
+		ActualMileage:   *domain.ActualMileage,
 	}
 }
 
@@ -68,7 +68,7 @@ func (req CustomerVehicleRequest) ToDomain(customerID, oneAccountID string) doma
 		Variant:         req.Variant,
 		Color:           req.Color,
 		PoliceNumber:    req.PoliceNumber,
-		ActualMileage:   req.ActualMileage,
+		ActualMileage:   &req.ActualMileage,
 		CreatedBy:       constants.System,
 		UpdatedBy:       constants.System,
 	}

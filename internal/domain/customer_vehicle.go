@@ -15,7 +15,7 @@ type CustomerVehicle struct {
 	Variant                string     `db:"c_variant"`
 	Color                  string     `db:"n_color"`
 	PoliceNumber           string     `db:"c_police_number"`
-	ActualMileage          int32      `db:"v_actual_mileage"`
+	ActualMileage          *int32     `db:"v_actual_mileage"`
 	VehicleCategory        *string    `db:"c_vehicle_category"`
 	StnkNumber             *string    `db:"c_stnk_number"`
 	StnkName               *string    `db:"n_stnk_name"`
@@ -126,7 +126,7 @@ func (cv *CustomerVehicle) ToCreateMap() ([]string, []interface{}) {
 		columns = append(columns, "n_color")
 		values = append(values, cv.Color)
 	}
-	if cv.ActualMileage != 0 {
+	if cv.ActualMileage != nil {
 		columns = append(columns, "v_actual_mileage")
 		values = append(values, cv.ActualMileage)
 	}
@@ -232,7 +232,7 @@ func (cv *CustomerVehicle) ToUpdateMap() map[string]interface{} {
 	if cv.Color != "" {
 		updateMap["n_color"] = cv.Color
 	}
-	if cv.ActualMileage != 0 {
+	if cv.ActualMileage != nil {
 		updateMap["v_actual_mileage"] = cv.ActualMileage
 	}
 	if cv.VehicleCategory != nil {

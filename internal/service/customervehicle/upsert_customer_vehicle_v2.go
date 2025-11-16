@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/utils"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
-	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/jmoiron/sqlx"
 )
 

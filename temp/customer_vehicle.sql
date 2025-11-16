@@ -2,7 +2,7 @@ CREATE TABLE dbo.tm_customer_vehicle
 (
     i_id                        VARCHAR(36) NOT NULL,
     i_customer_id               VARCHAR(36) NOT NULL,
-    i_one_account_id            VARCHAR(36) NULL,
+    i_one_account_id            VARCHAR(36) NOT NULL,
     c_vin                       VARCHAR(17) NULL,
     c_police_number             VARCHAR(16) NULL,
     c_katashiki_suffix          VARCHAR(64) NULL,

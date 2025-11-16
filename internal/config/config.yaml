@@ -42,3 +42,6 @@ http:
     apiKey: ''
     timeout: 10s
     retryCount: 3
+condition:
+  outletIDs:
+    - ALL

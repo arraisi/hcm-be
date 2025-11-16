@@ -51,6 +51,7 @@ type Config struct {
 	Webhook       Webhook       `yaml:"webhook"`
 	FeatureFlag   FeatureFlag   `yaml:"featureFlag"`
 	Http          HttpConfig    `yaml:"http"`
+	Condition     Condition     `yaml:"condition"`
 }
 
 type HttpConfig struct {
@@ -63,4 +64,8 @@ type HttpClientConfig struct {
 	APIKey     string        `yaml:"apiKey"`
 	Timeout    time.Duration `yaml:"timeout"`
 	RetryCount int           `yaml:"retryCount"`
+}
+
+type Condition struct {
+	OutletIDs []string `yaml:"outletIDs"`
 }
