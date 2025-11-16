@@ -28,7 +28,7 @@ services:
       - '8080:8080'
     environment:
       - NODE_ENV=production
-      - REDIS_HOST=redis:6380 
+      - REDIS_HOST=redis:6379 
     networks:
       - hcm-network
     depends_on:
