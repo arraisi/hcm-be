@@ -2,7 +2,7 @@ services:
   # Redis Service
   redis:
     image: redis:7-alpine
-    #container_name: hcm-redis
+    container_name: hcm-redis
     ports:
       - '6379:6379'
     networks:
@@ -21,14 +21,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    #container_name: hcm-app
+    container_name: hcm-app
     # Configuration is now loaded from config.yaml inside the container
     # No environment variables needed as the app uses internal/config/config.yaml
     ports:
       - '8080:8080'
-    environment:
-      - NODE_ENV=production
-      - REDIS_HOST=redis:6379 
     networks:
       - hcm-network
     depends_on:
@@ -41,8 +38,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-
 volumes:
   redis-data:
     driver: local
