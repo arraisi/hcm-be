@@ -69,7 +69,6 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 
 		api.Route("/customers", func(customers chi.Router) {
 			customers.Get("/", handler.CustomerHandler.GetCustomers)
-			customers.Post("/inquiry", handler.CustomerHandler.InquiryCustomer)
 		})
 
 		api.Route("/webhooks", func(webhooks chi.Router) {
@@ -90,6 +89,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Post("/toyota-id", handler.ToyotaIDHandler.CreateToyotaID)
 
 			webhooks.Post("/customer-reminder", handler.CustomerReminderHandler.CreateCustomerReminder)
+
+			webhooks.Post("/customer-inquiry", handler.CustomerHandler.InquiryCustomer)
 		})
 	})
 
