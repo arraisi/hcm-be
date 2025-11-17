@@ -101,3 +101,18 @@ func (mr *MockServiceMockRecorder) GetCustomers(ctx, req interface{}) *gomock.Ca
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCustomers", reflect.TypeOf((*MockService)(nil).GetCustomers), ctx, req)
 }
+
+// InquiryCustomer mocks base method.
+func (m *MockService) InquiryCustomer(ctx context.Context, req customer.CustomerInquiryRequest) (domain.Customer, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InquiryCustomer", ctx, req)
+	ret0, _ := ret[0].(domain.Customer)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InquiryCustomer indicates an expected call of InquiryCustomer.
+func (mr *MockServiceMockRecorder) InquiryCustomer(ctx, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InquiryCustomer", reflect.TypeOf((*MockService)(nil).InquiryCustomer), ctx, req)
+}
