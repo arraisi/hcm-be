@@ -42,6 +42,11 @@ http:
     apiKey: ''
     timeout: 10s
     retryCount: 3
+  dmsApi:
+    baseURL: 'http://192.168.100.121:7640/api/'
+    apiKey: ''
+    timeout: 10s
+    retryCount: 3
 asynq:
   redisAddr: 'localhost:6379' # use 'localhost:6379' for local development, 'redis:6379' for Docker
   redisDB: 0

@@ -44,16 +44,17 @@ func New(cfg config.AsynqConfig, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
 				cfg.Queue: 1,
 			},
 			// Custom retry delay function: 1m, 5m, 10m
+			// n is the number of times the task has been retried (0-indexed for next retry)
 			RetryDelayFunc: func(n int, err error, t *asynq.Task) time.Duration {
 				switch n {
+				case 0:
+					return time.Minute // 1st retry after 1 minute
 				case 1:
-					return time.Minute
+					return 5 * time.Minute // 2nd retry after 5 minutes
 				case 2:
-					return 5 * time.Minute
-				case 3:
-					return 10 * time.Minute
+					return 10 * time.Minute // 3rd retry after 10 minutes
 				default:
-					return 0
+					return 10 * time.Minute
 				}
 			},
 			ErrorHandler: asynq.ErrorHandlerFunc(func(ctx context.Context, task *asynq.Task, err error) {
