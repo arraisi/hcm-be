@@ -1,4 +1,4 @@
-package didx
+package dms
 
 import (
 	"context"
@@ -6,14 +6,16 @@ import (
 	"fmt"
 )
 
-func (c *client) Confirm(ctx context.Context, body any) error {
+func (c *client) TestDriveRequest(ctx context.Context, body any) error {
 	header := map[string]string{}
-	token := c.cfg.Http.ApimDIDXApi.APIKey
+	token := c.cfg.Http.DMSApi.APIKey
 
 	p, _ := json.Marshal(body)
 	fmt.Println(string(p))
 
-	result, err := c.httpUtil.Post(ctx, c.cfg.Http.ApimDIDXApi.BaseUrl, body, token, header)
+	url := fmt.Sprintf("%s/testdrive/add", c.cfg.Http.DMSApi.BaseUrl)
+
+	result, err := c.httpUtil.Post(ctx, url, body, token, header)
 	if err != nil {
 		return err
 	}

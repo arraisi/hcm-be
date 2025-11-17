@@ -8,20 +8,30 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/external/didx"
+	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/arraisi/hcm-be/internal/queue"
 	"github.com/hibiken/asynq"
 )
 
+type DIDXSvc interface {
+	Confirm(ctx context.Context, body any) error
+	ConfirmTestDrive(ctx context.Context, request testdrive.TestDriveEvent) error
+}
+
+type DMSSvc interface {
+	TestDriveRequest(ctx context.Context, body any) error
+}
+
 // Worker handles Asynq task processing
 type Worker struct {
-	srv        *asynq.Server
-	mux        *asynq.ServeMux
-	didxClient didx.ClientInterface
+	srv     *asynq.Server
+	mux     *asynq.ServeMux
+	didxSvc DIDXSvc
+	dmsSvc  DMSSvc
 }
 
 // New creates a new Asynq worker instance
-func New(cfg config.AsynqConfig, didxClient didx.ClientInterface) *Worker {
+func New(cfg config.AsynqConfig, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{
 			Addr:     cfg.RedisAddr,
@@ -59,13 +69,15 @@ func New(cfg config.AsynqConfig, didxClient didx.ClientInterface) *Worker {
 	mux := asynq.NewServeMux()
 
 	w := &Worker{
-		srv:        srv,
-		mux:        mux,
-		didxClient: didxClient,
+		srv:     srv,
+		mux:     mux,
+		didxSvc: didxSvc,
+		dmsSvc:  dmsSvc,
 	}
 
 	// Register task handlers
 	mux.HandleFunc(queue.TaskTypeDIDXConfirm, w.handleDIDXConfirm)
+	mux.HandleFunc(queue.TaskTypeDMSTestDriveRequest, w.handleDMSTestDriveRequest)
 
 	return w
 }
@@ -100,7 +112,7 @@ func (w *Worker) handleDIDXConfirm(ctx context.Context, t *asynq.Task) error {
 	)
 
 	// Call the DIDX external API
-	err := w.didxClient.Confirm(ctx, payload.ServiceBookingEvent)
+	err := w.didxSvc.Confirm(ctx, payload.ServiceBookingEvent)
 	if err != nil {
 		// Log failure and return error to trigger retry
 		log.Printf("[ERROR] DIDX Confirm failed (attempt %d) for ServiceBookingID: %s - Error: %v",
@@ -115,6 +127,44 @@ func (w *Worker) handleDIDXConfirm(ctx context.Context, t *asynq.Task) error {
 	log.Printf("[SUCCESS] DIDX Confirm succeeded for ServiceBookingID: %s, EventID: %s",
 		payload.ServiceBookingEvent.Data.ServiceBookingRequest.BookingId,
 		payload.ServiceBookingEvent.EventID,
+	)
+
+	return nil
+}
+
+// handleDMSTestDriveRequest processes DMS test drive request tasks
+func (w *Worker) handleDMSTestDriveRequest(ctx context.Context, t *asynq.Task) error {
+	var payload queue.DMSTestDriveRequestPayload
+	if err := json.Unmarshal(t.Payload(), &payload); err != nil {
+		log.Printf("[ERROR] Failed to unmarshal DMSTestDriveRequestPayload: %v", err)
+		// Return SkipRetry for unmarshal errors (permanent failure)
+		return fmt.Errorf("unmarshal error (will not retry): %w", asynq.SkipRetry)
+	}
+
+	// Log task attempt
+	retried, _ := asynq.GetRetryCount(ctx)
+	log.Printf("[INFO] Processing DMS TestDriveRequest task (attempt %d) for TestDriveID: %s, EventID: %s",
+		retried+1,
+		payload.TestDriveEvent.Data.TestDrive.TestDriveID,
+		payload.TestDriveEvent.EventID,
+	)
+
+	// Call the DMS external API
+	err := w.dmsSvc.TestDriveRequest(ctx, payload.TestDriveEvent)
+	if err != nil {
+		// Log failure and return error to trigger retry
+		log.Printf("[ERROR] DMS TestDriveRequest failed (attempt %d) for TestDriveID: %s - Error: %v",
+			retried+1,
+			payload.TestDriveEvent.Data.TestDrive.TestDriveID,
+			err,
+		)
+		return err
+	}
+
+	// Log success
+	log.Printf("[SUCCESS] DMS TestDriveRequest succeeded for TestDriveID: %s, EventID: %s",
+		payload.TestDriveEvent.Data.TestDrive.TestDriveID,
+		payload.TestDriveEvent.EventID,
 	)
 
 	return nil

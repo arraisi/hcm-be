@@ -8,7 +8,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 )
 
-func (c *Client) ConfirmTestDrive(ctx context.Context, request testdrive.TestDriveEvent) error {
+func (c *client) ConfirmTestDrive(ctx context.Context, request testdrive.TestDriveEvent) error {
 	header := map[string]string{}
 	token := c.cfg.Http.ApimDIDXApi.APIKey
 

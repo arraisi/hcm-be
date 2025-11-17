@@ -5,6 +5,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/external/didx"
+	"github.com/arraisi/hcm-be/internal/external/dms"
 	"github.com/arraisi/hcm-be/internal/external/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
@@ -76,9 +77,15 @@ func Run(cfg *config.Config) error {
 	})
 	apimDIDXApiClient := didx.New(cfg, apimDIDXApiHttpUtil)
 
+	DMSApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.DMSApi.Timeout,
+		Retries: cfg.Http.DMSApi.RetryCount,
+	})
+	dmsApiClient := dms.New(cfg, DMSApiHttpUtil)
+
 	// init Asynq client and worker
 	queueClient := asynqclient.New(cfg.Asynq)
-	queueWorker := asynqworker.New(cfg.Asynq, apimDIDXApiClient)
+	queueWorker := asynqworker.New(cfg.Asynq, apimDIDXApiClient, dmsApiClient)
 	queueInspector := inspector.New(cfg.Asynq)
 
 	// Start Asynq worker in a goroutine (local development only)
@@ -115,6 +122,7 @@ func Run(cfg *config.Config) error {
 		CustomerSvc:     customerSvc,
 		EmployeeRepo:    employeeRepo,
 		ApimDIDXSvc:     apimDIDXApiClient,
+		QueueClient:     queueClient,
 	})
 	idempotencyStore := idempotencyService.NewInMemoryIdempotencyStore(24 * time.Hour) // 24 hour TTL
 	customerVehicleSvc := customervehicleService.New(cfg, customervehicleService.ServiceContainer{

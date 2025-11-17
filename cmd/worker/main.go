@@ -8,6 +8,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/external/didx"
+	"github.com/arraisi/hcm-be/internal/external/dms"
 	"github.com/arraisi/hcm-be/internal/platform/httpclient"
 	"github.com/arraisi/hcm-be/internal/queue/asynqworker"
 	"github.com/arraisi/hcm-be/pkg/utils"
@@ -29,8 +30,14 @@ func main() {
 	})
 	apimDIDXApiClient := didx.New(cfg, apimDIDXApiHttpUtil)
 
+	DMSApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.DMSApi.Timeout,
+		Retries: cfg.Http.DMSApi.RetryCount,
+	})
+	dmsApiClient := dms.New(cfg, DMSApiHttpUtil)
+
 	// Initialize Asynq worker
-	worker := asynqworker.New(cfg.Asynq, apimDIDXApiClient)
+	worker := asynqworker.New(cfg.Asynq, apimDIDXApiClient, dmsApiClient)
 
 	// Setup graceful shutdown
 	sigChan := make(chan os.Signal, 1)

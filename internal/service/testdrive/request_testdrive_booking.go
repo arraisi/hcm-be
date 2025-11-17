@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
+	"github.com/arraisi/hcm-be/internal/queue"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	errorx "github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/utils"
@@ -80,7 +82,19 @@ func (s *service) RequestTestDriveBooking(ctx context.Context, request testdrive
 		return err
 	}
 
-	return s.transactionRepo.CommitTransaction(tx)
+	err = s.transactionRepo.CommitTransaction(tx)
+	if err != nil {
+		return err
+	}
+
+	err = s.queueClient.EnqueueDMSTestDriveRequest(context.Background(), queue.DMSTestDriveRequestPayload{
+		TestDriveEvent: request,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to enqueue DMS test drive request: %w", err)
+	}
+
+	return nil
 }
 
 // upsertLeads checks if a lead exists by LeadsID. If found, it updates the lead; if not found, it creates a new lead.

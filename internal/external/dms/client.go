@@ -1,4 +1,4 @@
-package didx
+package dms
 
 import (
 	"github.com/arraisi/hcm-be/internal/config"

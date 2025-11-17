@@ -50,6 +50,10 @@ type Repository interface {
 	GetTestDrives(ctx context.Context, req testdrive.GetTestDriveRequest) ([]domain.TestDrive, error)
 }
 
+type QueueClient interface {
+	EnqueueDMSTestDriveRequest(ctx context.Context, payload interface{}) error
+}
+
 type ServiceContainer struct {
 	TransactionRepo transactionRepository
 	Repo            Repository
@@ -58,6 +62,7 @@ type ServiceContainer struct {
 	CustomerSvc     CustomerService
 	EmployeeRepo    EmployeeRepository
 	ApimDIDXSvc     ApimDIDXService
+	QueueClient     QueueClient
 }
 
 type service struct {
@@ -69,6 +74,7 @@ type service struct {
 	customerSvc     CustomerService
 	employeeRepo    EmployeeRepository
 	apimDIDXSvc     ApimDIDXService
+	queueClient     QueueClient
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -81,5 +87,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		customerSvc:     container.CustomerSvc,
 		employeeRepo:    container.EmployeeRepo,
 		apimDIDXSvc:     container.ApimDIDXSvc,
+		queueClient:     container.QueueClient,
 	}
 }
