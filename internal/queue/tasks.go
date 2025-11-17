@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
@@ -19,7 +20,8 @@ func NewDIDXConfirmTask(payload DIDXConfirmPayload) (*asynq.Task, error) {
 	if err != nil {
 		return nil, err
 	}
-	return asynq.NewTask(TaskTypeDIDXConfirm, b), nil
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDIDXConfirm, payload.ServiceBookingEvent.EventID)
+	return asynq.NewTask(taskKey, b), nil
 }
 
 // DMSTestDriveRequestPayload represents the payload for DMS test drive request task
@@ -33,5 +35,6 @@ func NewDMSTestDriveRequestTask(payload DMSTestDriveRequestPayload) (*asynq.Task
 	if err != nil {
 		return nil, err
 	}
-	return asynq.NewTask(TaskTypeDMSTestDriveRequest, b), nil
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSTestDriveRequest, payload.TestDriveEvent.EventID)
+	return asynq.NewTask(taskKey, b), nil
 }
