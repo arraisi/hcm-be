@@ -108,6 +108,11 @@ var (
 		{Error: ErrServiceBookingCustomerHasActive, Code: http.StatusConflict},
 	}
 
+	ErrCustomerNotFound = errors.New("customer is not found")
+	ErrListCustomer     = ErrList{
+		{Error: ErrCustomerNotFound, Code: http.StatusNotFound},
+	}
+
 	// Service errors
 	ErrDatabaseConnection = errors.New("database connection failed")
 	ErrExternalService    = errors.New("external service error")

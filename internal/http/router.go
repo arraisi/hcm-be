@@ -69,8 +69,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			users.Delete("/{id}", handler.UserHandler.Delete)
 		})
 
-		api.Route("/customers", func(users chi.Router) {
-			users.Get("/", handler.CustomerHandler.GetCustomers)
+		api.Route("/customers", func(customers chi.Router) {
+			customers.Get("/", handler.CustomerHandler.GetCustomers)
 		})
 
 		api.Route("/webhooks", func(webhooks chi.Router) {
@@ -91,6 +91,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Post("/toyota-id", handler.ToyotaIDHandler.CreateToyotaID)
 
 			webhooks.Post("/customer-reminder", handler.CustomerReminderHandler.CreateCustomerReminder)
+
+			webhooks.Get("/customer-inquiry", handler.CustomerHandler.InquiryCustomer)
 		})
 
 		// Queue monitoring endpoints
