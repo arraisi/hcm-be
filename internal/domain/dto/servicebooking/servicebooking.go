@@ -74,6 +74,7 @@ type ServiceBookingRequest struct {
 // ToServiceBookingModel converts the DataRequest to the domain.TestDrive model
 func (sb *ServiceBookingEvent) ToServiceBookingModel(customerID, customerVehicleID string) domain.ServiceBooking {
 	serviceBooking := domain.ServiceBooking{
+		BookingType:                  sb.Process,
 		EventID:                      sb.EventID,
 		CustomerID:                   customerID,
 		CustomerVehicleID:            customerVehicleID,

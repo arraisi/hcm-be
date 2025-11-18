@@ -45,6 +45,7 @@ type ServiceBooking struct {
 	EventID                      string    `db:"i_event_id"`
 	AdditionalVehicleProblem     string    `db:"e_additional_vehicle_problem"`
 	InsuranceClaim               string    `db:"c_insurance_claim"`
+	BookingType                  string    `db:"c_booking_type"`
 }
 
 // TableName returns the database table name for the ServiceBooking model
@@ -93,6 +94,7 @@ func (sb *ServiceBooking) Columns() []string {
 		"c_created_by",
 		"d_updated_at",
 		"c_updated_by",
+		"c_booking_type",
 	}
 }
 
@@ -137,6 +139,7 @@ func (sb *ServiceBooking) SelectColumns() []string {
 		"c_created_by",
 		"d_updated_at",
 		"c_updated_by",
+		"c_booking_type",
 	}
 }
 
@@ -270,6 +273,10 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 	if sb.OtherCancellationReason != "" {
 		columns = append(columns, "e_other_cancellation_reason")
 		values = append(values, sb.OtherCancellationReason)
+	}
+	if sb.BookingType != "" {
+		columns = append(columns, "c_booking_type")
+		values = append(values, sb.BookingType)
 	}
 	columns = append(columns, "b_service_pricing_call_flag")
 	values = append(values, sb.ServicePricingCallFlag)

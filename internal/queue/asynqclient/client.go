@@ -42,7 +42,7 @@ func (c *client) EnqueueDIDXConfirm(ctx context.Context, payload interface{}) er
 	}
 
 	// Retry 3 times with custom backoff: 1m, 5m, 10m
-	_, err = c.asynqClient.EnqueueContext(
+	taskInfo, err := c.asynqClient.EnqueueContext(
 		ctx,
 		task,
 		asynq.Queue(c.cfg.Queue),
@@ -51,6 +51,9 @@ func (c *client) EnqueueDIDXConfirm(ctx context.Context, payload interface{}) er
 		asynq.Timeout(30*time.Second), // Task timeout
 		asynq.Unique(5*time.Minute),   // Prevent duplicate tasks within 5 minutes
 	)
+
+	fmt.Printf("EnqueueDIDXConfirmTask taskInfo: %+v\n", taskInfo)
+
 	return err
 }
 
@@ -68,7 +71,7 @@ func (c *client) EnqueueDMSTestDriveRequest(ctx context.Context, payload interfa
 	}
 
 	// Retry 3 times with custom backoff: 1m, 5m, 10m
-	_, err = c.asynqClient.EnqueueContext(
+	taskInfo, err := c.asynqClient.EnqueueContext(
 		ctx,
 		task,
 		asynq.Queue(c.cfg.Queue),
@@ -77,6 +80,9 @@ func (c *client) EnqueueDMSTestDriveRequest(ctx context.Context, payload interfa
 		asynq.Timeout(30*time.Second), // Task timeout
 		asynq.Unique(5*time.Minute),   // Prevent duplicate tasks within 5 minutes
 	)
+
+	fmt.Printf("EnqueueDMSTestDriveRequest taskInfo: %+v\n", taskInfo)
+
 	return err
 }
 
