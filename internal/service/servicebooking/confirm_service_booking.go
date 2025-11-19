@@ -82,7 +82,7 @@ func (s *service) ConfirmServiceBooking(ctx context.Context, request servicebook
 	// Enqueue the task to Asynq instead of calling DIDX directly
 	// Use context.Background() to ensure the enqueue operation completes
 	// even if the parent request context is cancelled
-	payload := queue.DIDXConfirmPayload{
+	payload := queue.DIDXServiceBookingConfirmPayload{
 		ServiceBookingEvent: sbEventConfirmRequest,
 	}
 

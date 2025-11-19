@@ -9,13 +9,13 @@ import (
 	"github.com/hibiken/asynq"
 )
 
-// DIDXConfirmPayload represents the payload for DIDX confirm task
-type DIDXConfirmPayload struct {
+// DIDXServiceBookingConfirmPayload represents the payload for DIDX confirm task
+type DIDXServiceBookingConfirmPayload struct {
 	ServiceBookingEvent servicebooking.ServiceBookingEvent `json:"service_booking_event"`
 }
 
-// NewDIDXConfirmTask creates a new Asynq task for DIDX confirm
-func NewDIDXConfirmTask(payload DIDXConfirmPayload) (*asynq.Task, error) {
+// NewDIDXServiceBookingConfirmTask creates a new Asynq task for DIDX confirm
+func NewDIDXServiceBookingConfirmTask(payload DIDXServiceBookingConfirmPayload) (*asynq.Task, error) {
 	b, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err

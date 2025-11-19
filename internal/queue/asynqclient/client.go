@@ -30,13 +30,13 @@ func New(cfg config.AsynqConfig) *client {
 
 // EnqueueDIDXConfirm enqueues a DIDX confirm task with custom retry configuration
 func (c *client) EnqueueDIDXConfirm(ctx context.Context, payload interface{}) error {
-	// Type assert to DIDXConfirmPayload
-	body, ok := payload.(queue.DIDXConfirmPayload)
+	// Type assert to DIDXServiceBookingConfirmPayload
+	body, ok := payload.(queue.DIDXServiceBookingConfirmPayload)
 	if !ok {
-		return fmt.Errorf("invalid payload type: expected queue.DIDXConfirmPayload")
+		return fmt.Errorf("invalid payload type: expected queue.DIDXServiceBookingConfirmPayload")
 	}
 
-	task, err := queue.NewDIDXConfirmTask(body)
+	task, err := queue.NewDIDXServiceBookingConfirmTask(body)
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (c *client) EnqueueDIDXConfirm(ctx context.Context, payload interface{}) er
 
 // EnqueueDMSTestDriveRequest enqueues a DMS test drive request task with custom retry configuration
 func (c *client) EnqueueDMSTestDriveRequest(ctx context.Context, payload interface{}) error {
-	// Type assert to DIDXConfirmPayload
+	// Type assert to DIDXServiceBookingConfirmPayload
 	body, ok := payload.(queue.DMSTestDriveRequestPayload)
 	if !ok {
 		return fmt.Errorf("invalid payload type: expected queue.DMSTestDriveRequestPayload")
