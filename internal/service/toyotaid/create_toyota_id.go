@@ -2,6 +2,8 @@ package toyotaid
 
 import (
 	"context"
+	"fmt"
+	"github.com/arraisi/hcm-be/internal/queue"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/toyotaid"
 )
@@ -34,5 +36,17 @@ func (s *service) CreateToyotaID(ctx context.Context, request toyotaid.Request) 
 		return err
 	}
 
-	return s.transactionRepo.CommitTransaction(tx)
+	err = s.transactionRepo.CommitTransaction(tx)
+	if err != nil {
+		return err
+	}
+
+	err = s.queueClient.EnqueueDMSCreateToyotaID(context.Background(), queue.DMSCreateToyotaIDPayload{
+		ToyotaIDRequest: request,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to enqueue DMS create toyota id: %w", err)
+	}
+
+	return nil
 }

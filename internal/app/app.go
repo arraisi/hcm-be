@@ -148,6 +148,7 @@ func Run(cfg *config.Config) error {
 		TransactionRepo:    txRepo,
 		CustomerSvc:        customerSvc,
 		CustomerVehicleSvc: customerVehicleSvc,
+		QueueClient:        queueClient,
 	})
 	customerReminderSvc := customerreminderService.New(cfg, customerreminderService.ServiceContainer{
 		TransactionRepo:    txRepo,
