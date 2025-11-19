@@ -19,9 +19,12 @@ func (w *Worker) handleServiceBookingConfirm(ctx context.Context, t *asynq.Task)
 		return fmt.Errorf("unmarshal error (will not retry): %w", asynq.SkipRetry)
 	}
 
+	taskID, _ := asynq.GetTaskID(ctx)
+
 	// Log task attempt
 	retried, _ := asynq.GetRetryCount(ctx)
-	log.Printf("[INFO] Processing DIDX Confirm task (attempt %d) for ServiceBookingID: %s, EventID: %s",
+	log.Printf("[INFO] TaskID: %s Processing DIDX Confirm task (attempt %d) for ServiceBookingID: %s, EventID: %s",
+		taskID,
 		retried+1,
 		payload.ServiceBookingEvent.Data.ServiceBookingRequest.BookingId,
 		payload.ServiceBookingEvent.EventID,
@@ -31,7 +34,8 @@ func (w *Worker) handleServiceBookingConfirm(ctx context.Context, t *asynq.Task)
 	err := w.didxSvc.Confirm(ctx, payload.ServiceBookingEvent)
 	if err != nil {
 		// Log failure and return error to trigger retry
-		log.Printf("[ERROR] DIDX Confirm failed (attempt %d) for ServiceBookingID: %s - Error: %v",
+		log.Printf("[ERROR] TaskID: %s DIDX Confirm failed (attempt %d) for ServiceBookingID: %s - Error: %v",
+			taskID,
 			retried+1,
 			payload.ServiceBookingEvent.Data.ServiceBookingRequest.BookingId,
 			err,
@@ -40,7 +44,8 @@ func (w *Worker) handleServiceBookingConfirm(ctx context.Context, t *asynq.Task)
 	}
 
 	// Log success
-	log.Printf("[SUCCESS] DIDX Confirm succeeded for ServiceBookingID: %s, EventID: %s",
+	log.Printf("[SUCCESS] TaskID: %s DIDX Confirm succeeded for ServiceBookingID: %s, EventID: %s",
+		taskID,
 		payload.ServiceBookingEvent.Data.ServiceBookingRequest.BookingId,
 		payload.ServiceBookingEvent.EventID,
 	)

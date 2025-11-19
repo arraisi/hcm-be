@@ -19,9 +19,12 @@ func (w *Worker) handleDMSTestDriveRequest(ctx context.Context, t *asynq.Task) e
 		return fmt.Errorf("unmarshal error (will not retry): %w", asynq.SkipRetry)
 	}
 
+	taskID, _ := asynq.GetTaskID(ctx)
+
 	// Log task attempt
 	retried, _ := asynq.GetRetryCount(ctx)
-	log.Printf("[INFO] Processing DMS TestDriveRequest task (attempt %d) for TestDriveID: %s, EventID: %s",
+	log.Printf("[INFO] TaskID: %s Processing DMS TestDriveRequest task (attempt %d) for TestDriveID: %s, EventID: %s",
+		taskID,
 		retried+1,
 		payload.TestDriveEvent.Data.TestDrive.TestDriveID,
 		payload.TestDriveEvent.EventID,
@@ -31,7 +34,8 @@ func (w *Worker) handleDMSTestDriveRequest(ctx context.Context, t *asynq.Task) e
 	err := w.dmsSvc.TestDriveRequest(ctx, payload.TestDriveEvent)
 	if err != nil {
 		// Log failure and return error to trigger retry
-		log.Printf("[ERROR] DMS TestDriveRequest failed (attempt %d) for TestDriveID: %s - Error: %v",
+		log.Printf("[ERROR] TaskID: %s DMS TestDriveRequest failed (attempt %d) for TestDriveID: %s - Error: %v",
+			taskID,
 			retried+1,
 			payload.TestDriveEvent.Data.TestDrive.TestDriveID,
 			err,
@@ -40,7 +44,8 @@ func (w *Worker) handleDMSTestDriveRequest(ctx context.Context, t *asynq.Task) e
 	}
 
 	// Log success
-	log.Printf("[SUCCESS] DMS TestDriveRequest succeeded for TestDriveID: %s, EventID: %s",
+	log.Printf("[SUCCESS] TaskID: %s DMS TestDriveRequest succeeded for TestDriveID: %s, EventID: %s",
+		taskID,
 		payload.TestDriveEvent.Data.TestDrive.TestDriveID,
 		payload.TestDriveEvent.EventID,
 	)
