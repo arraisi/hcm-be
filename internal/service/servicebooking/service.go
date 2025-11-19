@@ -87,39 +87,46 @@ type QueueClient interface {
 	EnqueueDIDXConfirm(ctx context.Context, payload interface{}) error
 }
 
+type DMSAfterSalesClient interface {
+	InsertServiceBookingRequest(ctx context.Context, event servicebooking.ServiceBookingEvent) error
+}
+
 type ServiceContainer struct {
-	TransactionRepo    transactionRepository
-	Repo               Repository
-	CustomerRepo       CustomerRepository
-	CustomerSvc        CustomerService
-	CustomerVehicleSvc CustomerVehicleService
-	EmployeeRepo       EmployeeRepository
-	ApimDIDXSvc        ApimDIDXService
-	QueueClient        QueueClient
+	TransactionRepo     transactionRepository
+	Repo                Repository
+	CustomerRepo        CustomerRepository
+	CustomerSvc         CustomerService
+	CustomerVehicleSvc  CustomerVehicleService
+	EmployeeRepo        EmployeeRepository
+	ApimDIDXSvc         ApimDIDXService
+	QueueClient         QueueClient
+	DMSAfterSalesClient DMSAfterSalesClient
 }
 
 type service struct {
-	cfg                *config.Config
-	transactionRepo    transactionRepository
-	repo               Repository
-	customerRepo       CustomerRepository
-	customerSvc        CustomerService
-	customerVehicleSvc CustomerVehicleService
-	employeeRepo       EmployeeRepository
-	apimDIDXSvc        ApimDIDXService
-	queueClient        QueueClient
+	cfg                 *config.Config
+	transactionRepo     transactionRepository
+	repo                Repository
+	customerRepo        CustomerRepository
+	customerSvc         CustomerService
+	customerVehicleSvc  CustomerVehicleService
+	employeeRepo        EmployeeRepository
+	apimDIDXSvc         ApimDIDXService
+	queueClient         QueueClient
+	dmsAfterSalesClient DMSAfterSalesClient
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
 	return &service{
-		cfg:                cfg,
-		transactionRepo:    container.TransactionRepo,
-		repo:               container.Repo,
-		customerRepo:       container.CustomerRepo,
-		customerSvc:        container.CustomerSvc,
-		customerVehicleSvc: container.CustomerVehicleSvc,
-		employeeRepo:       container.EmployeeRepo,
-		apimDIDXSvc:        container.ApimDIDXSvc,
-		queueClient:        container.QueueClient,
+		cfg:                 cfg,
+		transactionRepo:     container.TransactionRepo,
+		repo:                container.Repo,
+		customerRepo:        container.CustomerRepo,
+		customerSvc:         container.CustomerSvc,
+		customerVehicleSvc:  container.CustomerVehicleSvc,
+		employeeRepo:        container.EmployeeRepo,
+		apimDIDXSvc:         container.ApimDIDXSvc,
+		queueClient:         container.QueueClient,
+		dmsAfterSalesClient: container.DMSAfterSalesClient,
 	}
 }

@@ -20,7 +20,13 @@ type Observability struct {
 	MetricsEnabled bool `yaml:"metricsEnabled"`
 	PprofEnabled   bool `yaml:"pprofEnabled"`
 }
+
 type Database struct {
+	HCM           DatabaseConfig `yaml:"hcm"`
+	DMSAfterSales DatabaseConfig `yaml:"dmsAfterSales"`
+}
+
+type DatabaseConfig struct {
 	Driver                string        `yaml:"driver"` // Supported: memory, postgres, sqlserver
 	DSN                   string        `yaml:"dsn"`    // Data Source Name - connection string for the database
 	MaxOpenConnections    int           `yaml:"maxOpenConnections"`
@@ -28,6 +34,7 @@ type Database struct {
 	MaxConnectionLifetime time.Duration `yaml:"maxConnectionLifetime"`
 	MaxConnectionIdleTime time.Duration `yaml:"maxConnectionIdleTime"`
 }
+
 type Webhook struct {
 	APIKey     string `yaml:"apiKey"`     // API key for webhook authentication
 	HMACSecret string `yaml:"hmacSecret"` // HMAC secret for signature verification
@@ -48,11 +55,12 @@ type Config struct {
 	Server        Server        `yaml:"server"`
 	Observability Observability `yaml:"observability"`
 	Database      Database      `yaml:"database"`
-	Webhook       Webhook       `yaml:"webhook"`
-	FeatureFlag   FeatureFlag   `yaml:"featureFlag"`
-	Http          HttpConfig    `yaml:"http"`
-	Asynq         AsynqConfig   `yaml:"asynq"`
-	Condition     Condition     `yaml:"condition"`
+	//OracleDatabase OracleDatabase `yaml:"oracleDatabase"`
+	Webhook     Webhook     `yaml:"webhook"`
+	FeatureFlag FeatureFlag `yaml:"featureFlag"`
+	Http        HttpConfig  `yaml:"http"`
+	Asynq       AsynqConfig `yaml:"asynq"`
+	Condition   Condition   `yaml:"condition"`
 }
 
 type HttpConfig struct {

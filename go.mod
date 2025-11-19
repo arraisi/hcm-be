@@ -14,6 +14,7 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/microsoft/go-mssqldb v1.9.3
 	github.com/prometheus/client_golang v1.23.2
+	github.com/sijms/go-ora/v2 v2.9.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
 	github.com/zhashkevych/go-sqlxmock v1.5.1

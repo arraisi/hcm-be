@@ -5,6 +5,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/external/didx"
+	"github.com/arraisi/hcm-be/internal/external/dmsaftersales"
 	"github.com/arraisi/hcm-be/internal/external/dmssales"
 	"github.com/arraisi/hcm-be/internal/external/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
@@ -42,27 +43,27 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/microsoft/go-mssqldb" // register driver
+	_ "github.com/sijms/go-ora/v2"      // register Oracle driver
 )
 
 // Run starts the application with the given configuration.
 func Run(cfg *config.Config) error {
 	// wire dependencies
-	db, err := sqlx.Open(cfg.Database.Driver, cfg.Database.DSN)
+	dbHcm, err := openDatabase(cfg.Database.HCM)
 	if err != nil {
 		return err
 	}
 	defer func() {
-		_ = db.Close()
+		_ = dbHcm.Close()
 	}()
 
-	// create webhook dependencies
-	//mqPublisher := mq.NewInMemoryPublisher()
-
-	// configure connection pool from config
-	db.SetMaxOpenConns(cfg.Database.MaxOpenConnections)
-	db.SetMaxIdleConns(cfg.Database.MaxIdleConnections)
-	db.SetConnMaxLifetime(cfg.Database.MaxConnectionLifetime)
-	db.SetConnMaxIdleTime(cfg.Database.MaxConnectionIdleTime)
+	dbDmsAfterSales, err := openDatabase(cfg.Database.DMSAfterSales)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = dbDmsAfterSales.Close()
+	}()
 
 	// init external clients
 	mockApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
@@ -83,6 +84,9 @@ func Run(cfg *config.Config) error {
 	})
 	dmsApiClient := dmssales.New(cfg, DMSApiHttpUtil)
 
+	// init DMS After Sales client with Oracle DB
+	dmsAfterSalesClient := dmsaftersales.New(cfg, dbDmsAfterSales)
+
 	// init Asynq client and worker
 	queueClient := asynqclient.New(cfg.Asynq)
 	queueWorker := asynqworker.New(cfg.Asynq, apimDIDXApiClient, dmsApiClient)
@@ -99,14 +103,14 @@ func Run(cfg *config.Config) error {
 	}
 
 	// init repositories
-	txRepo := transactionRepository.New(db)
-	customerRepo := customerRepository.New(cfg, db)
-	leadRepo := leadsRepository.New(cfg, db)
-	testDriveRepo := testdriveRepository.New(cfg, db)
-	serviceBookingRepo := servicebookingRepository.New(cfg, db)
-	customerVehicleRepo := customervehicleRepository.New(cfg, db)
-	employeeRepo := employeeRepository.New(cfg, db)
-	customerReminderRepo := customerreminderRepository.New(cfg, db)
+	txRepo := transactionRepository.New(dbHcm)
+	customerRepo := customerRepository.New(cfg, dbHcm)
+	leadRepo := leadsRepository.New(cfg, dbHcm)
+	testDriveRepo := testdriveRepository.New(cfg, dbHcm)
+	serviceBookingRepo := servicebookingRepository.New(cfg, dbHcm)
+	customerVehicleRepo := customervehicleRepository.New(cfg, dbHcm)
+	employeeRepo := employeeRepository.New(cfg, dbHcm)
+	customerReminderRepo := customerreminderRepository.New(cfg, dbHcm)
 
 	// init services
 	userSvc := userService.NewUserService(mockApiClient)
@@ -130,14 +134,15 @@ func Run(cfg *config.Config) error {
 		Repo:            customerVehicleRepo,
 	})
 	serviceBookingSvc := servicebookingService.New(cfg, servicebookingService.ServiceContainer{
-		TransactionRepo:    txRepo,
-		Repo:               serviceBookingRepo,
-		CustomerRepo:       customerRepo,
-		CustomerSvc:        customerSvc,
-		CustomerVehicleSvc: customerVehicleSvc,
-		EmployeeRepo:       employeeRepo,
-		ApimDIDXSvc:        apimDIDXApiClient,
-		QueueClient:        queueClient,
+		TransactionRepo:     txRepo,
+		Repo:                serviceBookingRepo,
+		CustomerRepo:        customerRepo,
+		CustomerSvc:         customerSvc,
+		CustomerVehicleSvc:  customerVehicleSvc,
+		EmployeeRepo:        employeeRepo,
+		ApimDIDXSvc:         apimDIDXApiClient,
+		QueueClient:         queueClient,
+		DMSAfterSalesClient: dmsAfterSalesClient,
 	})
 	oneAccessSvc := oneaccessService.New(cfg, oneaccessService.ServiceContainer{
 		TransactionRepo: txRepo,
@@ -178,4 +183,20 @@ func Run(cfg *config.Config) error {
 	})
 
 	return apphttp.NewServer(cfg, router)
+}
+
+// Add this new method outside of the Run function
+func openDatabase(cfg config.DatabaseConfig) (*sqlx.DB, error) {
+	db, err := sqlx.Open(cfg.Driver, cfg.DSN)
+	if err != nil {
+		return nil, err
+	}
+
+	// configure connection pool from config
+	db.SetMaxOpenConns(cfg.MaxOpenConnections)
+	db.SetMaxIdleConns(cfg.MaxIdleConnections)
+	db.SetConnMaxLifetime(cfg.MaxConnectionLifetime)
+	db.SetConnMaxIdleTime(cfg.MaxConnectionIdleTime)
+
+	return db, nil
 }

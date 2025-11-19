@@ -12,12 +12,20 @@ observability:
   metricsEnabled: true
   pprofEnabled: true
 database:
-  driver: sqlserver # memory|postgres|sqlserver
-  dsn: 'sqlserver://hcmfreshuser:iniP4ssword!!Sql@tabeldata.ip-dynamic.com:64123?database=devhcmrefreshment&encrypt=disable&trustServerCertificate=true'
-  maxOpenConnections: 25
-  maxIdleConnections: 25
-  maxConnectionLifetime: 5m
-  maxConnectionIdleTime: 5m
+  hcm:
+    driver: sqlserver # memory|postgres|sqlserver
+    dsn: 'sqlserver://hcmfreshuser:iniP4ssword!!Sql@tabeldata.ip-dynamic.com:64123?database=devhcmrefreshment&encrypt=disable&trustServerCertificate=true'
+    maxOpenConnections: 25
+    maxIdleConnections: 25
+    maxConnectionLifetime: 5m
+    maxConnectionIdleTime: 5m
+  dmsAfterSales:
+    driver: oracle # memory|postgres|sqlserver
+    dsn: 'oracle://dmshcm:dmshcm123@tabeldata.ip-dynamic.com:61521/DMSDB'
+    maxOpenConnections: 25
+    maxIdleConnections: 25
+    maxConnectionLifetime: 5m
+    maxConnectionIdleTime: 5m
 webhook:
   apiKey: 'your-webhook-api-key'
   hmacSecret: 'your-hmac-secret-key'

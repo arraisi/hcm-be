@@ -84,6 +84,8 @@ func (s *service) RequestServiceBooking(ctx context.Context, event servicebookin
 		return err
 	}
 
+	// TODO: call store procedure to sync to external dms after sales system
+
 	return nil
 }
 
