@@ -14,6 +14,118 @@ import (
 	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
+// ConfirmServiceBookingGR processes General Repair service booking confirmation from webhook event
+func (s *service) ConfirmServiceBookingGR(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
+	return s.confirmServiceBookingFromEvent(ctx, request)
+}
+
+// ConfirmServiceBookingBP processes Body and Paint service booking confirmation from webhook event
+func (s *service) ConfirmServiceBookingBP(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
+	return s.confirmServiceBookingFromEvent(ctx, request)
+}
+
+// confirmServiceBookingFromEvent contains the shared logic for confirming service bookings from webhook events
+// This method handles both GR (General Repair) and BP (Body and Paint) bookings as they share the same process
+func (s *service) confirmServiceBookingFromEvent(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
+	// Start transaction
+	tx, err := s.transactionRepo.BeginTransaction(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			_ = s.transactionRepo.RollbackTransaction(tx)
+		}
+	}()
+
+	// Upsert customer
+	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount)
+	if err != nil {
+		return err
+	}
+
+	// Upsert customer vehicle with one_account_ID
+	customerVehicleID, err := s.customerVehicleSvc.UpsertCustomerVehicle(ctx, tx, customerID, request.Data.OneAccount.OneAccountID, request.Data.CustomerVehicle)
+	if err != nil {
+		return err
+	}
+
+	// Get existing service booking
+	existingServiceBooking, err := s.repo.GetServiceBooking(ctx, servicebooking.GetServiceBooking{
+		ServiceBookingID: utils.ToPointer(request.Data.ServiceBookingRequest.BookingId),
+	})
+	if err != nil {
+		return err
+	}
+
+	// Convert to service booking model and update with new data
+	serviceBookingModel := request.ToServiceBookingModel(customerID, customerVehicleID)
+	serviceBookingModel.ID = existingServiceBooking.ID // Preserve existing ID
+	serviceBookingModel.ServiceBookingStatus = request.Data.ServiceBookingRequest.BookingStatus
+
+	// Update service booking in database
+	err = s.repo.UpdateServiceBooking(ctx, tx, serviceBookingModel)
+	if err != nil {
+		return err
+	}
+
+	serviceBookingID := existingServiceBooking.ID
+
+	// Update jobs using existing handler
+	err = s.handleServiceBookingJobs(ctx, tx, serviceBookingID, request)
+	if err != nil {
+		return err
+	}
+
+	// Update parts using existing handler
+	err = s.handleServiceBookingParts(ctx, tx, serviceBookingID, request)
+	if err != nil {
+		return err
+	}
+
+	// Update warranties using existing handler
+	err = s.handleServiceBookingWarranty(ctx, tx, serviceBookingID, request)
+	if err != nil {
+		return err
+	}
+
+	// Update recalls using existing handler
+	err = s.handleServiceBookingRecalls(ctx, tx, serviceBookingID, request)
+	if err != nil {
+		return err
+	}
+
+	// Update vehicle insurance using existing handler
+	err = s.handleServiceBookingVehicleInsurance(ctx, tx, serviceBookingID, request)
+	if err != nil {
+		return err
+	}
+
+	// Update damage images using existing handler
+	err = s.handleServiceBookingDamageImages(ctx, tx, serviceBookingID, request)
+	if err != nil {
+		return err
+	}
+
+	// Commit transaction
+	if err = s.transactionRepo.CommitTransaction(tx); err != nil {
+		return err
+	}
+
+	// Enqueue the task to Asynq for external API call
+	payload := queue.DIDXServiceBookingConfirmPayload{
+		ServiceBookingEvent: request,
+	}
+
+	err = s.queueClient.EnqueueDIDXConfirm(context.Background(), payload)
+	if err != nil {
+		return fmt.Errorf("failed to enqueue DIDX confirm task: %w", err)
+	}
+
+	return nil
+}
+
+// ConfirmServiceBooking deprecated
 func (s *service) ConfirmServiceBooking(ctx context.Context, request servicebooking.ConfirmServiceBookingRequest) error {
 	serviceBooking, err := s.repo.GetServiceBooking(ctx, servicebooking.GetServiceBooking{
 		ServiceBookingID: utils.ToPointer(request.ServiceBookingID),

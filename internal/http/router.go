@@ -83,7 +83,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Post("/test-drive/confirm", handler.TestDriveHandler.ConfirmTestDrive)
 			webhooks.Post("/test-drive", handler.TestDriveHandler.RequestTestDrive)
 
-			webhooks.Put("/service-booking/{service_booking_id}", handler.ServiceBookingHandler.ConfirmServiceBooking)
+			webhooks.Post("/service-booking/gr/confirm", handler.ServiceBookingHandler.ConfirmServiceBookingGR)
+			webhooks.Post("/service-booking/bp/confirm", handler.ServiceBookingHandler.ConfirmServiceBookingBP)
 			webhooks.Post("/service-booking", handler.ServiceBookingHandler.RequestServiceBooking)
 
 			webhooks.Post("/one-access", handler.OneAccessHandler.CreateOneAccess)
