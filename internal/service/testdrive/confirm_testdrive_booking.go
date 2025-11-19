@@ -12,6 +12,78 @@ import (
 	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
+// ConfirmTestDrive processes test drive confirmation from webhook event
+func (s *service) ConfirmTestDrive(ctx context.Context, request testdrive.TestDriveEvent) error {
+	// Start transaction
+	tx, err := s.transactionRepo.BeginTransaction(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			_ = s.transactionRepo.RollbackTransaction(tx)
+		}
+	}()
+
+	// Upsert customer
+	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount)
+	if err != nil {
+		return err
+	}
+
+	// Get existing test drive
+	existingTestDrive, err := s.repo.GetTestDrive(ctx, testdrive.GetTestDriveRequest{
+		TestDriveID: utils.ToPointer(request.Data.TestDrive.TestDriveID),
+	})
+	if err != nil {
+		return err
+	}
+
+	// Convert to test drive model and update with new data
+	testDriveModel := request.ToTestDriveModel(customerID)
+	testDriveModel.ID = existingTestDrive.ID // Preserve existing ID
+	testDriveModel.Status = request.Data.TestDrive.TestDriveStatus
+
+	// Update test drive in database
+	err = s.repo.UpdateTestDrive(ctx, tx, testDriveModel)
+	if err != nil {
+		return err
+	}
+
+	// Update leads
+	leadsModel := request.Data.Leads.ToDomain(customerID, existingTestDrive.TestDriveID)
+
+	// Get existing leads to preserve ID
+	existingLeads, err := s.leadRepo.GetLeads(ctx, leads.GetLeadsRequest{
+		LeadsID: utils.ToPointer(request.Data.Leads.LeadsID),
+	})
+	if err != nil {
+		return err
+	}
+	leadsModel.ID = existingLeads.ID
+
+	err = s.leadRepo.UpdateLeads(ctx, tx, leadsModel)
+	if err != nil {
+		return err
+	}
+
+	// Commit transaction
+	if err = s.transactionRepo.CommitTransaction(tx); err != nil {
+		return err
+	}
+
+	// If there's PIC assignment, send confirmation to external API
+	if request.Data.PICAssignment != nil {
+		err = s.apimDIDXSvc.Confirm(ctx, request)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ConfirmTestDriveBooking deprecated
 func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive.ConfirmTestDriveBookingRequest) error {
 	testDrive, err := s.repo.GetTestDrive(ctx, testdrive.GetTestDriveRequest{
 		TestDriveID: utils.ToPointer(request.TestDriveID),

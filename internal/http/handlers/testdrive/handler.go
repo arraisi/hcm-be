@@ -16,6 +16,7 @@ type IdempotencyService interface {
 }
 
 type Service interface {
+	ConfirmTestDrive(ctx context.Context, request testdrive.TestDriveEvent) error
 	ConfirmTestDriveBooking(ctx context.Context, request testdrive.ConfirmTestDriveBookingRequest) error
 	RequestTestDriveBooking(ctx context.Context, request testdrive.TestDriveEvent) error
 }
