@@ -8,7 +8,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/external/didx"
-	"github.com/arraisi/hcm-be/internal/external/dms"
+	"github.com/arraisi/hcm-be/internal/external/dmssales"
 	"github.com/arraisi/hcm-be/internal/platform/httpclient"
 	"github.com/arraisi/hcm-be/internal/queue/asynqworker"
 	"github.com/arraisi/hcm-be/pkg/utils"
@@ -34,7 +34,7 @@ func main() {
 		Timeout: cfg.Http.DMSApi.Timeout,
 		Retries: cfg.Http.DMSApi.RetryCount,
 	})
-	dmsApiClient := dms.New(cfg, DMSApiHttpUtil)
+	dmsApiClient := dmssales.New(cfg, DMSApiHttpUtil)
 
 	// Initialize Asynq worker
 	worker := asynqworker.New(cfg.Asynq, apimDIDXApiClient, dmsApiClient)

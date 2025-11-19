@@ -1,4 +1,4 @@
-package dms
+package dmssales
 
 import (
 	"context"

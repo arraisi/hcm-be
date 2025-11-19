@@ -19,7 +19,9 @@ func (h *Handler) ConfirmServiceBookingGR(w http.ResponseWriter, r *http.Request
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
-	defer r.Body.Close()
+	defer func() {
+		_ = r.Body.Close()
+	}()
 
 	// Validate payload structure
 	if err := validator.ValidateStruct(request); err != nil {
@@ -51,7 +53,9 @@ func (h *Handler) ConfirmServiceBookingBP(w http.ResponseWriter, r *http.Request
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
-	defer r.Body.Close()
+	defer func() {
+		_ = r.Body.Close()
+	}()
 
 	// Validate payload structure
 	if err := validator.ValidateStruct(request); err != nil {
@@ -83,7 +87,9 @@ func (h *Handler) ConfirmServiceBooking(w http.ResponseWriter, r *http.Request) 
 		response.ErrorResponseJSON(w, errorResponse)
 		return
 	}
-	defer r.Body.Close()
+	defer func() {
+		_ = r.Body.Close()
+	}()
 
 	// Validate payload structure
 	if err := validator.ValidateStruct(request); err != nil {

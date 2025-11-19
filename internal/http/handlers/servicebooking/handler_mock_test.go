@@ -49,6 +49,34 @@ func (mr *MockServiceMockRecorder) ConfirmServiceBooking(ctx, request interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmServiceBooking", reflect.TypeOf((*MockService)(nil).ConfirmServiceBooking), ctx, request)
 }
 
+// ConfirmServiceBookingBP mocks base method.
+func (m *MockService) ConfirmServiceBookingBP(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConfirmServiceBookingBP", ctx, request)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConfirmServiceBookingBP indicates an expected call of ConfirmServiceBookingBP.
+func (mr *MockServiceMockRecorder) ConfirmServiceBookingBP(ctx, request interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmServiceBookingBP", reflect.TypeOf((*MockService)(nil).ConfirmServiceBookingBP), ctx, request)
+}
+
+// ConfirmServiceBookingGR mocks base method.
+func (m *MockService) ConfirmServiceBookingGR(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConfirmServiceBookingGR", ctx, request)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConfirmServiceBookingGR indicates an expected call of ConfirmServiceBookingGR.
+func (mr *MockServiceMockRecorder) ConfirmServiceBookingGR(ctx, request interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmServiceBookingGR", reflect.TypeOf((*MockService)(nil).ConfirmServiceBookingGR), ctx, request)
+}
+
 // RequestServiceBooking mocks base method.
 func (m *MockService) RequestServiceBooking(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
 	m.ctrl.T.Helper()
