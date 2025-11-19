@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
@@ -36,5 +37,20 @@ func NewDMSTestDriveRequestTask(payload DMSTestDriveRequestPayload) (*asynq.Task
 		return nil, err
 	}
 	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSTestDriveRequest, payload.TestDriveEvent.EventID)
+	return asynq.NewTask(taskKey, b), nil
+}
+
+// DMSCreateOneAccessPayload represents the payload for DMS create one access task
+type DMSCreateOneAccessPayload struct {
+	OneAccessRequest oneaccess.Request `json:"one_access_request"`
+}
+
+// NewDMSCreateOneAccessTask creates a new Asynq task for DMS test drive request
+func NewDMSCreateOneAccessTask(payload DMSCreateOneAccessPayload) (*asynq.Task, error) {
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSCreateOneAccess, payload.OneAccessRequest.EventID)
 	return asynq.NewTask(taskKey, b), nil
 }

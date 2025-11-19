@@ -18,6 +18,7 @@ type DIDXSvc interface {
 
 type DMSSvc interface {
 	TestDriveRequest(ctx context.Context, body any) error
+	CreateOneAccess(ctx context.Context, body any) error
 }
 
 // Worker handles Asynq task processing
@@ -77,6 +78,7 @@ func New(cfg config.AsynqConfig, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
 	// Register task handlers
 	mux.HandleFunc(queue.TaskTypeDIDXConfirm, w.handleServiceBookingConfirm)
 	mux.HandleFunc(queue.TaskTypeDMSTestDriveRequest, w.handleDMSTestDriveRequest)
+	mux.HandleFunc(queue.TaskTypeDMSCreateOneAccess, w.handleDMSCreateOneAccess)
 
 	return w
 }

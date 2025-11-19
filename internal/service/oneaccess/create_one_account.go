@@ -2,7 +2,9 @@ package oneaccess
 
 import (
 	"context"
+	"fmt"
 	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
+	"github.com/arraisi/hcm-be/internal/queue"
 )
 
 func (s *service) CreateOneAccess(ctx context.Context, request oneaccess.Request) error {
@@ -23,5 +25,17 @@ func (s *service) CreateOneAccess(ctx context.Context, request oneaccess.Request
 		return err
 	}
 
-	return s.transactionRepo.CommitTransaction(tx)
+	err = s.transactionRepo.CommitTransaction(tx)
+	if err != nil {
+		return err
+	}
+
+	err = s.queueClient.EnqueueDMSCreateOneAccess(context.Background(), queue.DMSCreateOneAccessPayload{
+		OneAccessRequest: request,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to enqueue DMS create one access: %w", err)
+	}
+
+	return nil
 }

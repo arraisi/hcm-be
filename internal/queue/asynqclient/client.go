@@ -86,6 +86,35 @@ func (c *client) EnqueueDMSTestDriveRequest(ctx context.Context, payload interfa
 	return err
 }
 
+// EnqueueDMSCreateOneAccess enqueues a DMS test drive request task with custom retry configuration
+func (c *client) EnqueueDMSCreateOneAccess(ctx context.Context, payload interface{}) error {
+	// Type assert to DIDXServiceBookingConfirmPayload
+	body, ok := payload.(queue.DMSCreateOneAccessPayload)
+	if !ok {
+		return fmt.Errorf("invalid payload type: expected queue.EnqueueDMSCreateOneAccess")
+	}
+
+	task, err := queue.NewDMSCreateOneAccessTask(body)
+	if err != nil {
+		return err
+	}
+
+	// Retry 3 times with custom backoff: 1m, 5m, 10m
+	taskInfo, err := c.asynqClient.EnqueueContext(
+		ctx,
+		task,
+		asynq.Queue(c.cfg.Queue),
+		asynq.MaxRetry(3),
+		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
+		asynq.Timeout(30*time.Second), // Task timeout
+		asynq.Unique(5*time.Minute),   // Prevent duplicate tasks within 5 minutes
+	)
+
+	fmt.Printf("EnqueueDMSTestDriveRequest taskInfo: %+v\n", taskInfo)
+
+	return err
+}
+
 // Close closes the Asynq client connection
 func (c *client) Close() error {
 	return c.asynqClient.Close()
