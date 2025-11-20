@@ -3,6 +3,8 @@ package queue
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
+	"github.com/arraisi/hcm-be/internal/domain/dto/toyotaid"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
@@ -36,5 +38,35 @@ func NewDMSTestDriveRequestTask(payload DMSTestDriveRequestPayload) (*asynq.Task
 		return nil, err
 	}
 	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSTestDriveRequest, payload.TestDriveEvent.EventID)
+	return asynq.NewTask(taskKey, b), nil
+}
+
+// DMSCreateOneAccessPayload represents the payload for DMS create one access task
+type DMSCreateOneAccessPayload struct {
+	OneAccessRequest oneaccess.Request `json:"one_access_request"`
+}
+
+// NewDMSCreateOneAccessTask creates a new Asynq task for DMS toyota id
+func NewDMSCreateOneAccessTask(payload DMSCreateOneAccessPayload) (*asynq.Task, error) {
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSCreateOneAccess, payload.OneAccessRequest.EventID)
+	return asynq.NewTask(taskKey, b), nil
+}
+
+// DMSCreateToyotaIDPayload represents the payload for DMS create toyota id task
+type DMSCreateToyotaIDPayload struct {
+	ToyotaIDRequest toyotaid.Request `json:"toyota_id_request"`
+}
+
+// NewDMSCreateToyotaIDTask creates a new Asynq task for DMS toyota id
+func NewDMSCreateToyotaIDTask(payload DMSCreateToyotaIDPayload) (*asynq.Task, error) {
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSCreateToyotaID, payload.ToyotaIDRequest.EventID)
 	return asynq.NewTask(taskKey, b), nil
 }

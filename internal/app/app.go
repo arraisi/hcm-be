@@ -147,11 +147,13 @@ func Run(cfg *config.Config) error {
 	oneAccessSvc := oneaccessService.New(cfg, oneaccessService.ServiceContainer{
 		TransactionRepo: txRepo,
 		CustomerSvc:     customerSvc,
+		QueueClient:     queueClient,
 	})
 	toyotaIDSvc := toyotaidService.New(cfg, toyotaidService.ServiceContainer{
 		TransactionRepo:    txRepo,
 		CustomerSvc:        customerSvc,
 		CustomerVehicleSvc: customerVehicleSvc,
+		QueueClient:        queueClient,
 	})
 	customerReminderSvc := customerreminderService.New(cfg, customerreminderService.ServiceContainer{
 		TransactionRepo:    txRepo,

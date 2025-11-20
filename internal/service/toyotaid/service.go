@@ -20,10 +20,15 @@ type CustomerVehicleService interface {
 	UpsertCustomerVehicleV2(ctx context.Context, tx *sqlx.Tx, req domain.CustomerVehicle) (string, error)
 }
 
+type QueueClient interface {
+	EnqueueDMSCreateToyotaID(ctx context.Context, payload interface{}) error
+}
+
 type ServiceContainer struct {
 	TransactionRepo    transactionRepository
 	CustomerSvc        CustomerService
 	CustomerVehicleSvc CustomerVehicleService
+	QueueClient        QueueClient
 }
 
 type service struct {
@@ -31,6 +36,7 @@ type service struct {
 	transactionRepo    transactionRepository
 	customerSvc        CustomerService
 	customerVehicleSvc CustomerVehicleService
+	queueClient        QueueClient
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -39,5 +45,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		transactionRepo:    container.TransactionRepo,
 		customerSvc:        container.CustomerSvc,
 		customerVehicleSvc: container.CustomerVehicleSvc,
+		queueClient:        container.QueueClient,
 	}
 }
