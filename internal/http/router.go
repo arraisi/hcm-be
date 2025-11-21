@@ -1,6 +1,7 @@
 package http
 
 import (
+	"log"
 	"net/http"
 	stdprof "net/http/pprof"
 
@@ -30,6 +31,7 @@ type Handler struct {
 	ToyotaIDHandler         toyotaid.Handler
 	CustomerReminderHandler customerreminder.Handler
 	QueueHandler            *queue.Handler
+	TokenHandler            handlers.TokenHandler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -59,8 +61,19 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 		r.Mount("/debug/pprof", pprofRouter())
 	}
 
+	// Auth token generation
+	r.Post("/api/v1/token/generate", handler.TokenHandler.Generate)
+
+	// Token validator middleware
+	tokenValidator, err := middleware.NewTokenValidator(config.JWT)
+	if err != nil {
+		log.Fatalf("failed to init token validator: %v", err)
+	}
+
 	// API v1
 	r.Route("/api/v1/hcm", func(api chi.Router) {
+		api.Use(tokenValidator.Middleware)
+
 		api.Route("/users", func(users chi.Router) {
 			users.Get("/", handler.UserHandler.List)
 			users.Post("/", handler.UserHandler.Create)

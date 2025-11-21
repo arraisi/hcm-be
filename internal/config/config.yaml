@@ -27,8 +27,11 @@ database:
     maxConnectionLifetime: 5m
     maxConnectionIdleTime: 5m
 webhook:
-  apiKey: 'your-webhook-api-key'
+  apiKey: 'YmLhbgVYIA9Fa7i1NSfgIgN2heBvyKNXkIqcsXC+9PUgj+PrL6xyAVgRoPpotNjrcYF2ImVHQqXVnbvbmkZ3mQ=='
   hmacSecret: 'your-hmac-secret-key'
+jwt:
+  secret: 'GF3AuBtUviqiWVXsoiNCvo+9c+XwcNnQ1EJw+SOqlgGh241dCsJOnx/dAmnRCJuce7bwjcJYIjaVBrYnLIKtSw=='
+  issuer: 'hcm-be'
 featureFlag:
   webhook:
     enableSignatureValidation: false

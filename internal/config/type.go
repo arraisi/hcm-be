@@ -40,6 +40,11 @@ type Webhook struct {
 	HMACSecret string `yaml:"hmacSecret"` // HMAC secret for signature verification
 }
 
+type JWTConfig struct {
+	Secret string `yaml:"secret"`
+	Issuer string `yaml:"issuer"`
+}
+
 type FeatureFlag struct {
 	WebhookConfig WebhookFeatureConfig `yaml:"webhook"`
 }
@@ -61,6 +66,7 @@ type Config struct {
 	Http        HttpConfig  `yaml:"http"`
 	Asynq       AsynqConfig `yaml:"asynq"`
 	Condition   Condition   `yaml:"condition"`
+	JWT         JWTConfig   `yaml:"jwt"`
 }
 
 type HttpConfig struct {
