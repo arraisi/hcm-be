@@ -3,12 +3,14 @@ package app
 import (
 	"time"
 
+	"github.com/arraisi/hcm-be/internal/auth"
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/external/didx"
 	"github.com/arraisi/hcm-be/internal/external/dmsaftersales"
 	"github.com/arraisi/hcm-be/internal/external/dmssales"
 	"github.com/arraisi/hcm-be/internal/external/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
+	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
 	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
@@ -29,6 +31,7 @@ import (
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
+	"github.com/arraisi/hcm-be/internal/service"
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	customerreminderService "github.com/arraisi/hcm-be/internal/service/customerreminder"
 	customervehicleService "github.com/arraisi/hcm-be/internal/service/customervehicle"
@@ -161,6 +164,11 @@ func Run(cfg *config.Config) error {
 		CustomerSvc:        customerSvc,
 		CustomerVehicleSvc: customerVehicleSvc,
 	})
+	tokenGenerator, err := auth.NewServiceTokenGenerator(cfg.JWT)
+	if err != nil {
+		return err
+	}
+	tokenSvc := service.NewTokenService(tokenGenerator)
 
 	// init handlers
 	userHandler := user.NewUserHandler(userSvc)
@@ -171,6 +179,7 @@ func Run(cfg *config.Config) error {
 	oneAccessHandler := oneaccess.New(cfg, oneAccessSvc, idempotencyStore)
 	customerReminderHandler := customerreminder.New(cfg, customerReminderSvc, idempotencyStore)
 	queueHandler := queue.NewHandler(queueInspector)
+	tokenHandler := handlers.NewTokenHandler(tokenSvc)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                  cfg,
@@ -182,6 +191,7 @@ func Run(cfg *config.Config) error {
 		ToyotaIDHandler:         toyotaIDHandler,
 		CustomerReminderHandler: customerReminderHandler,
 		QueueHandler:            queueHandler,
+		TokenHandler:            tokenHandler,
 	})
 
 	return apphttp.NewServer(cfg, router)
