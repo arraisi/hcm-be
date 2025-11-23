@@ -11,7 +11,7 @@ import (
 )
 
 type EngineService interface {
-	CustomerSegmentation(ctx context.Context, request engine.RunCustomerSegmentationRequest) error
+	CreateRoLeads(ctx context.Context, request engine.CreateRoLeadsRequest) error
 	RunDailyOutletAssignment(ctx context.Context) error
 	RunDailySalesAssignment(ctx context.Context) error
 }
@@ -45,7 +45,7 @@ func (s *Scheduler) Start() error {
 	// Register jobs
 	if _, err := s.scheduler.Cron(s.cfg.CustomerSegCron).Do(func() {
 		ctx := context.Background()
-		if err := s.engineSvc.CustomerSegmentation(ctx, engine.RunCustomerSegmentationRequest{ForceUpdate: false}); err != nil {
+		if err := s.engineSvc.CreateRoLeads(ctx, engine.CreateRoLeadsRequest{ForceUpdate: false}); err != nil {
 			log.Printf("[Scheduler] Error running monthly segmentation: %v", err)
 		}
 	}); err != nil {

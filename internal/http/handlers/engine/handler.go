@@ -9,7 +9,7 @@ import (
 )
 
 type Service interface {
-	CustomerSegmentation(ctx context.Context, request engine.RunCustomerSegmentationRequest) error
+	CreateRoLeads(ctx context.Context, request engine.CreateRoLeadsRequest) error
 }
 
 // Handler handles HTTP requests for engine operations

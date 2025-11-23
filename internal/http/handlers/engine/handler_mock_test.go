@@ -35,16 +35,16 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// CustomerSegmentation mocks base method.
-func (m *MockService) CustomerSegmentation(ctx context.Context, request engine.RunCustomerSegmentationRequest) error {
+// CreateRoLeads mocks base method.
+func (m *MockService) CreateRoLeads(ctx context.Context, request engine.CreateRoLeadsRequest) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CustomerSegmentation", ctx, request)
+	ret := m.ctrl.Call(m, "CreateRoLeads", ctx, request)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// CustomerSegmentation indicates an expected call of CustomerSegmentation.
-func (mr *MockServiceMockRecorder) CustomerSegmentation(ctx, request interface{}) *gomock.Call {
+// CreateRoLeads indicates an expected call of CreateRoLeads.
+func (mr *MockServiceMockRecorder) CreateRoLeads(ctx, request interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CustomerSegmentation", reflect.TypeOf((*MockService)(nil).CustomerSegmentation), ctx, request)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRoLeads", reflect.TypeOf((*MockService)(nil).CreateRoLeads), ctx, request)
 }

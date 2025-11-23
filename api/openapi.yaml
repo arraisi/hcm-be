@@ -838,10 +838,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /hcm/engine/customer-segmentation:
+  /hcm/engine/ro-leads:
     post:
-      summary: Run Monthly Customer Segmentation
-      description: Manually trigger the monthly customer segmentation process to calculate RO (Repair Order) scores
+      summary: Create RO Leads
+      description: Manually trigger the create ro leads process to calculate RO (Repeat Order) scores
       tags:
         - Engine
       security:
@@ -861,7 +861,7 @@ paths:
               force_update: false
       responses:
         '200':
-          description: Segmentation completed successfully
+          description: Create RO Leads completed successfully
           content:
             application/json:
               schema:

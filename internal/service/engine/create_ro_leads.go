@@ -14,7 +14,7 @@ import (
 	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
-func (s *service) CustomerSegmentation(ctx context.Context, request engine.RunCustomerSegmentationRequest) error {
+func (s *service) CreateRoLeads(ctx context.Context, request engine.CreateRoLeadsRequest) error {
 	req := customervehicle.GetCustomerVehiclePaginatedRequest{
 		Limit:                   100,
 		DecDateNotNull:          true,
@@ -46,7 +46,7 @@ func (s *service) CustomerSegmentation(ctx context.Context, request engine.RunCu
 	return nil
 }
 
-func (s *service) createRoLeads(ctx context.Context, request engine.RunCustomerSegmentationRequest, vehicles []domain.CustomerVehicle) ([]domain.RoLeads, error) {
+func (s *service) createRoLeads(ctx context.Context, request engine.CreateRoLeadsRequest, vehicles []domain.CustomerVehicle) ([]domain.RoLeads, error) {
 	roLeads := make([]domain.RoLeads, 0, len(vehicles))
 	roLeadsToBeDelete := make([]domain.RoLeads, 0)
 	for _, vehicle := range vehicles {
@@ -78,6 +78,7 @@ func (s *service) createRoLeads(ctx context.Context, request engine.RunCustomerS
 			CarPaymentStatusScore:   s.getPaymentStatusScore(utils.ToValue(vehicle.CarPaymentStatus)),
 			CarServiceActivityScore: s.getServiceActivityScore(ctx, vehicle),
 			CarServiceScore:         s.getServiceScore(ctx, vehicle),
+			CustomerResponse:        engine.CustomerResponseNotSent,
 			CreatedAt:               createdAt,
 			UpdatedAt:               &createdAt,
 		}
@@ -109,6 +110,8 @@ func (s *service) createRoLeads(ctx context.Context, request engine.RunCustomerS
 	if err != nil {
 		return roLeads, err
 	}
+
+	// TODO: send repeat order offers via WhatsApp
 
 	return roLeads, nil
 }
