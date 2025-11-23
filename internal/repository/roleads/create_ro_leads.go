@@ -16,26 +16,30 @@ func (r *repository) CreateRoLeads(ctx context.Context, tx *sqlx.Tx, req []domai
 	}
 
 	model := &domain.RoLeads{}
-	columns, _ := model.ToCreateMap()
-	columns = append(columns, "i_id")
+	cols, _ := model.ToCreateMap()
+
+	// Prepend i_id as the first column
+	columns := append([]string{"i_id"}, cols...)
 
 	// Build value placeholders for bulk insert
 	valueStrings := make([]string, 0, len(req))
 	valueArgs := make([]interface{}, 0, len(req)*len(columns))
 
 	placeholderCount := 0
-	for _, roLead := range req {
+	for i := range req {
 		// Generate and assign UUID
-		roLead.ID = uuid.NewString()
+		req[i].ID = uuid.NewString()
 
-		_, values := roLead.ToCreateMap()
-		values = append(values, roLead.ID)
+		_, vals := req[i].ToCreateMap()
 
-		// Create placeholders for this row
+		// Prepend ID as the first value to match column order
+		values := append([]interface{}{req[i].ID}, vals...)
+
+		// Create placeholders for this row using @p1, @p2... for SQL Server
 		placeholders := make([]string, len(columns))
-		for i := range columns {
+		for j := range columns {
 			placeholderCount++
-			placeholders[i] = fmt.Sprintf("$%d", placeholderCount)
+			placeholders[j] = fmt.Sprintf("@p%d", placeholderCount)
 		}
 		valueStrings = append(valueStrings, fmt.Sprintf("(%s)", strings.Join(placeholders, ", ")))
 		valueArgs = append(valueArgs, values...)
@@ -49,7 +53,6 @@ func (r *repository) CreateRoLeads(ctx context.Context, tx *sqlx.Tx, req []domai
 		strings.Join(valueStrings, ", "),
 	)
 
-	query = r.db.Rebind(query)
 	_, err := tx.ExecContext(ctx, query, valueArgs...)
 	if err != nil {
 		return fmt.Errorf("failed to bulk insert ro leads: %w", err)

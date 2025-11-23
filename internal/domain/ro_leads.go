@@ -2,8 +2,6 @@ package domain
 
 import (
 	"time"
-
-	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
 type RoLeads struct {
@@ -83,7 +81,7 @@ func (rl *RoLeads) ToCreateMap() ([]string, []interface{}) {
 		rl.LeadsOutlet,
 		rl.LeadsSalesNik,
 		now,
-		utils.ToPointer(now),
+		now,
 	}
 
 	return columns, values
