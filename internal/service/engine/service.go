@@ -23,6 +23,7 @@ type TransactionRepository interface {
 type RoLeadsRepository interface {
 	CreateRoLeads(ctx context.Context, tx *sqlx.Tx, req []domain.RoLeads) error
 	GetRoLeads(ctx context.Context, req roleads.GetRoLeadsRequest) (domain.RoLeads, error)
+	DeleteRoLeads(ctx context.Context, tx *sqlx.Tx, req domain.RoLeads) error
 }
 
 type service struct {

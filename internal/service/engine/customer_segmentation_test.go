@@ -10,6 +10,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
+	"github.com/arraisi/hcm-be/internal/domain/dto/engine"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/jmoiron/sqlx"
@@ -90,7 +91,9 @@ func TestRunMonthlySegmentation_Success(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx)
+	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+		ForceUpdate: false,
+	})
 
 	// Assert
 	assert.NoError(t, err)
@@ -195,7 +198,9 @@ func TestRunMonthlySegmentation_Success_WithPagination(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx)
+	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+		ForceUpdate: false,
+	})
 
 	// Assert
 	assert.NoError(t, err)
@@ -220,7 +225,9 @@ func TestRunMonthlySegmentation_Error_GetCustomerVehicleFailed(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx)
+	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+		ForceUpdate: false,
+	})
 
 	// Assert
 	assert.Error(t, err)
@@ -267,7 +274,9 @@ func TestRunMonthlySegmentation_Error_BeginTransactionFailed(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx)
+	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+		ForceUpdate: false,
+	})
 
 	// Assert
 	assert.Error(t, err)
@@ -325,7 +334,9 @@ func TestRunMonthlySegmentation_Error_CreateRoLeadsFailed(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx)
+	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+		ForceUpdate: false,
+	})
 
 	// Assert
 	assert.Error(t, err)
@@ -388,7 +399,9 @@ func TestRunMonthlySegmentation_Error_CommitTransactionFailed(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx)
+	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+		ForceUpdate: false,
+	})
 
 	// Assert
 	assert.Error(t, err)

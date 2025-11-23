@@ -157,6 +157,20 @@ func (mr *MockRoLeadsRepositoryMockRecorder) CreateRoLeads(ctx, tx, req interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRoLeads", reflect.TypeOf((*MockRoLeadsRepository)(nil).CreateRoLeads), ctx, tx, req)
 }
 
+// DeleteRoLeads mocks base method.
+func (m *MockRoLeadsRepository) DeleteRoLeads(ctx context.Context, tx *sqlx.Tx, req domain.RoLeads) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteRoLeads", ctx, tx, req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteRoLeads indicates an expected call of DeleteRoLeads.
+func (mr *MockRoLeadsRepositoryMockRecorder) DeleteRoLeads(ctx, tx, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRoLeads", reflect.TypeOf((*MockRoLeadsRepository)(nil).DeleteRoLeads), ctx, tx, req)
+}
+
 // GetRoLeads mocks base method.
 func (m *MockRoLeadsRepository) GetRoLeads(ctx context.Context, req roleads.GetRoLeadsRequest) (domain.RoLeads, error) {
 	m.ctrl.T.Helper()

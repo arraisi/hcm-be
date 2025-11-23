@@ -10,11 +10,12 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
+	"github.com/arraisi/hcm-be/internal/domain/dto/engine"
 	"github.com/arraisi/hcm-be/internal/domain/dto/roleads"
 	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
-func (s *service) RunMonthlySegmentation(ctx context.Context) error {
+func (s *service) RunMonthlySegmentation(ctx context.Context, request engine.RunMonthlySegmentationRequest) error {
 	log.Println("[Scheduler] Running monthly customer segmentation")
 
 	req := customervehicle.GetCustomerVehiclePaginatedRequest{
@@ -33,7 +34,7 @@ func (s *service) RunMonthlySegmentation(ctx context.Context) error {
 		}
 
 		// Create RO Leads for the fetched vehicles
-		_, err = s.createRoLeads(ctx, vehicles)
+		_, err = s.createRoLeads(ctx, request, vehicles)
 		if err != nil {
 			return err
 		}
@@ -48,17 +49,22 @@ func (s *service) RunMonthlySegmentation(ctx context.Context) error {
 	return nil
 }
 
-func (s *service) createRoLeads(ctx context.Context, vehicles []domain.CustomerVehicle) ([]domain.RoLeads, error) {
+func (s *service) createRoLeads(ctx context.Context, request engine.RunMonthlySegmentationRequest, vehicles []domain.CustomerVehicle) ([]domain.RoLeads, error) {
 	roLeads := make([]domain.RoLeads, 0, len(vehicles))
+	roLeadsToBeDelete := make([]domain.RoLeads, 0)
 	for _, vehicle := range vehicles {
 		leads, err := s.getRoLeadsForVehicleThisMonth(ctx, vehicle)
 		if err != nil {
 			return nil, err
 		}
 
-		if leads.ID != "" {
+		if leads.ID != "" && !request.ForceUpdate {
 			// Skip if RO Leads already exists for this vehicle this month
 			continue
+		}
+		if leads.ID != "" && request.ForceUpdate {
+			// Mark existing leads for deletion if force update is true
+			roLeadsToBeDelete = append(roLeadsToBeDelete, leads)
 		}
 
 		carAge := time.Now().Year() - vehicle.DecDate.Year()
@@ -82,6 +88,13 @@ func (s *service) createRoLeads(ctx context.Context, vehicles []domain.CustomerV
 		_ = s.transactionRepo.RollbackTransaction(tx)
 	}()
 
+	for _, roLead := range roLeadsToBeDelete {
+		err = s.roLeadsRepo.DeleteRoLeads(ctx, tx, roLead)
+		if err != nil {
+			return roLeads, err
+		}
+	}
+
 	err = s.roLeadsRepo.CreateRoLeads(ctx, tx, roLeads)
 	if err != nil {
 		return roLeads, err
@@ -103,6 +116,7 @@ func (s *service) getRoLeadsForVehicleThisMonth(ctx context.Context, vehicle dom
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return domain.RoLeads{}, err
 	}
+
 	return leads, nil
 }
 

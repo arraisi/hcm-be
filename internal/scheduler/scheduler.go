@@ -6,11 +6,12 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
+	"github.com/arraisi/hcm-be/internal/domain/dto/engine"
 	"github.com/go-co-op/gocron"
 )
 
 type EngineService interface {
-	RunMonthlySegmentation(ctx context.Context) error
+	RunMonthlySegmentation(ctx context.Context, request engine.RunMonthlySegmentationRequest) error
 	RunDailyOutletAssignment(ctx context.Context) error
 	RunDailySalesAssignment(ctx context.Context) error
 }
@@ -44,7 +45,7 @@ func (s *Scheduler) Start() error {
 	// Register jobs
 	if _, err := s.scheduler.Cron(s.cfg.CustomerSegCron).Do(func() {
 		ctx := context.Background()
-		if err := s.engineSvc.RunMonthlySegmentation(ctx); err != nil {
+		if err := s.engineSvc.RunMonthlySegmentation(ctx, engine.RunMonthlySegmentationRequest{ForceUpdate: false}); err != nil {
 			log.Printf("[Scheduler] Error running monthly segmentation: %v", err)
 		}
 	}); err != nil {
