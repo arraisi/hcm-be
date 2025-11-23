@@ -5,7 +5,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"log"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
@@ -15,9 +14,7 @@ import (
 	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
-func (s *service) RunMonthlySegmentation(ctx context.Context, request engine.RunMonthlySegmentationRequest) error {
-	log.Println("[Scheduler] Running monthly customer segmentation")
-
+func (s *service) CustomerSegmentation(ctx context.Context, request engine.RunCustomerSegmentationRequest) error {
 	req := customervehicle.GetCustomerVehiclePaginatedRequest{
 		Limit:                   100,
 		DecDateNotNull:          true,
@@ -49,7 +46,7 @@ func (s *service) RunMonthlySegmentation(ctx context.Context, request engine.Run
 	return nil
 }
 
-func (s *service) createRoLeads(ctx context.Context, request engine.RunMonthlySegmentationRequest, vehicles []domain.CustomerVehicle) ([]domain.RoLeads, error) {
+func (s *service) createRoLeads(ctx context.Context, request engine.RunCustomerSegmentationRequest, vehicles []domain.CustomerVehicle) ([]domain.RoLeads, error) {
 	roLeads := make([]domain.RoLeads, 0, len(vehicles))
 	roLeadsToBeDelete := make([]domain.RoLeads, 0)
 	for _, vehicle := range vehicles {
@@ -68,6 +65,12 @@ func (s *service) createRoLeads(ctx context.Context, request engine.RunMonthlySe
 		}
 
 		carAge := time.Now().Year() - vehicle.DecDate.Year()
+		if carAge <= 0 {
+			carAge = 1
+		}
+
+		createdAt := time.Now()
+
 		roLead := domain.RoLeads{
 			CustomerVehicleID:       vehicle.ID,
 			CarAge:                  carAge,
@@ -75,6 +78,8 @@ func (s *service) createRoLeads(ctx context.Context, request engine.RunMonthlySe
 			CarPaymentStatusScore:   s.getPaymentStatusScore(utils.ToValue(vehicle.CarPaymentStatus)),
 			CarServiceActivityScore: s.getServiceActivityScore(ctx, vehicle),
 			CarServiceScore:         s.getServiceScore(ctx, vehicle),
+			CreatedAt:               createdAt,
+			UpdatedAt:               &createdAt,
 		}
 		roLead.RoScore = s.calculateRoScore(&roLead)
 		roLeads = append(roLeads, roLead)

@@ -7,19 +7,19 @@ import (
 )
 
 type RoLeads struct {
-	ID                      string     `json:"i_id"`
-	CustomerVehicleID       string     `json:"i_customer_vehicle_id"`
-	CarAge                  int        `json:"i_car_age"`
-	CarAgeScore             int        `json:"i_car_age_score"`
-	CarPaymentStatusScore   int        `json:"i_car_payment_status_score"`
-	CarServiceActivityScore int        `json:"i_car_service_activity_score"`
-	CarServiceScore         int        `json:"i_car_service_score"`
-	RoScore                 int        `json:"i_ro_score"`
-	CustomerResponse        string     `json:"c_customer_response"`
-	LeadsOutlet             string     `json:"c_leads_outlet"`
-	LeadsSalesNik           string     `json:"c_leads_sales_nik"`
-	CreatedAt               time.Time  `json:"d_created_at"`
-	UpdatedAt               *time.Time `json:"d_updated_at"`
+	ID                      string     `db:"i_id"`
+	CustomerVehicleID       string     `db:"i_customer_vehicle_id"`
+	CarAge                  int        `db:"i_car_age"`
+	CarAgeScore             int        `db:"i_car_age_score"`
+	CarPaymentStatusScore   int        `db:"i_car_payment_status_score"`
+	CarServiceActivityScore int        `db:"i_car_service_activity_score"`
+	CarServiceScore         int        `db:"i_car_service_score"`
+	RoScore                 int        `db:"i_ro_score"`
+	CustomerResponse        string     `db:"c_customer_response"`
+	LeadsOutlet             string     `db:"c_leads_outlet"`
+	LeadsSalesNik           string     `db:"c_leads_sales_nik"`
+	CreatedAt               time.Time  `db:"d_created_at"`
+	UpdatedAt               *time.Time `db:"d_updated_at"`
 }
 
 var (

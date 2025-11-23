@@ -91,7 +91,7 @@ func TestRunMonthlySegmentation_Success(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+	err := m.service.CustomerSegmentation(m.ctx, engine.RunCustomerSegmentationRequest{
 		ForceUpdate: false,
 	})
 
@@ -198,7 +198,7 @@ func TestRunMonthlySegmentation_Success_WithPagination(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+	err := m.service.CustomerSegmentation(m.ctx, engine.RunCustomerSegmentationRequest{
 		ForceUpdate: false,
 	})
 
@@ -225,7 +225,7 @@ func TestRunMonthlySegmentation_Error_GetCustomerVehicleFailed(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+	err := m.service.CustomerSegmentation(m.ctx, engine.RunCustomerSegmentationRequest{
 		ForceUpdate: false,
 	})
 
@@ -274,7 +274,7 @@ func TestRunMonthlySegmentation_Error_BeginTransactionFailed(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+	err := m.service.CustomerSegmentation(m.ctx, engine.RunCustomerSegmentationRequest{
 		ForceUpdate: false,
 	})
 
@@ -334,7 +334,7 @@ func TestRunMonthlySegmentation_Error_CreateRoLeadsFailed(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+	err := m.service.CustomerSegmentation(m.ctx, engine.RunCustomerSegmentationRequest{
 		ForceUpdate: false,
 	})
 
@@ -399,7 +399,7 @@ func TestRunMonthlySegmentation_Error_CommitTransactionFailed(t *testing.T) {
 		Times(1)
 
 	// Execute
-	err := m.service.RunMonthlySegmentation(m.ctx, engine.RunMonthlySegmentationRequest{
+	err := m.service.CustomerSegmentation(m.ctx, engine.RunCustomerSegmentationRequest{
 		ForceUpdate: false,
 	})
 

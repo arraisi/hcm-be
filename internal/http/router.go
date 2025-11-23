@@ -128,7 +128,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 
 		// Engine endpoints
 		api.Route("/engine", func(eng chi.Router) {
-			eng.Post("/segmentation/monthly/run", handler.EngineHandler.RunMonthlySegmentation)
+			eng.Post("/customer-segmentation", handler.EngineHandler.RunCustomerSegmentation)
 		})
 	})
 

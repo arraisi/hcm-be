@@ -9,7 +9,7 @@ import (
 )
 
 type Service interface {
-	RunMonthlySegmentation(ctx context.Context, request engine.RunMonthlySegmentationRequest) error
+	CustomerSegmentation(ctx context.Context, request engine.RunCustomerSegmentationRequest) error
 }
 
 // Handler handles HTTP requests for engine operations

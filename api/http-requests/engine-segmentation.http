@@ -1,12 +1,12 @@
 ### Run Monthly Segmentation - Default (no force update)
-POST http://localhost:8080/api/v1/hcm/engine/segmentation/monthly/run
+POST http://localhost:8080/api/v1/hcm/engine/customer-segmentation
 Content-Type: application/json
 Authorization: Bearer YOUR_JWT_TOKEN_HERE
 
 {}
 
 ### Run Monthly Segmentation - With Force Update
-POST http://localhost:8080/api/v1/hcm/engine/segmentation/monthly/run
+POST http://localhost:8080/api/v1/hcm/engine/customer-segmentation
 Content-Type: application/json
 Authorization: Bearer YOUR_JWT_TOKEN_HERE
 
@@ -15,7 +15,7 @@ Authorization: Bearer YOUR_JWT_TOKEN_HERE
 }
 
 ### Run Monthly Segmentation - Explicit No Force Update
-POST http://localhost:8080/api/v1/hcm/engine/segmentation/monthly/run
+POST http://localhost:8080/api/v1/hcm/engine/customer-segmentation
 Content-Type: application/json
 Authorization: Bearer YOUR_JWT_TOKEN_HERE
 

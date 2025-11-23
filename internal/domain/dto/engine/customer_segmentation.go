@@ -1,5 +1,5 @@
 package engine
 
-type RunMonthlySegmentationRequest struct {
-	ForceUpdate bool
+type RunCustomerSegmentationRequest struct {
+	ForceUpdate bool `json:"force_update"`
 }

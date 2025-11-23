@@ -838,7 +838,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /hcm/engine/segmentation/monthly/run:
+  /hcm/engine/customer-segmentation:
     post:
       summary: Run Monthly Customer Segmentation
       description: Manually trigger the monthly customer segmentation process to calculate RO (Repair Order) scores
