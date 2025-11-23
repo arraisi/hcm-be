@@ -26,14 +26,14 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: "OK"
+                example: 'OK'
         '503':
           description: Service is unhealthy
           content:
             text/plain:
               schema:
                 type: string
-                example: "Service Unavailable"
+                example: 'Service Unavailable'
 
   /readyz:
     get:
@@ -48,14 +48,14 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: "OK"
+                example: 'OK'
         '503':
           description: Service is not ready
           content:
             text/plain:
               schema:
                 type: string
-                example: "Service Not Ready"
+                example: 'Service Not Ready'
 
   /metrics:
     get:
@@ -70,7 +70,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: "# HELP go_info Information about the Go environment..."
+                example: '# HELP go_info Information about the Go environment...'
 
   /users:
     get:
@@ -126,8 +126,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateUserRequest'
             example:
-              name: "John Doe"
-              email: "john.doe@example.com"
+              name: 'John Doe'
+              email: 'john.doe@example.com'
       responses:
         '201':
           description: User created successfully
@@ -372,52 +372,52 @@ paths:
             schema:
               $ref: '#/components/schemas/TestDriveEvent'
             example:
-              process: "test drive request"
-              event_ID: "05dbe854-74a4-4e0d-be00-da098d3569d6"
+              process: 'test drive request'
+              event_ID: '05dbe854-74a4-4e0d-be00-da098d3569d6'
               timestamp: 1698345600
               data:
                 one_account:
-                  one_account_ID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y"
-                  first_name: "John"
-                  last_name: "Doe"
-                  gender: "MALE"
-                  phone_number: "1234567890"
-                  email: "john.doe@example.com"
+                  one_account_ID: 'GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y'
+                  first_name: 'John'
+                  last_name: 'Doe'
+                  gender: 'MALE'
+                  phone_number: '1234567890'
+                  email: 'john.doe@example.com'
                 test_drive:
-                  test_drive_id: "0d5be854-74a4-4e0d-be00-da098d3529d5"
-                  test_drive_number: "TUT010026-02-20241107959"
-                  katashiki_code: "NSP170R-MWYXKD"
-                  model: "Innova Zenix"
-                  variant: "2.0 Q A/T"
+                  test_drive_id: '0d5be854-74a4-4e0d-be00-da098d3529d5'
+                  test_drive_number: 'TUT010026-02-20241107959'
+                  katashiki_code: 'NSP170R-MWYXKD'
+                  model: 'Innova Zenix'
+                  variant: '2.0 Q A/T'
                   created_datetime: 1698345600
                   test_drive_datetime_start: 1698349200
                   test_drive_datetime_end: 1698352800
-                  location: "DEALER"
-                  outlet_ID: "AST01329"
-                  outlet_name: "Astrido Toyota Bitung"
-                  test_drive_status: "SUBMITTED"
+                  location: 'DEALER'
+                  outlet_ID: 'AST01329'
+                  outlet_name: 'Astrido Toyota Bitung'
+                  test_drive_status: 'SUBMITTED'
                   cancellation_reason: null
                   other_cancellation_reason: null
                   customer_driving_consent: true
                 leads:
-                  leads_id: "44ae2529-98e4-41f4-bae8-f305f609932d"
-                  leads_type: "TEST_DRIVE_REQUEST"
-                  leads_follow_up_status: "ON_CONSIDERATION"
-                  leads_preference_contact_time_start: "09:30"
-                  leads_preference_contact_time_end: "10:30"
-                  leads_source: "OFFLINE_WALK_IN_OR_CALL_IN"
+                  leads_id: '44ae2529-98e4-41f4-bae8-f305f609932d'
+                  leads_type: 'TEST_DRIVE_REQUEST'
+                  leads_follow_up_status: 'ON_CONSIDERATION'
+                  leads_preference_contact_time_start: '09:30'
+                  leads_preference_contact_time_end: '10:30'
+                  leads_source: 'OFFLINE_WALK_IN_OR_CALL_IN'
                   additional_notes: null
                 score:
-                  tam_lead_score: "HOT"
-                  outlet_lead_score: "MEDIUM"
+                  tam_lead_score: 'HOT'
+                  outlet_lead_score: 'MEDIUM'
                   parameter:
-                    purchase_plan_criteria: "31_DAYS_TO_INFINITE"
-                    payment_prefer_criteria: "CASH"
-                    negotiation_criteria: "HAVE_STARTED_NEGOTIATIONS"
-                    test_drive_criteria: "COMPLETED"
-                    trade_in_criteria: "DELIVERY"
-                    browsing_history_criteria: "MORE_THAN_5_PAGES"
-                    vehicle_age_criteria: "MORE_THAN_2.5_YEARS"
+                    purchase_plan_criteria: '31_DAYS_TO_INFINITE'
+                    payment_prefer_criteria: 'CASH'
+                    negotiation_criteria: 'HAVE_STARTED_NEGOTIATIONS'
+                    test_drive_criteria: 'COMPLETED'
+                    trade_in_criteria: 'DELIVERY'
+                    browsing_history_criteria: 'MORE_THAN_5_PAGES'
+                    vehicle_age_criteria: 'MORE_THAN_2.5_YEARS'
       responses:
         '202':
           description: Test drive event accepted for processing
@@ -471,7 +471,7 @@ paths:
       tags:
         - Webhooks
       security:
-        - WebhookApiKey: [ ]
+        - WebhookApiKey: []
       parameters:
         - name: X-API-Key
           in: header
@@ -505,35 +505,35 @@ paths:
             schema:
               $ref: '#/components/schemas/OneAccessEvent'
             example:
-              process: "one access create"
-              event_ID: "05dbe854-74a4-4e0d-be00-da098d3569d6"
+              process: 'one access create'
+              event_ID: '05dbe854-74a4-4e0d-be00-da098d3569d6'
               timestamp: 1698345600
               data:
                 one_account:
-                  one_account_ID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y"
-                  dealer_customer_ID: "DLC-20241107-001"
-                  first_name: "John"
-                  last_name: "Doe"
-                  phone_number: "081234567890"
-                  email: "john.doe@example.com"
-                  birth_date: "1990-05-21"
-                  verification_channel: "WHATSAPP"
-                  ktp_number: "3273012105900001"
-                  occupation: "Engineer"
-                  gender: "MALE"
-                  registration_channel: "DEALER_SYSTEM"
+                  one_account_ID: 'GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y'
+                  dealer_customer_ID: 'DLC-20241107-001'
+                  first_name: 'John'
+                  last_name: 'Doe'
+                  phone_number: '081234567890'
+                  email: 'john.doe@example.com'
+                  birth_date: '1990-05-21'
+                  verification_channel: 'WHATSAPP'
+                  ktp_number: '3273012105900001'
+                  occupation: 'Engineer'
+                  gender: 'MALE'
+                  registration_channel: 'DEALER_SYSTEM'
                   registration_datetime: 1698349200
                   consent_given: true
                   consent_given_at: 1698349300
-                  consent_given_during: "REGISTRATION"
-                  address_label: "Rumah"
-                  residence_address: "Jalan Merdeka No. 10"
-                  province: "DKI Jakarta"
-                  city: "Jakarta Pusat"
-                  district: "Menteng"
-                  subdistrict: "Pegangsaan"
-                  postal_code: "10320"
-                  detail_address: "RT 05 / RW 02"
+                  consent_given_during: 'REGISTRATION'
+                  address_label: 'Rumah'
+                  residence_address: 'Jalan Merdeka No. 10'
+                  province: 'DKI Jakarta'
+                  city: 'Jakarta Pusat'
+                  district: 'Menteng'
+                  subdistrict: 'Pegangsaan'
+                  postal_code: '10320'
+                  detail_address: 'RT 05 / RW 02'
       responses:
         '202':
           description: One Access event accepted for processing
@@ -551,7 +551,7 @@ paths:
                         description: The event ID that was processed
                       status:
                         type: string
-                        enum: [ RECEIVED ]
+                        enum: [RECEIVED]
                         description: Status of the event processing
                   message:
                     type: string
@@ -587,7 +587,7 @@ paths:
       tags:
         - Webhooks
       security:
-        - WebhookApiKey: [ ]
+        - WebhookApiKey: []
       parameters:
         - name: X-API-Key
           in: header
@@ -621,52 +621,52 @@ paths:
             schema:
               $ref: '#/components/schemas/ToyotaIdRequest'
             example:
-              process: "toyota id creation"
-              event_ID: "d4d7402f-dcab-443d-a829-f1817085f8da"
+              process: 'toyota id creation'
+              event_ID: 'd4d7402f-dcab-443d-a829-f1817085f8da'
               timestamp: 1731229200
               data:
                 one_account:
-                  one_account_ID: "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y"
-                  dealer_customer_ID: "ASTVAJMF00552"
-                  first_name: "Nkoc"
-                  last_name: "Maf"
-                  phone_number: "081234567890"
-                  email: "nkoc.maf@example.com"
-                  birth_date: "1995-08-12"
-                  verification_channel: "SMS"
-                  ktp_number: "PRRJKAESWC086H"
-                  occupation: "Engineer"
-                  gender: "FEMALE"
-                  address_label: "Rumah"
-                  residence_address: "52EXP0ADG Q9G3AAD T, WI YktLIL ONb2 gSLTo a6pP YXZJ, NIl1n"
-                  province: "DKI Jakarta"
-                  city: "Jakarta Barat"
-                  district: "Pulo Gadung"
-                  subdistrict: "Jati"
-                  postal_code: "13220"
-                  detail_address: "gts89detiyt"
-                  registration_channel: "MTOYOTA"
+                  one_account_ID: 'GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y'
+                  dealer_customer_ID: 'ASTVAJMF00552'
+                  first_name: 'Nkoc'
+                  last_name: 'Maf'
+                  phone_number: '081234567890'
+                  email: 'nkoc.maf@example.com'
+                  birth_date: '1995-08-12'
+                  verification_channel: 'SMS'
+                  ktp_number: 'PRRJKAESWC086H'
+                  occupation: 'Engineer'
+                  gender: 'FEMALE'
+                  address_label: 'Rumah'
+                  residence_address: '52EXP0ADG Q9G3AAD T, WI YktLIL ONb2 gSLTo a6pP YXZJ, NIl1n'
+                  province: 'DKI Jakarta'
+                  city: 'Jakarta Barat'
+                  district: 'Pulo Gadung'
+                  subdistrict: 'Jati'
+                  postal_code: '13220'
+                  detail_address: 'gts89detiyt'
+                  registration_channel: 'MTOYOTA'
                   registration_datetime: 1731229200
                   consent_given: true
                   consent_given_at: 1731229200
-                  consent_given_during: "REGISTRATION"
-                  toyota_single_ID_status: "ACTIVE"
-                  customer_category: "INDIVIDUAL"
+                  consent_given_during: 'REGISTRATION'
+                  toyota_single_ID_status: 'ACTIVE'
+                  customer_category: 'INDIVIDUAL'
                 customer_vehicle:
-                  primary_user: "MASTER"
-                  vin: "MKFZKE81SCJ115045"
-                  police_number: "B1234ABC"
-                  katashiki_suffix: "NSP170R-MWYQKD02"
-                  color_code: "59"
-                  model: "Innova Zenix"
-                  variant: "2.0 Q A/T"
-                  color: "Putih"
-                  stnk_number: "aVZGjcOK"
-                  stnk_name: "uHwG2zT"
+                  primary_user: 'MASTER'
+                  vin: 'MKFZKE81SCJ115045'
+                  police_number: 'B1234ABC'
+                  katashiki_suffix: 'NSP170R-MWYQKD02'
+                  color_code: '59'
+                  model: 'Innova Zenix'
+                  variant: '2.0 Q A/T'
+                  color: 'Putih'
+                  stnk_number: 'aVZGjcOK'
+                  stnk_name: 'uHwG2zT'
                   stnk_expiry_date: 1731229200
-                  stnk_address: "52EXP0ADG Q9G3AAD T, WI YktLIL ONb2 gSLTo a6pP YXZJ"
-                  customer_type: [ "BUYER", "OWNER" ]
-                  vehicle_category: "RETAIL"
+                  stnk_address: '52EXP0ADG Q9G3AAD T, WI YktLIL ONb2 gSLTo a6pP YXZJ'
+                  customer_type: ['BUYER', 'OWNER']
+                  vehicle_category: 'RETAIL'
       responses:
         '202':
           description: Event accepted for processing
@@ -683,7 +683,7 @@ paths:
                         format: uuid
                       status:
                         type: string
-                        enum: [ RECEIVED ]
+                        enum: [RECEIVED]
                   message:
                     type: string
                     example: accepted
@@ -718,7 +718,7 @@ paths:
       tags:
         - Webhooks
       security:
-        - WebhookApiKey: [ ]
+        - WebhookApiKey: []
       parameters:
         - name: X-API-Key
           in: header
@@ -752,47 +752,47 @@ paths:
             schema:
               $ref: '#/components/schemas/CustomerReminderRequest'
             example:
-              process: "customer_reminder"
-              event_ID: "d4d7402f-dcab-443d-a829-f1817085f8da"
+              process: 'customer_reminder'
+              event_ID: 'd4d7402f-dcab-443d-a829-f1817085f8da'
               timestamp: 1731392400
               data:
-                outlet_ID: "AST010329"
+                outlet_ID: 'AST010329'
                 reminders:
                   - one_account:
-                      one_account_ID: "GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y"
-                      dealer_customer_ID: "ASTVAJMF00552"
-                      first_name: "Nkoc"
-                      last_name: "Maf"
-                      phone_number: "081234567890"
-                      email: "nkoc.maf@example.com"
+                      one_account_ID: 'GMO4GNYBSI0D85IP6K59OYGJZ6VOKW3Y'
+                      dealer_customer_ID: 'ASTVAJMF00552'
+                      first_name: 'Nkoc'
+                      last_name: 'Maf'
+                      phone_number: '081234567890'
+                      email: 'nkoc.maf@example.com'
                       preferred_contact_channel:
                         - WHATSAPP_OR_SMS
                         - MTOYOTA
                         - PHONE_CALL
                     reminder:
-                      reminder_ID: "53dcde92-220b-4982-a053-ae3eaa1f0c42"
-                      activity: "SERVICE_BOOKING"
+                      reminder_ID: '53dcde92-220b-4982-a053-ae3eaa1f0c42'
+                      activity: 'SERVICE_BOOKING'
                       activity_plan_scheduled_date: 1731392400
-                      auto_reminder_status: "DELIVERED"
-                      reminder_message: "Handover mobil dengan kode pesanan <kode_pesanan> akan segera dilakukan!"
+                      auto_reminder_status: 'DELIVERED'
+                      reminder_message: 'Handover mobil dengan kode pesanan <kode_pesanan> akan segera dilakukan!'
                       priority_call: 1
-                      extended_warranty_status: "ELIGIBLE"
-                      customer_habit: "MILEAGE"
-                      last_habit: "PUNCTUAL"
-                      next_service_status: "PUNCTUAL"
+                      extended_warranty_status: 'ELIGIBLE'
+                      customer_habit: 'MILEAGE'
+                      last_habit: 'PUNCTUAL'
+                      next_service_status: 'PUNCTUAL'
                       last_service_date: 1731306000
                       next_service_date: 1731478800
-                      ncs_status: "SAME_OUTLET"
-                      program_tab: "T_CARE"
+                      ncs_status: 'SAME_OUTLET'
+                      program_tab: 'T_CARE'
                       next_service_stage: 7
                     customer_vehicle:
-                      vin: "MKFZE81SCJ115045"
-                      police_number: "V+096+XXP"
-                      katashiki_suffix: "NSP170R-MWYQKD02"
-                      model: "Innova Zenix"
-                      variant: "2.0 Q A/T"
-                      color_code: "3R6"
-                      color: "Putih"
+                      vin: 'MKFZE81SCJ115045'
+                      police_number: 'V+096+XXP'
+                      katashiki_suffix: 'NSP170R-MWYQKD02'
+                      model: 'Innova Zenix'
+                      variant: '2.0 Q A/T'
+                      color_code: '3R6'
+                      color: 'Putih'
       responses:
         '202':
           description: Event accepted for processing
@@ -809,7 +809,7 @@ paths:
                         format: uuid
                       status:
                         type: string
-                        enum: [ RECEIVED ]
+                        enum: [RECEIVED]
                   message:
                     type: string
                     example: accepted
@@ -827,6 +827,60 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
           description: Conflict - duplicate event ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /hcm/engine/segmentation/monthly/run:
+    post:
+      summary: Run Monthly Customer Segmentation
+      description: Manually trigger the monthly customer segmentation process to calculate RO (Repair Order) scores
+      tags:
+        - Engine
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                force_update:
+                  type: boolean
+                  description: If true, updates existing RO leads for the current month. If false, skips existing leads.
+                  default: false
+            example:
+              force_update: false
+      responses:
+        '200':
+          description: Segmentation completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    nullable: true
+                  message:
+                    type: string
+                    example: 'Monthly segmentation completed successfully'
+        '400':
+          description: Bad request - invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - invalid or missing token
           content:
             application/json:
               schema:
@@ -925,7 +979,7 @@ components:
       properties:
         process:
           type: string
-          enum: ["test drive request"]
+          enum: ['test drive request']
           description: Process type identifier
         event_ID:
           type: string
@@ -1147,7 +1201,7 @@ components:
         process:
           type: string
           description: Process type identifier
-          example: "one access create"
+          example: 'one access create'
         event_ID:
           type: string
           format: uuid
@@ -1199,11 +1253,11 @@ components:
           type: string
           description: Birth date (YYYY-MM-DD)
           maxLength: 32
-          example: "1990-05-21"
+          example: '1990-05-21'
         verification_channel:
           type: string
           description: Verification channel
-          enum: [ SMS, WHATSAPP, EMAIL ]
+          enum: [SMS, WHATSAPP, EMAIL]
         ktp_number:
           type: string
           description: Indonesian KTP number
@@ -1215,11 +1269,11 @@ components:
         gender:
           type: string
           description: Gender
-          enum: [ FEMALE, MALE, OTHER ]
+          enum: [FEMALE, MALE, OTHER]
         registration_channel:
           type: string
           description: Registration channel
-          enum: [ MTOYOTA, DXMI, DEALER_SYSTEM ]
+          enum: [MTOYOTA, DXMI, DEALER_SYSTEM]
         registration_datetime:
           type: integer
           format: int64
@@ -1234,7 +1288,7 @@ components:
         consent_given_during:
           type: string
           description: Flow where consent was obtained
-          enum: [ REGISTRATION, SPK, SERVICE, ADD_VEHICLE ]
+          enum: [REGISTRATION, SPK, SERVICE, ADD_VEHICLE]
         address_label:
           type: string
           description: Address label
@@ -1281,12 +1335,12 @@ components:
         - consent_given_during
     ToyotaIdRequest:
       type: object
-      required: [ process, event_ID, timestamp, data ]
+      required: [process, event_ID, timestamp, data]
       properties:
         process:
           type: string
           description: Process type identifier
-          example: "toyota id creation"
+          example: 'toyota id creation'
         event_ID:
           type: string
           format: uuid
@@ -1300,7 +1354,7 @@ components:
 
     ToyotaIdData:
       type: object
-      required: [ one_account, customer_vehicle ]
+      required: [one_account, customer_vehicle]
       properties:
         one_account:
           $ref: '#/components/schemas/ToyotaIdOneAccount'
@@ -1332,10 +1386,10 @@ components:
         birth_date:
           type: string
           description: Birth date (YYYY-MM-DD)
-          example: "1995-08-12"
+          example: '1995-08-12'
         verification_channel:
           type: string
-          enum: [ SMS, WHATSAPP, EMAIL ]
+          enum: [SMS, WHATSAPP, EMAIL]
         ktp_number:
           type: string
           maxLength: 32
@@ -1344,7 +1398,7 @@ components:
           maxLength: 64
         gender:
           type: string
-          enum: [ FEMALE, MALE, OTHER ]
+          enum: [FEMALE, MALE, OTHER]
         address_label:
           type: string
           maxLength: 256
@@ -1371,7 +1425,7 @@ components:
           maxLength: 256
         registration_channel:
           type: string
-          enum: [ MTOYOTA, DXMI, DEALER_SYSTEM ]
+          enum: [MTOYOTA, DXMI, DEALER_SYSTEM]
         registration_datetime:
           type: integer
           format: int64
@@ -1382,13 +1436,13 @@ components:
           format: int64
         consent_given_during:
           type: string
-          enum: [ REGISTRATION, SPK, SERVICE, ADD_VEHICLE ]
+          enum: [REGISTRATION, SPK, SERVICE, ADD_VEHICLE]
         toyota_single_ID_status:
           type: string
-          enum: [ ACTIVE, INACTIVE, DELETED ]
+          enum: [ACTIVE, INACTIVE, DELETED]
         customer_category:
           type: string
-          enum: [ INDIVIDUAL, COMPANY ]
+          enum: [INDIVIDUAL, COMPANY]
         ktp_image:
           type: string
           description: Base64-encoded image (optional)
@@ -1406,7 +1460,7 @@ components:
       properties:
         primary_user:
           type: string
-          enum: [ MASTER, MEMBER ]
+          enum: [MASTER, MEMBER]
         vin:
           type: string
           maxLength: 17
@@ -1444,12 +1498,12 @@ components:
           type: array
           items:
             type: string
-            enum: [ OWNER, BUYER, USER ]
+            enum: [OWNER, BUYER, USER]
           minItems: 1
           uniqueItems: true
         vehicle_category:
           type: string
-          enum: [ RETAIL, FLEET ]
+          enum: [RETAIL, FLEET]
         stnk_image:
           type: string
           description: Base64-encoded image (optional)
@@ -1465,11 +1519,11 @@ components:
         - vehicle_category
     CustomerReminderRequest:
       type: object
-      required: [ process, event_ID, timestamp, data ]
+      required: [process, event_ID, timestamp, data]
       properties:
         process:
           type: string
-          example: "customer_reminder"
+          example: 'customer_reminder'
         event_ID:
           type: string
           format: uuid
@@ -1481,7 +1535,7 @@ components:
 
     CustomerReminderData:
       type: object
-      required: [ outlet_ID, reminders ]
+      required: [outlet_ID, reminders]
       properties:
         outlet_ID:
           type: string
@@ -1494,7 +1548,7 @@ components:
 
     CustomerReminderItem:
       type: object
-      required: [ one_account, reminder, customer_vehicle ]
+      required: [one_account, reminder, customer_vehicle]
       properties:
         one_account:
           $ref: '#/components/schemas/CustomerReminderOneAccount'
@@ -1539,7 +1593,7 @@ components:
           uniqueItems: true
           items:
             type: string
-            enum: [ MTOYOTA, WHATSAPP_OR_SMS, EMAIL, PHONE_CALL ]
+            enum: [MTOYOTA, WHATSAPP_OR_SMS, EMAIL, PHONE_CALL]
 
     CustomerReminderVehicle:
       type: object
@@ -1597,7 +1651,7 @@ components:
           format: int64
         auto_reminder_status:
           type: string
-          enum: [ DELIVERED, READ, NON_MTOYOTA ]
+          enum: [DELIVERED, READ, NON_MTOYOTA]
           nullable: true
         reminder_message:
           type: string
@@ -1607,19 +1661,19 @@ components:
           nullable: true
         extended_warranty_status:
           type: string
-          enum: [ ELIGIBLE, NOT_ELIGIBLE, NOT_APPLICABLE ]
+          enum: [ELIGIBLE, NOT_ELIGIBLE, NOT_APPLICABLE]
           nullable: true
         customer_habit:
           type: string
-          enum: [ TIME_BASED, MILEAGE ]
+          enum: [TIME_BASED, MILEAGE]
           nullable: true
         last_habit:
           type: string
-          enum: [ PUNCTUAL, EARLY, LATE, INACTIVE, PASSIVE ]
+          enum: [PUNCTUAL, EARLY, LATE, INACTIVE, PASSIVE]
           nullable: true
         next_service_status:
           type: string
-          enum: [ PUNCTUAL, EARLY, LATE, INACTIVE, PASSIVE ]
+          enum: [PUNCTUAL, EARLY, LATE, INACTIVE, PASSIVE]
           nullable: true
         last_service_date:
           type: integer
@@ -1631,11 +1685,11 @@ components:
           nullable: true
         ncs_status:
           type: string
-          enum: [ SAME_OUTLET, DIFFERENT ]
+          enum: [SAME_OUTLET, DIFFERENT]
           nullable: true
         program_tab:
           type: string
-          enum: [ T_CARE, GBSB, REGULAR ]
+          enum: [T_CARE, GBSB, REGULAR]
           nullable: true
         next_service_stage:
           type: integer
@@ -1653,6 +1707,11 @@ components:
           description: Error message
 
   securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for API authentication
     WebhookApiKey:
       type: apiKey
       in: header

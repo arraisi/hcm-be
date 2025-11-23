@@ -13,6 +13,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
+	"github.com/arraisi/hcm-be/internal/http/handlers/engine"
 	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
 	"github.com/arraisi/hcm-be/internal/http/handlers/queue"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
@@ -181,6 +182,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	customerReminderHandler := customerreminder.New(cfg, customerReminderSvc, idempotencyStore)
 	queueHandler := queue.NewHandler(queueInspector)
 	tokenHandler := handlers.NewTokenHandler(tokenSvc)
+	engineHandler := engine.New(cfg, engineSvc)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                  cfg,
@@ -193,6 +195,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		CustomerReminderHandler: customerReminderHandler,
 		QueueHandler:            queueHandler,
 		TokenHandler:            tokenHandler,
+		EngineHandler:           engineHandler,
 	})
 
 	srv := apphttp.NewServer(cfg, router)

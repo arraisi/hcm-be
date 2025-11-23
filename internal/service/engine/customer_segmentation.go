@@ -135,8 +135,6 @@ func (s *service) getCategoryScore(q int) int {
 
 func (s *service) getPaymentStatusScore(q string) int {
 	switch q {
-	case "Unknown", "Kredit belum lunas":
-		return 0
 	case "Kredit lunas":
 		return 50
 	case "Cash":

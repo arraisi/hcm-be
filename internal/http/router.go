@@ -9,6 +9,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
+	"github.com/arraisi/hcm-be/internal/http/handlers/engine"
 	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
 	"github.com/arraisi/hcm-be/internal/http/handlers/queue"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
@@ -32,6 +33,7 @@ type Handler struct {
 	CustomerReminderHandler customerreminder.Handler
 	QueueHandler            *queue.Handler
 	TokenHandler            handlers.TokenHandler
+	EngineHandler           engine.Handler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -122,6 +124,11 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			qr.Post("/unpause", handler.QueueHandler.UnpauseQueue)
 			qr.Delete("/archived", handler.QueueHandler.DeleteArchivedTasks)
 			qr.Post("/archived/run", handler.QueueHandler.RunArchivedTasks)
+		})
+
+		// Engine endpoints
+		api.Route("/engine", func(eng chi.Router) {
+			eng.Post("/segmentation/monthly/run", handler.EngineHandler.RunMonthlySegmentation)
 		})
 	})
 
