@@ -32,10 +32,11 @@ import (
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	"github.com/arraisi/hcm-be/internal/scheduler"
-	"github.com/arraisi/hcm-be/internal/service"
+	authService "github.com/arraisi/hcm-be/internal/service/auth"
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	customerreminderService "github.com/arraisi/hcm-be/internal/service/customerreminder"
 	customervehicleService "github.com/arraisi/hcm-be/internal/service/customervehicle"
+	engineService "github.com/arraisi/hcm-be/internal/service/engine"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	oneaccessService "github.com/arraisi/hcm-be/internal/service/oneaccess"
 	servicebookingService "github.com/arraisi/hcm-be/internal/service/servicebooking"
@@ -157,12 +158,12 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	if err != nil {
 		return nil, err
 	}
-	tokenSvc := service.NewTokenService(tokenGenerator)
+	tokenSvc := authService.NewTokenService(tokenGenerator)
 
 	// Scheduler Services
-	customerSegSvc := service.NewCustomerSegmentationService()
-	outletAssignSvc := service.NewOutletAssignmentService()
-	salesAssignSvc := service.NewSalesAssignmentService()
+	customerSegSvc := engineService.NewCustomerSegmentationService()
+	outletAssignSvc := engineService.NewOutletAssignmentService()
+	salesAssignSvc := engineService.NewSalesAssignmentService()
 
 	// Scheduler
 	scheduler, err := scheduler.New(cfg.Scheduler, customerSegSvc, outletAssignSvc, salesAssignSvc)

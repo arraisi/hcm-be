@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/service"
+	engineService "github.com/arraisi/hcm-be/internal/service/engine"
 	"github.com/go-co-op/gocron"
 )
 
@@ -14,15 +14,15 @@ type Scheduler struct {
 	scheduler *gocron.Scheduler
 	cfg       config.SchedulerConfig
 
-	customerSegSvc  service.CustomerSegmentationService
-	outletAssignSvc service.OutletAssignmentService
-	salesAssignSvc  service.SalesAssignmentService
+	customerSegSvc  engineService.CustomerSegmentationService
+	outletAssignSvc engineService.OutletAssignmentService
+	salesAssignSvc  engineService.SalesAssignmentService
 }
 
 func New(cfg config.SchedulerConfig,
-	customerSegSvc service.CustomerSegmentationService,
-	outletAssignSvc service.OutletAssignmentService,
-	salesAssignSvc service.SalesAssignmentService,
+	customerSegSvc engineService.CustomerSegmentationService,
+	outletAssignSvc engineService.OutletAssignmentService,
+	salesAssignSvc engineService.SalesAssignmentService,
 ) (*Scheduler, error) {
 	log.Printf("[Scheduler] Config: %+v", cfg)
 	loc, err := time.LoadLocation(cfg.Timezone)
