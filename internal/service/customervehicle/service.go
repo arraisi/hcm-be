@@ -19,6 +19,7 @@ type Repository interface {
 	CreateCustomerVehicle(ctx context.Context, tx *sqlx.Tx, req *domain.CustomerVehicle) error
 	GetCustomerVehicle(ctx context.Context, req customervehicle.GetCustomerVehicleRequest) (domain.CustomerVehicle, error)
 	GetCustomerVehicles(ctx context.Context, req customervehicle.GetCustomerVehicleRequest) ([]domain.CustomerVehicle, error)
+	GetCustomerVehiclePaginated(ctx context.Context, req customervehicle.GetCustomerVehiclePaginatedRequest) ([]domain.CustomerVehicle, bool, error)
 	UpdateCustomerVehicle(ctx context.Context, tx *sqlx.Tx, req domain.CustomerVehicle) error
 }
 

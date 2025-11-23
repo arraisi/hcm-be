@@ -28,6 +28,7 @@ import (
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
 	employeeRepository "github.com/arraisi/hcm-be/internal/repository/employee"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
+	roLeadsRepository "github.com/arraisi/hcm-be/internal/repository/roleads"
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
@@ -104,6 +105,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	customerVehicleRepo := customervehicleRepository.New(cfg, dbHcm)
 	employeeRepo := employeeRepository.New(cfg, dbHcm)
 	customerReminderRepo := customerreminderRepository.New(cfg, dbHcm)
+	roLeadsRepo := roLeadsRepository.New(cfg, dbHcm)
 
 	// init services
 	userSvc := userService.NewUserService(mockApiClient)
@@ -161,12 +163,10 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	tokenSvc := authService.NewTokenService(tokenGenerator)
 
 	// Scheduler Services
-	customerSegSvc := engineService.NewCustomerSegmentationService()
-	outletAssignSvc := engineService.NewOutletAssignmentService()
-	salesAssignSvc := engineService.NewSalesAssignmentService()
+	engineSvc := engineService.New(txRepo, roLeadsRepo, customerVehicleSvc)
 
 	// Scheduler
-	scheduler, err := scheduler.New(cfg.Scheduler, customerSegSvc, outletAssignSvc, salesAssignSvc)
+	scheduler, err := scheduler.New(cfg.Scheduler, engineSvc)
 	if err != nil {
 		return nil, err
 	}

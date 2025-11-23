@@ -35,6 +35,11 @@ type CustomerVehicle struct {
 	CreatedBy              string     `db:"c_created_by"`
 	UpdatedAt              time.Time  `db:"d_updated_at"`
 	UpdatedBy              string     `db:"c_updated_by"`
+	DecDate                *time.Time `db:"d_dec_date"`
+	HasjratBuyerFlag       *bool      `db:"b_hasjrat_buyer_flag"`
+	CarPaymentStatus       *string    `db:"c_car_payment_status"`
+	OutletCode             *string    `db:"c_outlet_code"`
+	SalesNik               *string    `db:"c_sales_nik"`
 }
 
 // TableName returns the database table name for the CustomerVehicle model
@@ -75,6 +80,11 @@ func (cv *CustomerVehicle) Columns() []string {
 		"c_created_by",
 		"d_updated_at",
 		"c_updated_by",
+		"d_dec_date",
+		"b_hasjrat_buyer_flag",
+		"c_car_payment_status",
+		"c_outlet_code",
+		"c_sales_nik",
 	}
 }
 
