@@ -61,12 +61,20 @@ type Config struct {
 	Observability Observability `yaml:"observability"`
 	Database      Database      `yaml:"database"`
 	//OracleDatabase OracleDatabase `yaml:"oracleDatabase"`
-	Webhook     Webhook     `yaml:"webhook"`
-	FeatureFlag FeatureFlag `yaml:"featureFlag"`
-	Http        HttpConfig  `yaml:"http"`
-	Asynq       AsynqConfig `yaml:"asynq"`
-	Condition   Condition   `yaml:"condition"`
-	JWT         JWTConfig   `yaml:"jwt"`
+	Webhook     Webhook         `yaml:"webhook"`
+	FeatureFlag FeatureFlag     `yaml:"featureFlag"`
+	Http        HttpConfig      `yaml:"http"`
+	Asynq       AsynqConfig     `yaml:"asynq"`
+	Condition   Condition       `yaml:"condition"`
+	JWT         JWTConfig       `yaml:"jwt"`
+	Scheduler   SchedulerConfig `yaml:"scheduler"`
+}
+
+type SchedulerConfig struct {
+	Timezone         string `yaml:"timezone" mapstructure:"timezone"`
+	CustomerSegCron  string `yaml:"customer_seg_cron" mapstructure:"customer_seg_cron"`
+	OutletAssignCron string `yaml:"outlet_assign_cron" mapstructure:"outlet_assign_cron"`
+	SalesAssignCron  string `yaml:"sales_assign_cron" mapstructure:"sales_assign_cron"`
 }
 
 type HttpConfig struct {

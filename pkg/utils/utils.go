@@ -4,6 +4,9 @@ import (
 	"encoding/base64"
 	"fmt"
 	"time"
+
+	"github.com/arraisi/hcm-be/internal/config"
+	"github.com/jmoiron/sqlx"
 )
 
 func ToPointer[T any](v T) *T {
@@ -59,4 +62,20 @@ func JoinSCommaSeparatedString(values []string) string {
 		result += "," + values[i]
 	}
 	return result
+}
+
+// OpenDatabase opens a database connection with the given configuration.
+func OpenDatabase(cfg config.DatabaseConfig) (*sqlx.DB, error) {
+	db, err := sqlx.Open(cfg.Driver, cfg.DSN)
+	if err != nil {
+		return nil, err
+	}
+
+	// configure connection pool from config
+	db.SetMaxOpenConns(cfg.MaxOpenConnections)
+	db.SetMaxIdleConns(cfg.MaxIdleConnections)
+	db.SetConnMaxLifetime(cfg.MaxConnectionLifetime)
+	db.SetConnMaxIdleTime(cfg.MaxConnectionIdleTime)
+
+	return db, nil
 }

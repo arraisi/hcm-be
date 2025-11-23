@@ -67,3 +67,8 @@ asynq:
 condition:
   outletIDs:
     - ALL
+scheduler:
+  timezone: "Asia/Jakarta"
+  customer_seg_cron: "0 8 1 * *"      # monthly, every 1st at 08:00
+  outlet_assign_cron: "0 7 * * *"     # daily 07:00
+  sales_assign_cron: "* * * * *"      # daily 07:00
