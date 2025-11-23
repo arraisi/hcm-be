@@ -31,6 +31,7 @@ import (
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
+	"github.com/arraisi/hcm-be/internal/scheduler"
 	"github.com/arraisi/hcm-be/internal/service"
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	customerreminderService "github.com/arraisi/hcm-be/internal/service/customerreminder"
@@ -49,25 +50,13 @@ import (
 	_ "github.com/sijms/go-ora/v2"      // register Oracle driver
 )
 
-// Run starts the application with the given configuration.
-func Run(cfg *config.Config) error {
-	// wire dependencies
-	dbHcm, err := openDatabase(cfg.Database.HCM)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		_ = dbHcm.Close()
-	}()
+type App struct {
+	Server    *apphttp.Server
+	Scheduler *scheduler.Scheduler
+}
 
-	dbDmsAfterSales, err := openDatabase(cfg.Database.DMSAfterSales)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		_ = dbDmsAfterSales.Close()
-	}()
-
+// NewApp initializes the application with the given configuration.
+func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App, error) {
 	// init external clients
 	mockApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
 		Timeout: cfg.Http.MockApi.Timeout,
@@ -166,9 +155,20 @@ func Run(cfg *config.Config) error {
 	})
 	tokenGenerator, err := auth.NewServiceTokenGenerator(cfg.JWT)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	tokenSvc := service.NewTokenService(tokenGenerator)
+
+	// Scheduler Services
+	customerSegSvc := service.NewCustomerSegmentationService()
+	outletAssignSvc := service.NewOutletAssignmentService()
+	salesAssignSvc := service.NewSalesAssignmentService()
+
+	// Scheduler
+	scheduler, err := scheduler.New(cfg.Scheduler, customerSegSvc, outletAssignSvc, salesAssignSvc)
+	if err != nil {
+		return nil, err
+	}
 
 	// init handlers
 	userHandler := user.NewUserHandler(userSvc)
@@ -194,21 +194,10 @@ func Run(cfg *config.Config) error {
 		TokenHandler:            tokenHandler,
 	})
 
-	return apphttp.NewServer(cfg, router)
-}
+	srv := apphttp.NewServer(cfg, router)
 
-// Add this new method outside of the Run function
-func openDatabase(cfg config.DatabaseConfig) (*sqlx.DB, error) {
-	db, err := sqlx.Open(cfg.Driver, cfg.DSN)
-	if err != nil {
-		return nil, err
-	}
-
-	// configure connection pool from config
-	db.SetMaxOpenConns(cfg.MaxOpenConnections)
-	db.SetMaxIdleConns(cfg.MaxIdleConnections)
-	db.SetConnMaxLifetime(cfg.MaxConnectionLifetime)
-	db.SetConnMaxIdleTime(cfg.MaxConnectionIdleTime)
-
-	return db, nil
+	return &App{
+		Server:    srv,
+		Scheduler: scheduler,
+	}, nil
 }
