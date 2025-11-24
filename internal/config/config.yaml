@@ -68,7 +68,7 @@ condition:
   outletIDs:
     - ALL
 scheduler:
-  timezone: "Asia/Jakarta"
-  customer_seg_cron: "0 8 1 * *"      # monthly, every 1st at 08:00
-  outlet_assign_cron: "0 7 * * *"     # daily 07:00
-  sales_assign_cron: "* * * * *"      # daily 07:00
+  timezone: "UTC"
+  customer_seg_cron: "0 1 1 * *"      # monthly, every 1st at 01:00 UTC (08:00 Jakarta)
+  outlet_assign_cron: "0 0 * * *"     # daily 00:00 UTC (07:00 Jakarta)
+  sales_assign_cron: "0 0 * * *"      # daily 00:00 UTC (07:00 Jakarta)
