@@ -79,6 +79,8 @@ func (s *service) createRoLeads(ctx context.Context, request engine.CreateRoLead
 			CarServiceActivityScore: s.getServiceActivityScore(ctx, vehicle),
 			CarServiceScore:         s.getServiceScore(ctx, vehicle),
 			CustomerResponse:        engine.CustomerResponseNotSent,
+			LeadsOutlet:             utils.ToValue(vehicle.OutletCode),
+			LeadsSalesNik:           utils.ToValue(vehicle.SalesNik),
 			CreatedAt:               createdAt,
 			UpdatedAt:               &createdAt,
 		}
