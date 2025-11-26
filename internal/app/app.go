@@ -28,6 +28,7 @@ import (
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
 	employeeRepository "github.com/arraisi/hcm-be/internal/repository/employee"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
+	outletRepository "github.com/arraisi/hcm-be/internal/repository/outlet"
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
@@ -103,6 +104,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	customerVehicleRepo := customervehicleRepository.New(cfg, dbHcm)
 	employeeRepo := employeeRepository.New(cfg, dbHcm)
 	customerReminderRepo := customerreminderRepository.New(cfg, dbHcm)
+	_ = outletRepository.New(dbHcm)
 
 	// init services
 	userSvc := userService.NewUserService(mockApiClient)
