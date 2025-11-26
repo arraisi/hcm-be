@@ -5,14 +5,14 @@ import (
 	"fmt"
 )
 
-// GetNextRunning calls sp_get_next_hasjrat_running and returns the next running number.
+// GetNextSequence calls sp_get_next_hasjrat_running and returns the next running number.
 //
 // Params should already be normalized:
 // - sourceCode:        "H" / "C"
 // - customerTypeCode:  "R" / "G" / "C"
 // - outletCode:        5-char padded outlet (e.g. "10101" -> "10101")
 // - year:              2-char year string (e.g. "25")
-func (r *repository) GetNextRunning(
+func (r *repository) GetNextSequence(
 	ctx context.Context,
 	sourceCode string,
 	customerTypeCode string,
