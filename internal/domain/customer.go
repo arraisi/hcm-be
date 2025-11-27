@@ -1,8 +1,6 @@
 package domain
 
 import (
-	"fmt"
-	"strings"
 	"time"
 )
 
@@ -279,72 +277,4 @@ func (u *Customer) ToUpdateMap() map[string]interface{} {
 	updateMap["d_updated_at"] = u.UpdatedAt.UTC()
 	updateMap["c_updated_by"] = u.UpdatedBy
 	return updateMap
-}
-
-// mapCustomerTypeToCode mengubah CustomerType menjadi 1 huruf: R / G / C
-func mapCustomerTypeToCode(customerType string) (string, error) {
-	switch strings.ToLower(strings.TrimSpace(customerType)) {
-	case "personal", "retail_personal":
-		return "R", nil
-	case "government", "goverment", "retail_government":
-		return "G", nil
-	case "corporate", "retail_corporate":
-		return "C", nil
-	default:
-		return "", fmt.Errorf("unsupported customer type: %q", customerType)
-	}
-}
-
-// padOutletCode memastikan outlet code panjangnya 5 digit, di-pad dengan 0 di depan kalau kurang.
-func padOutletCode(outletCode string) (string, error) {
-	outletCode = strings.TrimSpace(outletCode)
-	if len(outletCode) == 0 {
-		return "", fmt.Errorf("outlet code is empty")
-	}
-	if len(outletCode) > 5 {
-		return "", fmt.Errorf("outlet code %q is longer than 5 characters", outletCode)
-	}
-	return fmt.Sprintf("%05s", outletCode), nil
-}
-
-// GenerateHasjratID membentuk ID dengan format:
-// HA + SourceCode(1) + CustomerTypeCode(1) + Outlet(5) + Year(2) + Seq(7)
-// Contoh: HAHR1010125000001
-func (c *Customer) GenerateHasjratID(sourceCode, outletCode string, seq uint64) (string, error) {
-	const prefix = "HA"
-
-	sourceCode = strings.ToUpper(strings.TrimSpace(sourceCode))
-	if len(sourceCode) != 1 {
-		return "", fmt.Errorf("source code must be exactly 1 character, got %q", sourceCode)
-	}
-
-	// 1 huruf tipe customer (R/G/C) dari c.CustomerType
-	customerTypeCode, err := mapCustomerTypeToCode(c.CustomerType)
-	if err != nil {
-		return "", err
-	}
-
-	// Outlet 5 digit
-	outletCodePadded, err := padOutletCode(outletCode)
-	if err != nil {
-		return "", err
-	}
-
-	// Tahun 2 digit dari CreatedAt (misal 2025 -> 25)
-	year := c.CreatedAt.Year() % 100
-
-	// Running number 7 digit
-	running := fmt.Sprintf("%07d", seq)
-
-	hasjratID := fmt.Sprintf(
-		"%s%s%s%s%02d%s",
-		prefix,           // HA
-		sourceCode,       // H / C
-		customerTypeCode, // R / G / C
-		outletCodePadded, // 5 digit outlet
-		year,             // 2 digit tahun
-		running,          // 7 digit running number
-	)
-
-	return hasjratID, nil
 }

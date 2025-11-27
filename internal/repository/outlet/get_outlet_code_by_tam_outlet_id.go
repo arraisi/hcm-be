@@ -8,7 +8,7 @@ import (
 	"github.com/elgris/sqrl"
 )
 
-func (r *repository) GetOutletByTAMOutletCode(ctx context.Context, tamOutletCode string) (*domain.Outlet, error) {
+func (r *repository) GetOutletCodeByTAMOutletID(ctx context.Context, tamOutletCode string) (*domain.Outlet, error) {
 	if tamOutletCode == "" {
 		return nil, fmt.Errorf("tam outlet code cannot be empty")
 	}
