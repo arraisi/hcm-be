@@ -3,10 +3,9 @@ package hasjratid
 import (
 	"context"
 	"fmt"
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	"strings"
 	"time"
-
-	"github.com/arraisi/hcm-be/internal/domain"
 )
 
 // GenerateHasjratID builds an ID with the format:
@@ -19,29 +18,25 @@ import (
 //
 // Parameters:
 //   - ctx:            request context
-//   - c:              customer entity (for customer type)
 //   - sourceCode:     "H" / "C" (customer source, e.g. H = Hasjrat, C = Campaign, etc.)
+//   - customerType:   R/G/C -> personal, individual, Government, Company, Corporate
 //   - tamOutletID:    optional TAM outlet ID; if provided, it will be resolved via OutletRepo
 //   - outletCode:     optional outlet code; used when tamOutletID is empty
 //   - registrationDate: UNIX timestamp (seconds) used to derive the year (YY)
 func (s *service) GenerateHasjratID(
 	ctx context.Context,
-	c domain.Customer,
-	sourceCode string,
-	tamOutletID string,
-	outletCode string,
-	registrationDate int64,
+	request hasjratid.GenerateRequest,
 ) (string, error) {
 	const prefix = "HA"
 
 	// --- Normalize & validate source code (H / C) ---
-	sourceCode = strings.ToUpper(strings.TrimSpace(sourceCode))
-	if len(sourceCode) != 1 {
-		return "", fmt.Errorf("source code must be exactly 1 character, got %q", sourceCode)
+	request.SourceCode = strings.ToUpper(strings.TrimSpace(request.SourceCode))
+	if len(request.SourceCode) != 1 {
+		return "", fmt.Errorf("source code must be exactly 1 character, got %q", request.SourceCode)
 	}
 
 	// --- Map customer type text to 1-letter code (R/G/C) ---
-	customerTypeCode, err := MapCustomerTypeTextToCode(c.CustomerType)
+	customerTypeCode, err := MapCustomerTypeTextToCode(request.CustomerType)
 	if err != nil {
 		return "", err
 	}
@@ -49,8 +44,8 @@ func (s *service) GenerateHasjratID(
 	// --- Resolve outlet code ---
 	var resolvedOutletCode string
 
-	tamOutletID = strings.TrimSpace(tamOutletID)
-	outletCode = strings.TrimSpace(outletCode)
+	tamOutletID := strings.TrimSpace(request.TamOutletID)
+	outletCode := strings.TrimSpace(request.OutletCode)
 
 	switch {
 	case tamOutletID != "":
@@ -79,17 +74,17 @@ func (s *service) GenerateHasjratID(
 	}
 
 	// --- Derive 2-digit year from registration UNIX timestamp ---
-	if registrationDate <= 0 {
-		return "", fmt.Errorf("registrationDate must be a valid UNIX timestamp, got %d", registrationDate)
+	if request.RegistrationDate <= 0 {
+		return "", fmt.Errorf("registrationDate must be a valid UNIX timestamp, got %d", request.RegistrationDate)
 	}
 
-	regTime := time.Unix(registrationDate, 0)
+	regTime := time.Unix(request.RegistrationDate, 0)
 	yearStr := fmt.Sprintf("%02d", regTime.Year()%100)
 
 	// --- Get next sequence value from DB (running number 1..n) ---
 	seq, err := s.repo.GetNextSequence(
 		ctx,
-		sourceCode,
+		request.SourceCode,
 		customerTypeCode,
 		outletCodePadded,
 		yearStr,
@@ -104,12 +99,12 @@ func (s *service) GenerateHasjratID(
 	// --- Build final Hasjrat ID ---
 	hasjratID := fmt.Sprintf(
 		"%s%s%s%s%s%s",
-		prefix,           // HA
-		sourceCode,       // H / C
-		customerTypeCode, // R / G / C
-		outletCodePadded, // 5-digit outlet
-		yearStr,          // 2-digit year
-		running,          // 7-digit sequence
+		prefix,             // HA
+		request.SourceCode, // H / C
+		customerTypeCode,   // R / G / C
+		outletCodePadded,   // 5-digit outlet
+		yearStr,            // 2-digit year
+		running,            // 7-digit sequence
 	)
 
 	return hasjratID, nil
