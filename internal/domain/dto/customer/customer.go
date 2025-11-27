@@ -12,22 +12,44 @@ import (
 
 // OneAccountRequest represents the one account information from the webhook
 type OneAccountRequest struct {
-	OneAccountID string `json:"one_account_ID" validate:"required"`
-	FirstName    string `json:"first_name" validate:"required"`
-	LastName     string `json:"last_name" validate:"required"`
-	Gender       string `json:"gender" validate:"required,oneof=MALE FEMALE OTHER"`
-	PhoneNumber  string `json:"phone_number" validate:"required"`
-	Email        string `json:"email" validate:"omitempty,email"`
+	OneAccountID         string  `json:"one_account_ID" validate:"required"`
+	DealerCustomerID     *string `json:"dealer_customer_ID"`
+	CustomerCategory     *string `json:"customer_category"`
+	FirstName            string  `json:"first_name" validate:"required"`
+	LastName             string  `json:"last_name" validate:"required"`
+	KTPNumber            *string `json:"ktp_number"`
+	BirthDate            *string `json:"birth_date"`
+	ResidenceAddress     *string `json:"residence_address"`
+	ResidenceSubdistrict *string `json:"residence_subdistrict"`
+	ResidenceDistrict    *string `json:"residence_district"`
+	ResidenceCity        *string `json:"residence_city"`
+	ResidenceProvince    *string `json:"residence_province"`
+	ResidencePostalCode  *string `json:"residence_postal_code"`
+	Email                string  `json:"email" validate:"omitempty,email"`
+	PhoneNumber          string  `json:"phone_number" validate:"required"`
+	CustomerType         *string `json:"customer_type"`
+	Gender               string  `json:"gender" validate:"required,oneof=MALE FEMALE OTHER"`
 }
 
 func NewOneAccountRequest(customer domain.Customer) OneAccountRequest {
 	return OneAccountRequest{
-		OneAccountID: customer.OneAccountID,
-		FirstName:    customer.FirstName,
-		LastName:     customer.LastName,
-		Gender:       utils.ToValue(customer.Gender),
-		PhoneNumber:  customer.PhoneNumber,
-		Email:        customer.Email,
+		OneAccountID:         customer.OneAccountID,
+		DealerCustomerID:     utils.ToPointer(customer.DealerCustomerID),
+		CustomerCategory:     utils.ToPointer(customer.CustomerCategory),
+		FirstName:            customer.FirstName,
+		LastName:             customer.LastName,
+		KTPNumber:            utils.ToPointer(customer.KTPNumber),
+		BirthDate:            utils.ToPointer(customer.BirthDate.Format("2006-01-02")),
+		ResidenceAddress:     utils.ToPointer(customer.ResidenceAddress),
+		ResidenceSubdistrict: utils.ToPointer(customer.ResidenceSubdistrict),
+		ResidenceDistrict:    utils.ToPointer(customer.ResidenceDistrict),
+		ResidenceCity:        utils.ToPointer(customer.ResidenceCity),
+		ResidenceProvince:    utils.ToPointer(customer.ResidenceProvince),
+		ResidencePostalCode:  utils.ToPointer(customer.ResidencePostalCode),
+		Email:                customer.Email,
+		PhoneNumber:          customer.PhoneNumber,
+		CustomerType:         utils.ToPointer(customer.CustomerType),
+		Gender:               utils.ToValue(customer.Gender),
 	}
 }
 
@@ -96,17 +118,33 @@ func (req UpdateCustomerRequest) ToUpdateMap() map[string]interface{} {
 }
 
 func (be *OneAccountRequest) ToDomain() domain.Customer {
+	birthDate := time.Time{}
+	if be.BirthDate != nil {
+		birthDate, _ = time.Parse("2006-01-02", *be.BirthDate)
+	}
+
 	return domain.Customer{
-		OneAccountID: be.OneAccountID,
-		FirstName:    be.FirstName,
-		LastName:     be.LastName,
-		Email:        be.Email,
-		PhoneNumber:  be.PhoneNumber,
-		Gender:       utils.ToPointer(be.Gender),
-		CreatedAt:    time.Now(),
-		CreatedBy:    constants.System,
-		UpdatedAt:    time.Now(),
-		UpdatedBy:    utils.ToPointer(constants.System),
+		OneAccountID:         be.OneAccountID,
+		DealerCustomerID:     utils.ToValue(be.DealerCustomerID),
+		CustomerCategory:     utils.ToValue(be.CustomerCategory),
+		FirstName:            be.FirstName,
+		LastName:             be.LastName,
+		KTPNumber:            utils.ToValue(be.KTPNumber),
+		BirthDate:            birthDate,
+		ResidenceAddress:     utils.ToValue(be.ResidenceAddress),
+		ResidenceSubdistrict: utils.ToValue(be.ResidenceSubdistrict),
+		ResidenceDistrict:    utils.ToValue(be.ResidenceDistrict),
+		ResidenceCity:        utils.ToValue(be.ResidenceCity),
+		ResidenceProvince:    utils.ToValue(be.ResidenceProvince),
+		ResidencePostalCode:  utils.ToValue(be.ResidencePostalCode),
+		Email:                be.Email,
+		PhoneNumber:          be.PhoneNumber,
+		CustomerType:         utils.ToValue(be.CustomerType),
+		Gender:               utils.ToPointer(be.Gender),
+		CreatedAt:            time.Now(),
+		CreatedBy:            constants.System,
+		UpdatedAt:            time.Now(),
+		UpdatedBy:            utils.ToPointer(constants.System),
 	}
 }
 
