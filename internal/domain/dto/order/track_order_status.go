@@ -80,6 +80,16 @@ type InsuranceApplicationRequest struct {
 	Policies               []InsurancePolicyRequest `json:"policies" validate:"required,min=1,dive"`
 }
 
+func (i *InsuranceApplicationRequest) ToInsurancePoliciesModel(salesOrderID string) []domain.SalesOrderInsurancePolicy {
+	policies := make([]domain.SalesOrderInsurancePolicy, 0, len(i.Policies))
+	for _, policyReq := range i.Policies {
+		policy := policyReq.ToInsurancePolicyModel(salesOrderID)
+		policies = append(policies, policy)
+
+	}
+	return policies
+}
+
 // PDFURequest represents PDFU (Post Delivery Follow Up) information
 type PDFURequest struct {
 	Status                  string `json:"status" validate:"required,oneof=PENDING COMPLETED FAILED"`
@@ -95,8 +105,8 @@ type DocumentHandoverRequest struct {
 	BPKBDealerReceivedDatetime int64   `json:"bpkb_dealer_received_datetime"`
 	STNKRecipientName          *string `json:"stnk_recipient_name"`
 	BPKBRecipientName          *string `json:"bpkb_recipient_name"`
-	STNKStatus                 *string `json:"stnk_status"`
-	BPKBStatus                 *string `json:"bpkb_status"`
+	STNKStatus                 bool    `json:"stnk_status"`
+	BPKBStatus                 bool    `json:"bpkb_status"`
 	DocumentCollectionStatus   string  `json:"document_collection_status" validate:"required,oneof=WAITING IN_PROGRESS COMPLETED"`
 }
 
@@ -162,7 +172,7 @@ type SalesOrderRequest struct {
 	MatchingDate          int64                        `json:"matching_date"`
 	VIN                   string                       `json:"vin"`
 	VINReleaseFlag        bool                         `json:"vin_release_flag"`
-	UnitDeliveryDatetime  int64                        `json:"unit_delivery_datetime"`
+	PlanDeliveryDatetime  int64                        `json:"plan_delivery_datetime"`
 	RRN                   string                       `json:"rrn"`
 	UnitStatus            string                       `json:"unit_status" validate:"required"`
 	MDPDate               int64                        `json:"mdp_date"`
@@ -221,7 +231,8 @@ type TrackOrderStatusEvent struct {
 }
 
 // ToSPKModel converts SPKRequest to domain.SPK
-func (r *SPKRequest) ToSPKModel(customerID string, eventID string) domain.SPK {
+func (r *SPKRequest) ToSPKModel() domain.SPK {
+	now := time.Now()
 	return domain.SPK{
 		SPKNumber:               r.SPKNumber,
 		LeadsID:                 r.LeadsID,
@@ -240,21 +251,14 @@ func (r *SPKRequest) ToSPKModel(customerID string, eventID string) domain.SPK {
 		SPKApprovedDatetime:     utils.UnixToTimePtr(r.SPKApprovedDatetime),
 		SPKCancelledDatetime:    utils.UnixToTimePtr(r.SPKCancelledDatetime),
 		SPKCancelledReason:      r.SPKCancelledReason,
-		CreatedAt:               time.Now(),
-		UpdatedAt:               time.Now(),
+		CreatedAt:               now,
+		UpdatedAt:               now,
 	}
 }
 
 // ToSalesOrderModel converts SalesOrderRequest to domain.SalesOrder
 func (r *SalesOrderRequest) ToSalesOrderModel(spkID, customerID, eventID string) domain.SalesOrder {
-	// Helper function to convert bool pointer to bool status
-	convertBoolStatus := func(status *string) bool {
-		if status == nil {
-			return false
-		}
-		return *status == "true" || *status == "false"
-	}
-
+	now := time.Now()
 	return domain.SalesOrder{
 		SONumber:                         r.SONumber,
 		ColorCode:                        r.ColorCode,
@@ -264,7 +268,7 @@ func (r *SalesOrderRequest) ToSalesOrderModel(spkID, customerID, eventID string)
 		MatchingDate:                     utils.UnixToTimePtr(r.MatchingDate),
 		VIN:                              utils.ToPointer(r.VIN),
 		VINReleaseFlag:                   r.VINReleaseFlag,
-		PlanDeliveryDatetime:             utils.UnixToTimePtr(r.UnitDeliveryDatetime),
+		PlanDeliveryDatetime:             utils.UnixToTimePtr(r.PlanDeliveryDatetime),
 		RRN:                              utils.ToPointer(r.RRN),
 		UnitStatus:                       r.UnitStatus,
 		MDPDate:                          utils.UnixToTimePtr(r.MDPDate),
@@ -311,8 +315,8 @@ func (r *SalesOrderRequest) ToSalesOrderModel(spkID, customerID, eventID string)
 		DocBPKBDealerReceivedDatetime:    utils.UnixToTimePtr(r.DocumentHandover.BPKBDealerReceivedDatetime),
 		DocSTNKRecipientName:             r.DocumentHandover.STNKRecipientName,
 		DocBPKBRecipientName:             r.DocumentHandover.BPKBRecipientName,
-		DocSTNKStatus:                    convertBoolStatus(r.DocumentHandover.STNKStatus),
-		DocBPKBStatus:                    convertBoolStatus(r.DocumentHandover.BPKBStatus),
+		DocSTNKStatus:                    r.DocumentHandover.STNKStatus,
+		DocBPKBStatus:                    r.DocumentHandover.BPKBStatus,
 		DocCollectionStatus:              r.DocumentHandover.DocumentCollectionStatus,
 		LeasingID:                        utils.ToPointerIf(r.LeasingApplication != nil, r.LeasingApplication.LeasingID),
 		LeasingCompanyName:               utils.ToPointerIf(r.LeasingApplication != nil, r.LeasingApplication.LeasingCompanyName),
@@ -323,8 +327,8 @@ func (r *SalesOrderRequest) ToSalesOrderModel(spkID, customerID, eventID string)
 		InsuranceProvider:                utils.ToPointerIf(r.InsuranceApplication != nil, r.InsuranceApplication.InsuranceProvider),
 		InsuranceProviderOther:           r.InsuranceApplication.InsuranceProviderOther,
 		InsurancePolicyNumber:            utils.ToPointerIf(r.InsuranceApplication != nil, r.InsuranceApplication.InsurancePolicyNumber),
-		CreatedAt:                        time.Now(),
-		UpdatedAt:                        time.Now(),
+		CreatedAt:                        now,
+		UpdatedAt:                        now,
 		EventID:                          eventID,
 		SPKID:                            spkID,
 		CustomerID:                       customerID,
@@ -351,6 +355,17 @@ func (r *AccessoryRequest) ToAccessoryModel(salesOrderID string) domain.SalesOrd
 		CreatedAt:                       now,
 		UpdatedAt:                       now,
 		SalesOrderID:                    salesOrderID,
+	}
+}
+
+func (r *PackagePartRequest) ToAccessoryPartModel(accessoriesID string) domain.SalesOrderAccessoriesPart {
+	now := time.Now()
+	return domain.SalesOrderAccessoriesPart{
+		AccessoriesID:     accessoriesID,
+		AccessoriesNumber: r.AccessoriesNumber,
+		AccessoriesName:   r.AccessoriesName,
+		CreatedAt:         now,
+		UpdatedAt:         now,
 	}
 }
 
@@ -396,6 +411,7 @@ func (r *InsurancePolicyRequest) ToInsurancePolicyModel(salesOrderID string) dom
 
 // ToDeliveryPlanModel converts DeliveryPlanRequest to domain.SalesOrderDeliveryPlan
 func (r *DeliveryPlanRequest) ToDeliveryPlanModel(salesOrderID string) domain.SalesOrderDeliveryPlan {
+	now := time.Now()
 	return domain.SalesOrderDeliveryPlan{
 		SalesOrderID:              salesOrderID,
 		AmendmentCreatedDatetime:  time.Unix(r.AmendmentCreatedDatetime, 0),
@@ -418,7 +434,7 @@ func (r *DeliveryPlanRequest) ToDeliveryPlanModel(salesOrderID string) domain.Sa
 		DeliveryDistrict:          r.DeliveryDistrict,
 		DeliverySubdistrict:       r.DeliverySubdistrict,
 		DeliveryPostalCode:        r.DeliveryPostalCode,
-		CreatedAt:                 time.Now(),
-		UpdatedAt:                 time.Now(),
+		CreatedAt:                 now,
+		UpdatedAt:                 now,
 	}
 }

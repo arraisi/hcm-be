@@ -7,7 +7,6 @@ import (
 // SPK represents Surat Pesanan Kendaraan (Vehicle Order Letter)
 type SPK struct {
 	ID                      string     `json:"id" db:"i_id"`
-	SPKID                   string     `json:"spk_id" db:"i_spk_id"`
 	SPKNumber               string     `json:"spk_number" db:"c_spk_number"`
 	LeadsID                 string     `json:"leads_id" db:"i_leads_id"`
 	CreatedDatetime         time.Time  `json:"created_datetime" db:"d_created_datetime"`
@@ -37,7 +36,6 @@ func (s *SPK) TableName() string {
 // Columns returns the list of database columns for the SPK model
 func (s *SPK) Columns() []string {
 	return []string{
-		"i_spk_id",
 		"c_spk_number",
 		"i_leads_id",
 		"d_created_datetime",
@@ -64,7 +62,6 @@ func (s *SPK) Columns() []string {
 func (s *SPK) SelectColumns() []string {
 	return []string{
 		"i_id",
-		"i_spk_id",
 		"c_spk_number",
 		"i_leads_id",
 		"d_created_datetime",
@@ -91,7 +88,6 @@ func (s *SPK) ToCreateMap() (columns []string, values []interface{}) {
 	now := time.Now()
 	columns = s.Columns()
 	values = []interface{}{
-		s.SPKID,
 		s.SPKNumber,
 		s.LeadsID,
 		s.CreatedDatetime,
@@ -117,10 +113,6 @@ func (s *SPK) ToCreateMap() (columns []string, values []interface{}) {
 
 func (s *SPK) ToUpdateMap() map[string]interface{} {
 	updateMap := map[string]interface{}{}
-
-	if s.SPKID != "" {
-		updateMap["i_spk_id"] = s.SPKID
-	}
 	if s.SPKNumber != "" {
 		updateMap["c_spk_number"] = s.SPKNumber
 	}
