@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/elgris/sqrl v0.0.0-20210727210741-7e0198b30236
 	github.com/go-chi/chi/v5 v5.2.3
+	github.com/go-co-op/gocron v1.37.0
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.28.0
@@ -13,6 +14,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hibiken/asynq v0.25.1
 	github.com/jmoiron/sqlx v1.4.0
+	github.com/lib/pq v1.10.9
 	github.com/microsoft/go-mssqldb v1.9.3
 	github.com/prometheus/client_golang v1.23.2
 	github.com/sijms/go-ora/v2 v2.9.0
@@ -29,7 +31,6 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
-	github.com/go-co-op/gocron v1.37.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
