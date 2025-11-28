@@ -75,7 +75,6 @@ func (s *SalesOrderAccessory) SelectColumns() []string {
 func (s *SalesOrderAccessory) ToCreateMap() (columns []string, values []interface{}) {
 	columns = s.Columns()
 	values = []interface{}{
-		s.ID,
 		s.AccessoriesType,
 		s.AccessoriesNumber,
 		s.AccessoriesName,
