@@ -108,6 +108,35 @@ var (
 		{Error: ErrServiceBookingCustomerHasActive, Code: http.StatusConflict},
 	}
 
+	// Sales Order errors
+	ErrSalesOrderNotFound     = errors.New("sales order not found")
+	ErrSalesOrderInvalidData  = errors.New("invalid sales order data")
+	ErrSalesOrderCreateFailed = errors.New("failed to create sales order")
+	ErrSalesOrderUpdateFailed = errors.New("failed to update sales order")
+	ErrSPKNotFound            = errors.New("SPK not found")
+	ErrSPKInvalidStatus       = errors.New("invalid SPK status")
+	ErrSPKCreateFailed        = errors.New("failed to create SPK")
+	ErrSPKUpdateFailed        = errors.New("failed to update SPK")
+	ErrPaymentInvalidStatus   = errors.New("invalid payment status")
+	ErrDeliveryInvalidStatus  = errors.New("invalid delivery status")
+	ErrInsuranceInvalidType   = errors.New("invalid insurance type")
+	ErrAccessoryInvalidType   = errors.New("invalid accessory type")
+	// Sales Order-specific error list
+	ErrListSalesOrder = ErrList{
+		{Error: ErrSalesOrderNotFound, Code: http.StatusNotFound},
+		{Error: ErrSalesOrderInvalidData, Code: http.StatusBadRequest},
+		{Error: ErrSalesOrderCreateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrSalesOrderUpdateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrSPKNotFound, Code: http.StatusNotFound},
+		{Error: ErrSPKInvalidStatus, Code: http.StatusBadRequest},
+		{Error: ErrSPKCreateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrSPKUpdateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrPaymentInvalidStatus, Code: http.StatusBadRequest},
+		{Error: ErrDeliveryInvalidStatus, Code: http.StatusBadRequest},
+		{Error: ErrInsuranceInvalidType, Code: http.StatusBadRequest},
+		{Error: ErrAccessoryInvalidType, Code: http.StatusBadRequest},
+	}
+
 	ErrCustomerNotFound = errors.New("customer is not found")
 	ErrListCustomer     = ErrList{
 		{Error: ErrCustomerNotFound, Code: http.StatusNotFound},
