@@ -381,31 +381,16 @@ func (r *PaymentRequest) ToPaymentModel(salesOrderID string, isDownPayment bool)
 }
 
 // ToInsurancePolicyModel converts InsurancePolicyRequest to domain.SalesOrderInsurancePolicy
-func (r *InsurancePolicyRequest) ToInsurancePolicyModel(insuranceID string) domain.SalesOrderInsurancePolicy {
+func (r *InsurancePolicyRequest) ToInsurancePolicyModel(salesOrderID string) domain.SalesOrderInsurancePolicy {
+	now := time.Now()
 	return domain.SalesOrderInsurancePolicy{
-		InsuranceID:        insuranceID,
+		SalesOrderID:       salesOrderID,
 		InsuranceType:      r.InsuranceType,
 		InsuranceCoverage:  r.InsuranceCoverage,
 		InsuranceStartDate: time.Unix(r.InsuranceStartDate, 0),
 		InsuranceEndDate:   time.Unix(r.InsuranceEndDate, 0),
-		CreatedAt:          time.Now(),
-		CreatedBy:          constants.System,
-		UpdatedAt:          time.Now(),
-		UpdatedBy:          constants.System,
-	}
-}
-
-// ToInsuranceModel converts InsuranceApplicationRequest to domain.SalesOrderInsurance
-func (r *InsuranceApplicationRequest) ToInsuranceModel(salesOrderID string) domain.SalesOrderInsurance {
-	return domain.SalesOrderInsurance{
-		SalesOrderID:           salesOrderID,
-		InsuranceProvider:      r.InsuranceProvider,
-		InsuranceProviderOther: r.InsuranceProviderOther,
-		InsurancePolicyNumber:  r.InsurancePolicyNumber,
-		CreatedAt:              time.Now(),
-		CreatedBy:              constants.System,
-		UpdatedAt:              time.Now(),
-		UpdatedBy:              constants.System,
+		CreatedAt:          now,
+		UpdatedAt:          now,
 	}
 }
 
