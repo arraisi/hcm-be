@@ -410,7 +410,7 @@ func (r *DeliveryPlanRequest) ToDeliveryPlanModel(salesOrderID string) domain.Sa
 		RecipientPhoneNumber:      r.RecipientPhoneNumber,
 		RecipientRelation:         r.RecipientRelation,
 		RecipientRelationOthers:   r.RecipientRelationOthers,
-		DeliveryLocation:          r.DeliveryLocation,
+		DeliveryAddressLocation:   r.DeliveryLocation,
 		DeliveryAddressLabel:      r.DeliveryAddressLabel,
 		DeliveryAddress:           r.DeliveryAddress,
 		DeliveryProvince:          r.DeliveryProvince,
@@ -419,8 +419,6 @@ func (r *DeliveryPlanRequest) ToDeliveryPlanModel(salesOrderID string) domain.Sa
 		DeliverySubdistrict:       r.DeliverySubdistrict,
 		DeliveryPostalCode:        r.DeliveryPostalCode,
 		CreatedAt:                 time.Now(),
-		CreatedBy:                 constants.System,
 		UpdatedAt:                 time.Now(),
-		UpdatedBy:                 constants.System,
 	}
 }
