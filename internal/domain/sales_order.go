@@ -62,8 +62,8 @@ type SalesOrder struct {
 	DocBPKBDealerReceivedDatetime    *time.Time `json:"doc_bpkb_dealer_received_datetime" db:"d_doc_bpkb_dealer_received_datetime"`
 	DocSTNKRecipientName             *string    `json:"doc_stnk_recipient_name" db:"n_doc_stnk_recipient_name"`
 	DocBPKBRecipientName             *string    `json:"doc_bpkb_recipient_name" db:"n_doc_bpkb_recipient_name"`
-	DocSTNKStatus                    bool       `json:"doc_stnk_status" db:"b_doc_stnk_status"`
-	DocBPKBStatus                    bool       `json:"doc_bpkb_status" db:"b_doc_bpkb_status"`
+	DocSTNKStatus                    string     `json:"doc_stnk_status" db:"b_doc_stnk_status"`
+	DocBPKBStatus                    string     `json:"doc_bpkb_status" db:"b_doc_bpkb_status"`
 	DocCollectionStatus              string     `json:"doc_collection_status" db:"c_doc_collection_status"`
 	LeasingID                        *string    `json:"leasing_id" db:"i_leasing_id"`
 	LeasingCompanyName               *string    `json:"leasing_company_name" db:"n_leasing_company_name"`
@@ -89,7 +89,7 @@ func (s *SalesOrder) TableName() string {
 // Columns returns the list of database columns for the SalesOrder model
 func (s *SalesOrder) Columns() []string {
 	return []string{
-		"i_id", "c_so_number", "c_color_code", "n_color",
+		"c_so_number", "c_color_code", "n_color",
 		"d_sro_cancelled", "c_matching_status", "d_matching_date", "c_vin", "b_vin_release_flag",
 		"d_plan_delivery_datetime", "c_rrn", "c_unit_status", "d_mdp_date", "d_on_hand_date",
 		"c_vehicle_category", "b_flag_off_the_road_vehicle", "c_settlement_status", "d_settlement_datetime", "c_payment_method",
@@ -139,7 +139,7 @@ func (s *SalesOrder) SelectColumns() []string {
 func (s *SalesOrder) ToCreateMap() (columns []string, values []interface{}) {
 	columns = s.Columns()
 	values = []interface{}{
-		s.ID, s.SONumber, s.ColorCode, s.Color,
+		s.SONumber, s.ColorCode, s.Color,
 		s.SROCancelled, s.MatchingStatus, s.MatchingDate, s.VIN, s.VINReleaseFlag,
 		s.PlanDeliveryDatetime, s.RRN, s.UnitStatus, s.MDPDate, s.OnHandDate,
 		s.VehicleCategory, s.FlagOffTheRoadVehicle, s.SettlementStatus, s.SettlementDatetime, s.PaymentMethod,

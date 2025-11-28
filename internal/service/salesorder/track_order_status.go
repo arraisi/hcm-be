@@ -30,10 +30,10 @@ func (s *service) TrackOrderStatus(ctx context.Context, event order.TrackOrderSt
 
 	// TODO: Check if SPK exists by SPK number and update, otherwise create
 	// For now, we'll just create
-	// err = s.spkRepo.CreateSPK(ctx, tx, &spk)
-	// if err != nil {
-	// 	return err
-	// }
+	err = s.spkRepo.CreateSPK(ctx, tx, &spk)
+	if err != nil {
+		return err
+	}
 
 	// 3. Process each Sales Order
 	for _, soReq := range event.Data.SalesOrders {
@@ -41,10 +41,10 @@ func (s *service) TrackOrderStatus(ctx context.Context, event order.TrackOrderSt
 		fmt.Println(salesOrder)
 
 		// TODO: Create/Update Sales Order
-		// err = s.salesOrderRepo.CreateSalesOrder(ctx, tx, &salesOrder)
-		// if err != nil {
-		// 	return err
-		// }
+		err = s.repo.CreateSalesOrder(ctx, tx, &salesOrder)
+		if err != nil {
+			return err
+		}
 
 		// 4. Process Accessories
 		for _, accReq := range soReq.Accessories {
@@ -52,20 +52,20 @@ func (s *service) TrackOrderStatus(ctx context.Context, event order.TrackOrderSt
 			fmt.Println(accessory)
 
 			// TODO: Create accessory
-			// err = s.accessoryRepo.CreateAccessory(ctx, tx, &accessory)
-			// if err != nil {
-			// 	return err
-			// }
+			err = s.repo.CreateSalesOrderAccessories(ctx, tx, &accessory)
+			if err != nil {
+				return err
+			}
 
 			for _, part := range accReq.PackageParts {
 				accessoryPart := part.ToAccessoryPartModel(accessory.ID)
 				fmt.Println(accessoryPart)
 
 				// TODO: Create accessory part
-				// err = s.accessoryRepo.CreateAccessoryPart(ctx, tx, &accessory)
-				// if err != nil {
-				// 	return err
-				// }
+				err = s.repo.CreateSalesOrderAccessoriesPart(ctx, tx, &accessoryPart)
+				if err != nil {
+					return err
+				}
 			}
 		}
 
@@ -75,10 +75,10 @@ func (s *service) TrackOrderStatus(ctx context.Context, event order.TrackOrderSt
 			fmt.Println(payment)
 
 			// TODO: Create/Update payment
-			// err = s.paymentRepo.CreatePayment(ctx, tx, &payment)
-			// if err != nil {
-			// 	return err
-			// }
+			err = s.repo.CreateSalesOrderPayment(ctx, tx, &payment)
+			if err != nil {
+				return err
+			}
 		}
 
 		// 6. Process Payments
@@ -87,10 +87,10 @@ func (s *service) TrackOrderStatus(ctx context.Context, event order.TrackOrderSt
 			fmt.Println(payment)
 
 			// TODO: Create/Update payment
-			// err = s.paymentRepo.CreatePayment(ctx, tx, &payment)
-			// if err != nil {
-			// 	return err
-			// }
+			err = s.repo.CreateSalesOrderPayment(ctx, tx, &payment)
+			if err != nil {
+				return err
+			}
 		}
 
 		// 7. Process Insurance
@@ -99,10 +99,12 @@ func (s *service) TrackOrderStatus(ctx context.Context, event order.TrackOrderSt
 			fmt.Println(insurancePolicies)
 
 			// TODO: Create insurance
-			// err = s.insuranceRepo.CreateInsurancePolicies(ctx, tx, &insurance)
-			// if err != nil {
-			// 	return err
-			// }
+			for _, policy := range insurancePolicies {
+				err = s.repo.CreateSalesOrderInsurancePolicies(ctx, tx, &policy)
+				if err != nil {
+					return err
+				}
+			}
 		}
 
 		// 9. Process Delivery Plans
@@ -111,10 +113,10 @@ func (s *service) TrackOrderStatus(ctx context.Context, event order.TrackOrderSt
 			fmt.Println(deliveryPlan)
 
 			// TODO: Create delivery plan
-			// err = s.deliveryPlanRepo.CreateDeliveryPlan(ctx, tx, &deliveryPlan)
-			// if err != nil {
-			// 	return err
-			// }
+			err = s.repo.CreateSalesOrderDeliveryPlan(ctx, tx, &deliveryPlan)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

@@ -105,8 +105,8 @@ type DocumentHandoverRequest struct {
 	BPKBDealerReceivedDatetime int64   `json:"bpkb_dealer_received_datetime"`
 	STNKRecipientName          *string `json:"stnk_recipient_name"`
 	BPKBRecipientName          *string `json:"bpkb_recipient_name"`
-	STNKStatus                 bool    `json:"stnk_status"`
-	BPKBStatus                 bool    `json:"bpkb_status"`
+	STNKStatus                 string  `json:"stnk_status"`
+	BPKBStatus                 string  `json:"bpkb_status"`
 	DocumentCollectionStatus   string  `json:"document_collection_status" validate:"required,oneof=WAITING IN_PROGRESS COMPLETED"`
 }
 
@@ -168,7 +168,7 @@ type SalesOrderRequest struct {
 	ColorCode             string                       `json:"color_code" validate:"required"`
 	Color                 string                       `json:"color" validate:"required"`
 	SROCancelledDatetime  int64                        `json:"sro_cancelled_datetime"`
-	MatchingStatus        string                       `json:"matching_status" validate:"required,oneof=WAITING VIN_MATCHED UNMATCHED"`
+	MatchingStatus        string                       `json:"matching_status"`
 	MatchingDate          int64                        `json:"matching_date"`
 	VIN                   string                       `json:"vin"`
 	VINReleaseFlag        bool                         `json:"vin_release_flag"`

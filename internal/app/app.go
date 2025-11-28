@@ -14,6 +14,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
 	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
+	orderHandler "github.com/arraisi/hcm-be/internal/http/handlers/order"
 	"github.com/arraisi/hcm-be/internal/http/handlers/queue"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
@@ -28,7 +29,9 @@ import (
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
 	employeeRepository "github.com/arraisi/hcm-be/internal/repository/employee"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
+	salesorderRepository "github.com/arraisi/hcm-be/internal/repository/salesorder"
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
+	spkRepository "github.com/arraisi/hcm-be/internal/repository/spk"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	"github.com/arraisi/hcm-be/internal/scheduler"
@@ -38,6 +41,7 @@ import (
 	customervehicleService "github.com/arraisi/hcm-be/internal/service/customervehicle"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	oneaccessService "github.com/arraisi/hcm-be/internal/service/oneaccess"
+	salesOrderService "github.com/arraisi/hcm-be/internal/service/salesorder"
 	servicebookingService "github.com/arraisi/hcm-be/internal/service/servicebooking"
 	testdriveService "github.com/arraisi/hcm-be/internal/service/testdrive"
 	toyotaidService "github.com/arraisi/hcm-be/internal/service/toyotaid"
@@ -103,6 +107,8 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	customerVehicleRepo := customervehicleRepository.New(cfg, dbHcm)
 	employeeRepo := employeeRepository.New(cfg, dbHcm)
 	customerReminderRepo := customerreminderRepository.New(cfg, dbHcm)
+	salesOrderRepo := salesorderRepository.New(cfg, dbHcm)
+	spkRepo := spkRepository.New(cfg, dbHcm)
 
 	// init services
 	userSvc := userService.NewUserService(mockApiClient)
@@ -159,6 +165,13 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	}
 	tokenSvc := service.NewTokenService(tokenGenerator)
 
+	salesOrderSvc := salesOrderService.New(cfg, salesOrderService.ServiceContainer{
+		TransactionRepo: txRepo,
+		CustomerSvc:     customerSvc,
+		Repository:      salesOrderRepo,
+		SpkRepository:   spkRepo,
+	})
+
 	// Scheduler Services
 	customerSegSvc := service.NewCustomerSegmentationService()
 	outletAssignSvc := service.NewOutletAssignmentService()
@@ -180,6 +193,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	customerReminderHandler := customerreminder.New(cfg, customerReminderSvc, idempotencyStore)
 	queueHandler := queue.NewHandler(queueInspector)
 	tokenHandler := handlers.NewTokenHandler(tokenSvc)
+	orderHandler := orderHandler.New(cfg, salesOrderSvc, idempotencyStore)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                  cfg,
@@ -192,6 +206,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		CustomerReminderHandler: customerReminderHandler,
 		QueueHandler:            queueHandler,
 		TokenHandler:            tokenHandler,
+		OrderHandler:            orderHandler,
 	})
 
 	srv := apphttp.NewServer(cfg, router)

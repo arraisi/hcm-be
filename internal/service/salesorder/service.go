@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/arraisi/hcm-be/internal/config"
+	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/jmoiron/sqlx"
 )
@@ -19,25 +20,33 @@ type CustomerService interface {
 	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, request customer.OneAccountRequest) (string, error)
 }
 
+type SpkRepository interface {
+	CreateSPK(ctx context.Context, tx *sqlx.Tx, req *domain.SPK) error
+}
+
+type Repository interface {
+	CreateSalesOrder(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrder) error
+	CreateSalesOrderAccessories(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrderAccessory) error
+	CreateSalesOrderAccessoriesPart(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrderAccessoriesPart) error
+	CreateSalesOrderDeliveryPlan(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrderDeliveryPlan) error
+	CreateSalesOrderInsurancePolicies(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrderInsurancePolicy) error
+	CreateSalesOrderPayment(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrderPayment) error
+}
+
 // ServiceContainer holds all dependencies for the sales order service
 type ServiceContainer struct {
 	TransactionRepo transactionRepository
 	CustomerSvc     CustomerService
-	// TODO: Add repository dependencies as they are created:
-	// SPKRepo             SPKRepository
-	// SalesOrderRepo      SalesOrderRepository
-	// AccessoryRepo       AccessoryRepository
-	// PaymentRepo         PaymentRepository
-	// InsuranceRepo       InsuranceRepository
-	// InsurancePolicyRepo InsurancePolicyRepository
-	// DeliveryPlanRepo    DeliveryPlanRepository
+	Repository      Repository
+	SpkRepository   SpkRepository
 }
 
 type service struct {
 	cfg             *config.Config
 	transactionRepo transactionRepository
 	customerSvc     CustomerService
-	// TODO: Add repository fields as they are created
+	repo            Repository
+	spkRepo         SpkRepository
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -45,5 +54,7 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		cfg:             cfg,
 		transactionRepo: container.TransactionRepo,
 		customerSvc:     container.CustomerSvc,
+		repo:            container.Repository,
+		spkRepo:         container.SpkRepository,
 	}
 }

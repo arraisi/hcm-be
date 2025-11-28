@@ -99,7 +99,6 @@ func (s *SalesOrderDeliveryPlan) SelectColumns() []string {
 func (s *SalesOrderDeliveryPlan) ToCreateMap() (columns []string, values []interface{}) {
 	columns = s.Columns()
 	values = []interface{}{
-		s.ID,
 		s.SalesOrderID,
 		s.AmendmentCreatedDatetime,
 		s.AmendmentStatus,

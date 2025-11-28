@@ -55,9 +55,9 @@ func (s *SalesOrderInsurancePolicy) ToCreateMap() (columns []string, values []in
 	values = []interface{}{
 		s.SalesOrderID,
 		s.InsuranceType,
-		s.InsuranceCoverage,
 		s.InsuranceStartDate,
 		s.InsuranceEndDate,
+		s.InsuranceCoverage,
 		s.CreatedAt,
 		s.UpdatedAt,
 	}
