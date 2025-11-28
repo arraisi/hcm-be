@@ -5,6 +5,9 @@ import (
 	"net/http"
 	stdprof "net/http/pprof"
 
+	"github.com/arraisi/hcm-be/internal/http/handlers/order"
+	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
+
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
@@ -13,7 +16,6 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers/queue"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
-	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 	"github.com/arraisi/hcm-be/internal/http/handlers/user"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 
@@ -32,6 +34,7 @@ type Handler struct {
 	CustomerReminderHandler customerreminder.Handler
 	QueueHandler            *queue.Handler
 	TokenHandler            handlers.TokenHandler
+	OrderHandler            order.Handler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -107,6 +110,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Post("/customer-reminder", handler.CustomerReminderHandler.CreateCustomerReminder)
 
 			webhooks.Get("/customer-inquiry", handler.CustomerHandler.InquiryCustomer)
+
+			webhooks.Post("/track-order-status", handler.OrderHandler.TrackOrderStatus)
 		})
 
 		// Queue monitoring endpoints
