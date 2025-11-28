@@ -1,6 +1,7 @@
 package order
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
@@ -332,45 +333,50 @@ func (r *SalesOrderRequest) ToSalesOrderModel(spkID, customerID, eventID string)
 
 // ToAccessoryModel converts AccessoryRequest to domain.SalesOrderAccessory
 func (r *AccessoryRequest) ToAccessoryModel(salesOrderID string) domain.SalesOrderAccessory {
+	now := time.Now()
 	return domain.SalesOrderAccessory{
-		SalesOrderID:                    salesOrderID,
 		AccessoriesType:                 r.AccessoriesType,
+		PackageID:                       utils.ToValue(r.PackageID),
 		AccessoriesNumber:               r.AccessoriesNumber,
-		PackageID:                       r.PackageID,
 		AccessoriesName:                 r.AccessoriesName,
-		AccessoriesQty:                  r.AccessoriesQty,
+		AccessoriesQty:                  strconv.Itoa(r.AccessoriesQty),
 		AccessoriesOrderSource:          r.AccessoriesOrderSource,
 		AccessoriesAvailabilityStatus:   r.AccessoriesAvailabilityStatus,
 		AccessoriesItemStatus:           r.AccessoriesItemStatus,
-		AccessoriesSize:                 r.AccessoriesSize,
-		AccessoriesColor:                r.AccessoriesColor,
-		AccessoriesEstPrice:             r.AccessoriesEstPrice,
-		AccessoriesInstallationEstPrice: r.AccessoriesInstallationEstPrice,
+		AccessoriesSize:                 utils.ToValue(r.AccessoriesSize),
+		AccessoriesColor:                utils.ToValue(r.AccessoriesColor),
+		AccessoriesEstPrice:             strconv.FormatInt(r.AccessoriesEstPrice, 10),
 		FlagAccessoriesNeedDownPayment:  r.FlagAccessoriesNeedDownPayment,
-		CreatedAt:                       time.Now(),
-		CreatedBy:                       constants.System,
-		UpdatedAt:                       time.Now(),
-		UpdatedBy:                       constants.System,
+		AccessoriesInstallationEstPrice: strconv.FormatInt(r.AccessoriesInstallationEstPrice, 10),
+		CreatedAt:                       now,
+		UpdatedAt:                       now,
+		SalesOrderID:                    salesOrderID,
 	}
 }
 
 // ToPaymentModel converts PaymentRequest to domain.SalesOrderPayment
 func (r *PaymentRequest) ToPaymentModel(salesOrderID string, isDownPayment bool) domain.SalesOrderPayment {
+	// Determine payment type based on isDownPayment flag
+	paymentType := constants.PaymentTypePayment
+	if isDownPayment {
+		paymentType = constants.PaymentTypeDownPayment
+	}
+
+	now := time.Now()
+
 	return domain.SalesOrderPayment{
 		SalesOrderID:    salesOrderID,
 		PaymentID:       r.PaymentID,
-		PaymentStatus:   r.PaymentStatus,
 		PaymentNumber:   r.PaymentNumber,
 		PaymentDatetime: time.Unix(r.PaymentDatetime, 0),
+		NameOnPayment:   r.NameOnPayment,
+		PaymentStatus:   r.PaymentStatus,
 		FundSource:      r.FundSource,
 		PaymentChannel:  r.PaymentChannel,
-		PaymentStage:    r.PaymentStage,
-		NameOnPayment:   r.NameOnPayment,
-		IsDownPayment:   isDownPayment,
-		CreatedAt:       time.Now(),
-		CreatedBy:       constants.System,
-		UpdatedAt:       time.Now(),
-		UpdatedBy:       constants.System,
+		PaymentStage:    strconv.Itoa(r.PaymentStage),
+		PaymentType:     paymentType,
+		CreatedAt:       now,
+		UpdatedAt:       now,
 	}
 }
 

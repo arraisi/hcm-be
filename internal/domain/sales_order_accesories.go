@@ -8,6 +8,7 @@ import (
 type SalesOrderAccessory struct {
 	ID                              string    `json:"id" db:"i_id"`
 	AccessoriesType                 string    `json:"accessories_type" db:"c_accessories_type"`
+	PackageID                       string    `json:"package_id" db:"i_package_id"`
 	AccessoriesNumber               string    `json:"accessories_number" db:"c_accessories_number"`
 	AccessoriesName                 string    `json:"accessories_name" db:"n_accessories_name"`
 	AccessoriesQty                  string    `json:"accessories_qty" db:"v_accessories_qty"`
@@ -17,7 +18,7 @@ type SalesOrderAccessory struct {
 	AccessoriesSize                 string    `json:"accessories_size" db:"v_accessories_size"`
 	AccessoriesColor                string    `json:"accessories_color" db:"c_accessories_color"`
 	AccessoriesEstPrice             string    `json:"accessories_est_price" db:"v_accessories_est_price"`
-	FlagAccessoriesNeedDownPayment  string    `json:"flag_accessories_need_down_payment" db:"c_flag_accessories_need_down_payment"`
+	FlagAccessoriesNeedDownPayment  bool      `json:"flag_accessories_need_down_payment" db:"b_flag_accessories_need_down_payment"`
 	AccessoriesInstallationEstPrice string    `json:"accessories_installation_est_price" db:"v_accessories_installation_est_price"`
 	CreatedAt                       time.Time `json:"created_at" db:"d_created_at"`
 	UpdatedAt                       time.Time `json:"updated_at" db:"d_updated_at"`
@@ -33,6 +34,7 @@ func (s *SalesOrderAccessory) TableName() string {
 func (s *SalesOrderAccessory) Columns() []string {
 	return []string{
 		"c_accessories_type",
+		"i_package_id",
 		"c_accessories_number",
 		"n_accessories_name",
 		"v_accessories_qty",
@@ -42,7 +44,7 @@ func (s *SalesOrderAccessory) Columns() []string {
 		"v_accessories_size",
 		"c_accessories_color",
 		"v_accessories_est_price",
-		"c_flag_accessories_need_down_payment",
+		"b_flag_accessories_need_down_payment",
 		"v_accessories_installation_est_price",
 		"d_created_at",
 		"d_updated_at",
@@ -55,6 +57,7 @@ func (s *SalesOrderAccessory) SelectColumns() []string {
 	return []string{
 		"CAST(i_id AS NVARCHAR(36)) as i_id",
 		"c_accessories_type",
+		"i_package_id",
 		"c_accessories_number",
 		"n_accessories_name",
 		"v_accessories_qty",
@@ -64,7 +67,7 @@ func (s *SalesOrderAccessory) SelectColumns() []string {
 		"v_accessories_size",
 		"c_accessories_color",
 		"v_accessories_est_price",
-		"c_flag_accessories_need_down_payment",
+		"b_flag_accessories_need_down_payment",
 		"v_accessories_installation_est_price",
 		"d_created_at",
 		"d_updated_at",
@@ -76,6 +79,7 @@ func (s *SalesOrderAccessory) ToCreateMap() (columns []string, values []interfac
 	columns = s.Columns()
 	values = []interface{}{
 		s.AccessoriesType,
+		s.PackageID,
 		s.AccessoriesNumber,
 		s.AccessoriesName,
 		s.AccessoriesQty,
