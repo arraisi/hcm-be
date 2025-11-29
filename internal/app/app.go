@@ -3,7 +3,6 @@ package app
 import (
 	"time"
 
-	"github.com/arraisi/hcm-be/internal/auth"
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/external/didx"
 	"github.com/arraisi/hcm-be/internal/external/dmsaftersales"
@@ -24,6 +23,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/queue/asynqclient"
 	"github.com/arraisi/hcm-be/internal/queue/asynqworker"
 	"github.com/arraisi/hcm-be/internal/queue/inspector"
+	"github.com/arraisi/hcm-be/internal/repository/auth"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
 	customerreminderRepository "github.com/arraisi/hcm-be/internal/repository/customerreminder"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
@@ -35,11 +35,12 @@ import (
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	"github.com/arraisi/hcm-be/internal/scheduler"
-	"github.com/arraisi/hcm-be/internal/service"
+	authService "github.com/arraisi/hcm-be/internal/service/auth"
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	customerreminderService "github.com/arraisi/hcm-be/internal/service/customerreminder"
 	customervehicleService "github.com/arraisi/hcm-be/internal/service/customervehicle"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
+	"github.com/arraisi/hcm-be/internal/service/leads"
 	oneaccessService "github.com/arraisi/hcm-be/internal/service/oneaccess"
 	salesOrderService "github.com/arraisi/hcm-be/internal/service/salesorder"
 	servicebookingService "github.com/arraisi/hcm-be/internal/service/servicebooking"
@@ -159,11 +160,11 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		CustomerSvc:        customerSvc,
 		CustomerVehicleSvc: customerVehicleSvc,
 	})
-	tokenGenerator, err := auth.NewServiceTokenGenerator(cfg.JWT)
+	tokenGenerator, err := auth.New(cfg.JWT)
 	if err != nil {
 		return nil, err
 	}
-	tokenSvc := service.NewTokenService(tokenGenerator)
+	tokenSvc := authService.New(tokenGenerator)
 
 	salesOrderSvc := salesOrderService.New(cfg, salesOrderService.ServiceContainer{
 		TransactionRepo: txRepo,
@@ -173,9 +174,9 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	})
 
 	// Scheduler Services
-	customerSegSvc := service.NewCustomerSegmentationService()
-	outletAssignSvc := service.NewOutletAssignmentService()
-	salesAssignSvc := service.NewSalesAssignmentService()
+	customerSegSvc := leads.NewCustomerSegmentationService()
+	outletAssignSvc := leads.NewOutletAssignmentService()
+	salesAssignSvc := leads.NewSalesAssignmentService()
 
 	// Scheduler
 	scheduler, err := scheduler.New(cfg.Scheduler, customerSegSvc, outletAssignSvc, salesAssignSvc)

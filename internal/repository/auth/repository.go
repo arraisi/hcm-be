@@ -15,8 +15,8 @@ type ServiceTokenGenerator struct {
 	issuer string
 }
 
-// NewServiceTokenGenerator constructs a generator using the provided JWT config.
-func NewServiceTokenGenerator(cfg config.JWTConfig) (*ServiceTokenGenerator, error) {
+// New constructs a generator using the provided JWT config.
+func New(cfg config.JWTConfig) (*ServiceTokenGenerator, error) {
 	if cfg.Secret == "" {
 		return nil, errors.New("jwt secret is required")
 	}

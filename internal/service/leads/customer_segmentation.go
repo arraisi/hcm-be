@@ -1,4 +1,4 @@
-package service
+package leads
 
 import (
 	"context"
