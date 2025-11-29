@@ -71,13 +71,13 @@ func (s *service) RequestTestDriveBooking(ctx context.Context, request testdrive
 	}
 
 	// Upsert Test Drive
-	testDriveID, err := s.UpsertServiceTestDrive(ctx, tx, customerID, request)
+	_, err = s.UpsertServiceTestDrive(ctx, tx, customerID, request)
 	if err != nil {
 		return err
 	}
 
 	// Upsert Leads
-	err = s.upsertLeads(ctx, tx, customerID, testDriveID, request)
+	err = s.upsertLeads(ctx, tx, customerID, request)
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func (s *service) RequestTestDriveBooking(ctx context.Context, request testdrive
 }
 
 // upsertLeads checks if a lead exists by LeadsID. If found, it updates the lead; if not found, it creates a new lead.
-func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, customerID, testDriveID string, ev testdrive.TestDriveEvent) error {
+func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, customerID string, ev testdrive.TestDriveEvent) error {
 	leadsID := ev.Data.Leads.LeadsID
 
 	lead, err := s.leadRepo.GetLeads(ctx, leads.GetLeadsRequest{
@@ -106,7 +106,7 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, customerID, test
 	})
 	if err == nil {
 		// Found → update
-		lds := ev.Data.Leads.ToDomain(customerID, testDriveID)
+		lds := ev.Data.Leads.ToDomain(customerID)
 		lds.ID = lead.ID
 		err := s.leadRepo.UpdateLeads(ctx, tx, lds)
 		if err != nil {
@@ -117,7 +117,7 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, customerID, test
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		lds := ev.Data.Leads.ToDomain(customerID, testDriveID)
+		lds := ev.Data.Leads.ToDomain(customerID)
 		if err := s.leadRepo.CreateLeads(ctx, tx, &lds); err != nil {
 			return err
 		}

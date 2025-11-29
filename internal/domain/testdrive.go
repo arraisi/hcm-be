@@ -21,7 +21,7 @@ type TestDrive struct {
 	CustomerDrivingConsent bool      `json:"customer_driving_consent" db:"b_customer_driving_consent"`
 	TestDriveNumber        string    `json:"test_drive_number" db:"c_test_drive_number"`
 	CustomerID             string    `json:"customer_id" db:"i_customer_id"`
-	LeadsID                string    `json:"leads_id" db:"i_leads_id"`
+	LeadsID                *string   `json:"leads_id" db:"i_leads_id"`
 	EventID                string    `json:"event_id" db:"i_event_id"`
 	RequestAt              time.Time `json:"request_at" db:"d_request_at"`
 	CreatedAt              time.Time `json:"created_at" db:"d_created_at"`
@@ -155,7 +155,7 @@ func (u *TestDrive) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "i_customer_id")
 		values = append(values, u.CustomerID)
 	}
-	if u.LeadsID != "" {
+	if u.LeadsID != nil {
 		columns = append(columns, "i_leads_id")
 		values = append(values, u.LeadsID)
 	}
@@ -225,7 +225,7 @@ func (u *TestDrive) ToUpdateMap() map[string]interface{} {
 	if u.CustomerID != "" {
 		updateMap["i_customer_id"] = u.CustomerID
 	}
-	if u.LeadsID != "" {
+	if u.LeadsID != nil {
 		updateMap["i_leads_id"] = u.LeadsID
 	}
 	if !u.RequestAt.IsZero() {

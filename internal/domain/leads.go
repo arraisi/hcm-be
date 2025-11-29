@@ -7,7 +7,6 @@ import (
 type Leads struct {
 	ID                              string    `json:"id" db:"i_id"`
 	CustomerID                      string    `json:"customer_id" db:"i_customer_id"`
-	TestDriveID                     string    `json:"test_drive_id" db:"i_test_drive_id"`
 	LeadsID                         string    `json:"leads_id" db:"i_leads_id"`
 	LeadsType                       string    `json:"leads_type" db:"c_leads_type"`
 	LeadsFollowUpStatus             string    `json:"leads_follow_up_status" db:"c_leads_follow_up_status"`
@@ -63,7 +62,6 @@ func (u *Leads) Columns() []string {
 	return []string{
 		"i_id",
 		"i_customer_id",
-		"i_test_drive_id",
 		"i_leads_id",
 		"c_leads_type",
 		"c_leads_follow_up_status",
@@ -92,7 +90,6 @@ func (u *Leads) SelectColumns() []string {
 	return []string{
 		"i_id",
 		"i_customer_id",
-		"i_test_drive_id",
 		"i_leads_id",
 		"c_leads_type",
 		"c_leads_follow_up_status",
@@ -123,10 +120,6 @@ func (u *Leads) ToCreateMap() (columns []string, values []interface{}) {
 	if u.CustomerID != "" {
 		columns = append(columns, "i_customer_id")
 		values = append(values, u.CustomerID)
-	}
-	if u.TestDriveID != "" {
-		columns = append(columns, "i_test_drive_id")
-		values = append(values, u.TestDriveID)
 	}
 	if u.LeadsID != "" {
 		columns = append(columns, "i_leads_id")

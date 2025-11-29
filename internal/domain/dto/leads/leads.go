@@ -80,10 +80,9 @@ func (req GetLeadsRequest) Apply(q *sqrl.SelectBuilder) {
 }
 
 // ToDomain converts the RequestTestDrive to the internal Leads model
-func (be *LeadsRequest) ToDomain(customerID, testDriveID string) domain.Leads {
+func (be *LeadsRequest) ToDomain(customerID string) domain.Leads {
 	return domain.Leads{
 		CustomerID:                      customerID,
-		TestDriveID:                     testDriveID,
 		LeadsID:                         be.LeadsID,
 		LeadsType:                       be.LeadsType,
 		LeadsFollowUpStatus:             be.LeadsFollowUpStatus,

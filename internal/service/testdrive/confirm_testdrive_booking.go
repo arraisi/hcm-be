@@ -51,7 +51,7 @@ func (s *service) ConfirmTestDrive(ctx context.Context, request testdrive.TestDr
 	}
 
 	// Update leads
-	leadsModel := request.Data.Leads.ToDomain(customerID, existingTestDrive.TestDriveID)
+	leadsModel := request.Data.Leads.ToDomain(customerID)
 
 	// Get existing leads to preserve ID
 	existingLeads, err := s.leadRepo.GetLeads(ctx, leads.GetLeadsRequest{
@@ -102,7 +102,7 @@ func (s *service) ConfirmTestDriveBooking(ctx context.Context, request testdrive
 	}
 
 	leadsData, err := s.leadRepo.GetLeads(ctx, leads.GetLeadsRequest{
-		LeadsID: utils.ToPointer(testDrive.LeadsID),
+		LeadsID: testDrive.LeadsID,
 	})
 	if err != nil {
 		return err
