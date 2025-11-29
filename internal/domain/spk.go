@@ -15,9 +15,9 @@ type SPK struct {
 	Variant                 string     `json:"variant" db:"c_variant"`
 	KatashikiSuffix         string     `json:"katashiki_suffix" db:"c_katashiki_suffix"`
 	Year                    int        `json:"year" db:"n_year"`
-	OutletID                string     `json:"outlet_id" db:"i_outlet_id"`
+	OutletID                string     `json:"outlet_id" db:"i_outlet_ID"`
 	OutletName              string     `json:"outlet_name" db:"n_outlet_name"`
-	EmployeeID              string     `json:"employee_id" db:"i_employee_id"`
+	EmployeeID              string     `json:"employee_id" db:"i_employee_ID"`
 	EmployeeFirstName       string     `json:"employee_first_name" db:"n_employee_first_name"`
 	EmployeeLastName        string     `json:"employee_last_name" db:"n_employee_last_name"`
 	SPKCustomerConfirmation bool       `json:"spk_customer_confirmation" db:"b_spk_customer_confirmation"`

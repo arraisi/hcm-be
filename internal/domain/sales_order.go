@@ -161,3 +161,203 @@ func (s *SalesOrder) ToCreateMap() (columns []string, values []interface{}) {
 	}
 	return
 }
+
+func (s *SalesOrder) ToUpdateMap() map[string]interface{} {
+	m := make(map[string]interface{})
+
+	if s.SONumber != "" {
+		m["c_so_number"] = s.SONumber
+	}
+	if s.ColorCode != "" {
+		m["c_color_code"] = s.ColorCode
+	}
+	if s.Color != "" {
+		m["n_color"] = s.Color
+	}
+	if s.SROCancelled != nil {
+		m["d_sro_cancelled"] = s.SROCancelled
+	}
+	if s.MatchingStatus != "" {
+		m["c_matching_status"] = s.MatchingStatus
+	}
+	if s.MatchingDate != nil {
+		m["d_matching_date"] = s.MatchingDate
+	}
+	if s.VIN != nil {
+		m["c_vin"] = s.VIN
+	}
+	m["b_vin_release_flag"] = s.VINReleaseFlag
+	if s.PlanDeliveryDatetime != nil {
+		m["d_plan_delivery_datetime"] = s.PlanDeliveryDatetime
+	}
+	if s.RRN != nil {
+		m["c_rrn"] = s.RRN
+	}
+	if s.UnitStatus != "" {
+		m["c_unit_status"] = s.UnitStatus
+	}
+	if s.MDPDate != nil {
+		m["d_mdp_date"] = s.MDPDate
+	}
+	if s.OnHandDate != nil {
+		m["d_on_hand_date"] = s.OnHandDate
+	}
+	if s.VehicleCategory != "" {
+		m["c_vehicle_category"] = s.VehicleCategory
+	}
+	m["b_flag_off_the_road_vehicle"] = s.FlagOffTheRoadVehicle
+	if s.SettlementStatus != "" {
+		m["c_settlement_status"] = s.SettlementStatus
+	}
+	if s.SettlementDatetime != nil {
+		m["d_settlement_datetime"] = s.SettlementDatetime
+	}
+	if s.PaymentMethod != "" {
+		m["c_payment_method"] = s.PaymentMethod
+	}
+	if s.OutletTradeID != nil {
+		m["i_outlet_trade_id"] = s.OutletTradeID
+	}
+	if s.OutletTradeName != nil {
+		m["n_outlet_trade_name"] = s.OutletTradeName
+	}
+	if s.OutletTradePONumber != nil {
+		m["c_outlet_trade_po_number"] = s.OutletTradePONumber
+	}
+	if s.OutletTradePODatetime != nil {
+		m["d_outlet_trade_po_datetime"] = s.OutletTradePODatetime
+	}
+	if s.DeliveryDONumber != "" {
+		m["c_delivery_do_number"] = s.DeliveryDONumber
+	}
+	m["d_delivery_received_plan_datetime"] = s.DeliveryReceivedPlanDatetime
+	m["d_delivery_received_plan_datetime_end"] = s.DeliveryReceivedPlanDatetimeEnd
+	if s.DeliveryGateOutDatetime != nil {
+		m["d_delivery_gate_out_datetime"] = s.DeliveryGateOutDatetime
+	}
+	if s.DeliveryActualReceivedDatetime != nil {
+		m["d_delivery_actual_received_datetime"] = s.DeliveryActualReceivedDatetime
+	}
+	if s.DeliveryLocation != "" {
+		m["c_delivery_location"] = s.DeliveryLocation
+	}
+	if s.DeliveryAddressLabel != "" {
+		m["c_delivery_address_label"] = s.DeliveryAddressLabel
+	}
+	if s.DeliveryDestinationAddress != "" {
+		m["e_delivery_destination_address"] = s.DeliveryDestinationAddress
+	}
+	if s.DeliveryProvince != "" {
+		m["n_delivery_province"] = s.DeliveryProvince
+	}
+	if s.DeliveryCity != "" {
+		m["n_delivery_city"] = s.DeliveryCity
+	}
+	if s.DeliveryDistrict != "" {
+		m["n_delivery_district"] = s.DeliveryDistrict
+	}
+	if s.DeliverySubdistrict != "" {
+		m["n_delivery_subdistrict"] = s.DeliverySubdistrict
+	}
+	if s.DeliveryPostalCode != "" {
+		m["c_delivery_postal_code"] = s.DeliveryPostalCode
+	}
+	m["b_delivery_flag_buyer_is_recipient"] = s.DeliveryFlagBuyerIsRecipient
+	if s.DeliveryRecipientName != nil {
+		m["n_delivery_recipient_name"] = s.DeliveryRecipientName
+	}
+	if s.DeliveryRecipientPhoneNumber != nil {
+		m["c_delivery_recipient_phone_number"] = s.DeliveryRecipientPhoneNumber
+	}
+	if s.DeliveryRecipientRelation != nil {
+		m["c_delivery_recipient_relation"] = s.DeliveryRecipientRelation
+	}
+	if s.DeliveryRecipientRelationOthers != nil {
+		m["c_delivery_recipient_relation_others"] = s.DeliveryRecipientRelationOthers
+	}
+	if s.DeliveryOriginLocation != "" {
+		m["c_delivery_origin_location"] = s.DeliveryOriginLocation
+	}
+	if s.DeliveryPreparationStatus != "" {
+		m["c_delivery_preparation_status"] = s.DeliveryPreparationStatus
+	}
+	if s.DeliveryReadyForDeliveryDatetime != nil {
+		m["d_delivery_ready_for_delivery_datetime"] = s.DeliveryReadyForDeliveryDatetime
+	}
+	if s.DeliveryPSPSubmittedDatetime != nil {
+		m["d_delivery_psp_submitted_datetime"] = s.DeliveryPSPSubmittedDatetime
+	}
+	if s.DeliveryPreDECSubmittedDatetime != nil {
+		m["d_delivery_pre_dec_submitted_datetime"] = s.DeliveryPreDECSubmittedDatetime
+	}
+	if s.DeliveryDECSubmittedDatetime != nil {
+		m["d_delivery_dec_submitted_datetime"] = s.DeliveryDECSubmittedDatetime
+	}
+	if s.PDFUStatus != "" {
+		m["c_pdfu_status"] = s.PDFUStatus
+	}
+	if s.PDFUSurveyCompletedDatetime != nil {
+		m["d_pdfu_survey_completed_datetime"] = s.PDFUSurveyCompletedDatetime
+	}
+	if s.DocSTNKHandoverDatetime != nil {
+		m["d_doc_stnk_handover_datetime"] = s.DocSTNKHandoverDatetime
+	}
+	if s.DocBPKBHandoverDatetime != nil {
+		m["d_doc_bpkb_handover_datetime"] = s.DocBPKBHandoverDatetime
+	}
+	if s.DocBPKBReceivedBy != nil {
+		m["n_doc_bpkb_received_by"] = s.DocBPKBReceivedBy
+	}
+	if s.DocSTNKDealerReceivedDatetime != nil {
+		m["d_doc_stnk_dealer_received_datetime"] = s.DocSTNKDealerReceivedDatetime
+	}
+	if s.DocBPKBDealerReceivedDatetime != nil {
+		m["d_doc_bpkb_dealer_received_datetime"] = s.DocBPKBDealerReceivedDatetime
+	}
+	if s.DocSTNKRecipientName != nil {
+		m["n_doc_stnk_recipient_name"] = s.DocSTNKRecipientName
+	}
+	if s.DocBPKBRecipientName != nil {
+		m["n_doc_bpkb_recipient_name"] = s.DocBPKBRecipientName
+	}
+	if s.DocSTNKStatus != "" {
+		m["b_doc_stnk_status"] = s.DocSTNKStatus
+	}
+	if s.DocBPKBStatus != "" {
+		m["b_doc_bpkb_status"] = s.DocBPKBStatus
+	}
+	if s.DocCollectionStatus != "" {
+		m["c_doc_collection_status"] = s.DocCollectionStatus
+	}
+	if s.LeasingID != nil {
+		m["i_leasing_id"] = s.LeasingID
+	}
+	if s.LeasingCompanyName != nil {
+		m["n_leasing_company_name"] = s.LeasingCompanyName
+	}
+	if s.LeasingCreatedDatetime != nil {
+		m["d_leasing_created_datetime"] = s.LeasingCreatedDatetime
+	}
+	if s.LeasingApplicationStatus != nil {
+		m["c_leasing_application_status"] = s.LeasingApplicationStatus
+	}
+	if s.LeasingApprovalDate != nil {
+		m["d_leasing_approval_date"] = s.LeasingApprovalDate
+	}
+	if s.LeasingTerms != nil {
+		m["c_leasing_terms"] = s.LeasingTerms
+	}
+	if s.InsuranceProvider != nil {
+		m["c_insurance_provider"] = s.InsuranceProvider
+	}
+	if s.InsuranceProviderOther != nil {
+		m["c_insurance_provider_other"] = s.InsuranceProviderOther
+	}
+	if s.InsurancePolicyNumber != nil {
+		m["c_insurance_policy_number"] = s.InsurancePolicyNumber
+	}
+
+	m["d_updated_at"] = time.Now()
+
+	return m
+}

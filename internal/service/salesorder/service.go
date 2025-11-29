@@ -6,6 +6,8 @@ import (
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
+	"github.com/arraisi/hcm-be/internal/domain/dto/salesorder"
+	"github.com/arraisi/hcm-be/internal/domain/dto/spk"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -22,15 +24,26 @@ type CustomerService interface {
 
 type SpkRepository interface {
 	CreateSPK(ctx context.Context, tx *sqlx.Tx, req *domain.SPK) error
+	UpdateSpk(ctx context.Context, tx *sqlx.Tx, req domain.SPK) error
+	GetSpk(ctx context.Context, req spk.GetSpkRequest) (domain.SPK, error)
 }
 
 type Repository interface {
 	CreateSalesOrder(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrder) error
+	UpdateSalesOrder(ctx context.Context, tx *sqlx.Tx, req domain.SalesOrder) error
+	GetSalesOrder(ctx context.Context, req salesorder.GetSalesOrderRequest) (domain.SalesOrder, error)
+
 	CreateSalesOrderAccessories(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrderAccessory) error
 	CreateSalesOrderAccessoriesPart(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrderAccessoriesPart) error
 	CreateSalesOrderDeliveryPlan(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrderDeliveryPlan) error
 	CreateSalesOrderInsurancePolicies(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrderInsurancePolicy) error
 	CreateSalesOrderPayment(ctx context.Context, tx *sqlx.Tx, req *domain.SalesOrderPayment) error
+
+	DeleteSalesOrderAccessories(ctx context.Context, tx *sqlx.Tx, req salesorder.DeleteSalesOrderAccessoriesRequest) error
+	DeleteSalesOrderAccessoriesPart(ctx context.Context, tx *sqlx.Tx, req salesorder.DeleteSalesOrderAccessoriesPartRequest) error
+	DeleteSalesOrderDeliveryPlan(ctx context.Context, tx *sqlx.Tx, req salesorder.DeleteSalesOrderDeliveryPlanRequest) error
+	DeleteSalesOrderInsurancePolicy(ctx context.Context, tx *sqlx.Tx, req salesorder.DeleteSalesOrderInsurancePolicyRequest) error
+	DeleteSalesOrderPayment(ctx context.Context, tx *sqlx.Tx, req salesorder.DeleteSalesOrderPaymentRequest) error
 }
 
 // ServiceContainer holds all dependencies for the sales order service
