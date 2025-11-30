@@ -1,10 +1,10 @@
-package service
+package auth
 
 import (
 	"context"
 	"errors"
 
-	"github.com/arraisi/hcm-be/internal/auth"
+	"github.com/arraisi/hcm-be/internal/repository/auth"
 )
 
 // TokenService defines operations for generating service tokens.
@@ -16,8 +16,8 @@ type tokenService struct {
 	generator *auth.ServiceTokenGenerator
 }
 
-// NewTokenService creates a token service using the provided JWT generator.
-func NewTokenService(generator *auth.ServiceTokenGenerator) TokenService {
+// New creates a token service using the provided JWT generator.
+func New(generator *auth.ServiceTokenGenerator) TokenService {
 	return &tokenService{generator: generator}
 }
 

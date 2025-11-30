@@ -5,15 +5,15 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/arraisi/hcm-be/internal/service"
+	"github.com/arraisi/hcm-be/internal/service/auth"
 	"github.com/arraisi/hcm-be/pkg/response"
 )
 
 type TokenHandler struct {
-	tokenService service.TokenService
+	tokenService auth.TokenService
 }
 
-func NewTokenHandler(tokenService service.TokenService) TokenHandler {
+func NewTokenHandler(tokenService auth.TokenService) TokenHandler {
 	return TokenHandler{tokenService: tokenService}
 }
 

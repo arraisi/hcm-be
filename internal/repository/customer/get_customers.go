@@ -22,13 +22,13 @@ func (r *repository) GetCustomers(ctx context.Context, req customer.GetCustomerR
 
 	sqlQuery, args, err := query.ToSql()
 	if err != nil {
-		return nil, err
+		return customers, err
 	}
 
 	sqlQuery = r.db.Rebind(sqlQuery)
 	err = r.db.SelectContext(ctx, &customers, sqlQuery, args...)
 	if err != nil {
-		return nil, err
+		return customers, err
 	}
 
 	return customers, nil
