@@ -27,6 +27,7 @@ type Leads struct {
 	CreatedBy                       string    `json:"created_by" db:"c_created_by"`
 	UpdatedAt                       time.Time `json:"updated_at" db:"d_updated_at"`
 	UpdatedBy                       *string   `json:"updated_by" db:"c_updated_by"`
+	CustomerVehicleID               string    `json:"customer_vehicle_id" db:"i_customer_vehicle_id"`
 
 	// to be confirmed old table columns
 	LastFollowUpDatetime         *time.Time `json:"last_follow_up_datetime" db:"d_last_follow_up_datetime"`

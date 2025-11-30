@@ -13,7 +13,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
 	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
-	orderHandler "github.com/arraisi/hcm-be/internal/http/handlers/order"
+	"github.com/arraisi/hcm-be/internal/http/handlers/order"
 	"github.com/arraisi/hcm-be/internal/http/handlers/queue"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
 	"github.com/arraisi/hcm-be/internal/http/handlers/testdrive"
@@ -174,12 +174,14 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	})
 
 	// Scheduler Services
-	customerSegSvc := leads.NewCustomerSegmentationService()
-	outletAssignSvc := leads.NewOutletAssignmentService()
-	salesAssignSvc := leads.NewSalesAssignmentService()
+	roAutomationSvc := leads.New(cfg, leads.ServiceContainer{
+		TransactionRepo:     txRepo,
+		CustomerRepo:        customerRepo,
+		CustomerVehicleRepo: customerVehicleRepo,
+	})
 
 	// Scheduler
-	scheduler, err := scheduler.New(cfg.Scheduler, customerSegSvc, outletAssignSvc, salesAssignSvc)
+	schedulerSvc, err := scheduler.New(cfg.Scheduler, roAutomationSvc)
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +196,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	customerReminderHandler := customerreminder.New(cfg, customerReminderSvc, idempotencyStore)
 	queueHandler := queue.NewHandler(queueInspector)
 	tokenHandler := handlers.NewTokenHandler(tokenSvc)
-	orderHandler := orderHandler.New(cfg, salesOrderSvc, idempotencyStore)
+	orderHandler := order.New(cfg, salesOrderSvc, idempotencyStore)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                  cfg,
@@ -214,6 +216,6 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 
 	return &App{
 		Server:    srv,
-		Scheduler: scheduler,
+		Scheduler: schedulerSvc,
 	}, nil
 }
