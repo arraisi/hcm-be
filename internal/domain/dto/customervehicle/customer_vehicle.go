@@ -1,6 +1,8 @@
 package customervehicle
 
 import (
+	"fmt"
+
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/elgris/sqrl"
@@ -12,6 +14,8 @@ type GetCustomerVehicleRequest struct {
 	OneAccountID *string
 	Vin          *string
 	PoliceNumber *string
+	Limit        int
+	Offset       int
 }
 
 // Apply applies the request parameters to the given SelectBuilder
@@ -30,6 +34,9 @@ func (req GetCustomerVehicleRequest) Apply(q *sqrl.SelectBuilder) {
 	}
 	if req.PoliceNumber != nil {
 		q.Where(sqrl.Eq{"c_police_number": req.PoliceNumber})
+	}
+	if req.Limit > 0 {
+		q.Suffix(fmt.Sprintf("OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", req.Offset, req.Limit))
 	}
 }
 

@@ -19,6 +19,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
+	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -41,7 +42,7 @@ func TestServiceBookingHandler_ServiceBooking(t *testing.T) {
 				OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 				FirstName:    "John",
 				LastName:     "Doe",
-				Gender:       "MALE",
+				Gender:       utils.ToPointer("MALE"),
 				PhoneNumber:  "1234567890",
 				Email:        "john.doe@example.com",
 			},
@@ -133,7 +134,7 @@ func createSampleServiceBookingEvent(eventID string, timestamp int64) serviceboo
 				OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 				FirstName:    "John",
 				LastName:     "Doe",
-				Gender:       "MALE",
+				Gender:       utils.ToPointer("MALE"),
 				PhoneNumber:  "1234567890",
 				Email:        "john.doe@example.com",
 			},
