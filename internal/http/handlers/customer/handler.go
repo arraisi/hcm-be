@@ -17,7 +17,7 @@ type IdempotencyService interface {
 }
 
 type Service interface {
-	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) ([]domain.Customer, error)
+	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) (customer.GetCustomersResponse, error)
 	InquiryCustomer(ctx context.Context, req customer.CustomerInquiryRequest) (domain.Customer, error)
 }
 

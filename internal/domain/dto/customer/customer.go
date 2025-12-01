@@ -64,6 +64,8 @@ type GetCustomerRequest struct {
 	CustomerID   string
 	KTPNumber    string
 	PhoneNumber  string
+	Page         int
+	PageSize     int
 }
 
 // Apply applies the request parameters to the given SelectBuilder
@@ -80,8 +82,15 @@ func (req GetCustomerRequest) Apply(q *sqrl.SelectBuilder) {
 		q.Where(sqrl.Eq{"c_phone_number": req.PhoneNumber})
 	}
 
-	if req.Limit > 0 {
-		q.Suffix(fmt.Sprintf("OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", req.Offset, req.Limit))
+	if req.PageSize > 0 {
+		// Calculate offset: (page - 1) * pageSize
+		offset := 0
+		if req.Page > 1 {
+			offset = (req.Page - 1) * req.PageSize
+		}
+		// Use pageSize + 1 to detect if there's a next page
+		limit := req.PageSize + 1
+		q.Suffix(fmt.Sprintf("OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", offset, limit))
 	}
 }
 
@@ -152,4 +161,15 @@ type CustomerInquiryRequest struct {
 	NIK      *string `json:"nik" validate:"omitempty,min=16,max=16"`
 	NoHp     *string `json:"nohp" validate:"omitempty,min=10,max=13"`
 	FlagNoHp *bool   `json:"flag_nohp" validate:"required"`
+}
+
+type Pagination struct {
+	Page     int  `json:"page"`
+	PageSize int  `json:"page_size"`
+	HasNext  bool `json:"has_next"`
+}
+
+type GetCustomersResponse struct {
+	Data       []domain.Customer `json:"data"`
+	Pagination Pagination        `json:"pagination"`
 }

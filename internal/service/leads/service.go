@@ -17,7 +17,7 @@ type transactionRepository interface {
 }
 
 type customerRepository interface {
-	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) ([]domain.Customer, error)
+	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) (customer.GetCustomersResponse, error)
 	GetDetailPenjualanToyota(ctx context.Context, req customer.GetDetailPenjualanToyotaRequest) ([]domain.ViewDetailPenjualanToyota, error)
 }
 

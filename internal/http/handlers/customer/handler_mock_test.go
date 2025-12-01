@@ -88,10 +88,10 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // GetCustomers mocks base method.
-func (m *MockService) GetCustomers(ctx context.Context, req customer.GetCustomerRequest) ([]domain.Customer, error) {
+func (m *MockService) GetCustomers(ctx context.Context, req customer.GetCustomerRequest) (customer.GetCustomersResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCustomers", ctx, req)
-	ret0, _ := ret[0].([]domain.Customer)
+	ret0, _ := ret[0].(customer.GetCustomersResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
