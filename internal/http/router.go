@@ -110,6 +110,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Post("/customer-reminder", handler.CustomerReminderHandler.CreateCustomerReminder)
 
 			webhooks.Get("/customer-inquiry", handler.CustomerHandler.InquiryCustomer)
+			webhooks.Get("/customer-inquiry/list", handler.CustomerHandler.GetCustomers)
 
 			webhooks.Post("/track-order-status", handler.OrderHandler.TrackOrderStatus)
 		})
