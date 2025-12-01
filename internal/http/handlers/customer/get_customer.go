@@ -52,5 +52,5 @@ func (h *Handler) GetCustomers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.OK(w, result, "User retrieved successfully")
+	response.JSON(w, http.StatusOK, result)
 }
