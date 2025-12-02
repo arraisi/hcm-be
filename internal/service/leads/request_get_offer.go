@@ -8,6 +8,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	dtoLeads "github.com/arraisi/hcm-be/internal/domain/dto/leads"
+	"github.com/arraisi/hcm-be/internal/queue"
 	"github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/jmoiron/sqlx"
@@ -51,6 +52,14 @@ func (s *service) RequestGetOffer(ctx context.Context, request dtoLeads.GetOffer
 	// Commit transaction
 	if err := s.transactionRepo.CommitTransaction(tx); err != nil {
 		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	// Enqueue to DMS for further processing
+	if err := s.queueClient.EnqueueDMSCreateGetOffer(ctx, queue.DMSCreateGetOfferPayload{
+		GetOfferEvent: request,
+	}); err != nil {
+		// Log error but don't fail the request since data is already committed
+		fmt.Printf("failed to enqueue get offer task: %v\n", err)
 	}
 
 	return nil

@@ -57,6 +57,10 @@ type customerService interface {
 	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest) (string, error)
 }
 
+type queueClient interface {
+	EnqueueDMSCreateGetOffer(ctx context.Context, payload interface{}) error
+}
+
 type ServiceContainer struct {
 	TransactionRepo       transactionRepository
 	CustomerRepo          customerRepository
@@ -66,6 +70,7 @@ type ServiceContainer struct {
 	TradeInRepo           tradeInRepository
 	InterestedPartRepo    interestedPartRepository
 	CustomerSvc           customerService
+	QueueClient           queueClient
 }
 
 type service struct {
@@ -78,6 +83,7 @@ type service struct {
 	tradeInRepo           tradeInRepository
 	interestedPartRepo    interestedPartRepository
 	customerSvc           customerService
+	queueClient           queueClient
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -91,5 +97,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		tradeInRepo:           container.TradeInRepo,
 		interestedPartRepo:    container.InterestedPartRepo,
 		customerSvc:           container.CustomerSvc,
+		queueClient:           container.QueueClient,
 	}
 }

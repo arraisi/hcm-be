@@ -3,6 +3,8 @@ package queue
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
 	"github.com/arraisi/hcm-be/internal/domain/dto/toyotaid"
 
@@ -68,5 +70,20 @@ func NewDMSCreateToyotaIDTask(payload DMSCreateToyotaIDPayload) (*asynq.Task, er
 		return nil, err
 	}
 	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSCreateToyotaID, payload.ToyotaIDRequest.EventID)
+	return asynq.NewTask(taskKey, b), nil
+}
+
+// DMSCreateGetOfferPayload represents the payload for DMS create get offer task
+type DMSCreateGetOfferPayload struct {
+	GetOfferEvent leads.GetOfferWebhookEvent `json:"get_offer_event"`
+}
+
+// NewDMSCreateGetOfferTask creates a new Asynq task for DMS get offer
+func NewDMSCreateGetOfferTask(payload DMSCreateGetOfferPayload) (*asynq.Task, error) {
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSCreateGetOffer, payload.GetOfferEvent.EventID)
 	return asynq.NewTask(taskKey, b), nil
 }

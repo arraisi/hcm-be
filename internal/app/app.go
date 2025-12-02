@@ -200,6 +200,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		TradeInRepo:           tradeInRepo,
 		InterestedPartRepo:    interestedPartRepo,
 		CustomerSvc:           customerSvc,
+		QueueClient:           queueClient,
 	})
 
 	// Scheduler
