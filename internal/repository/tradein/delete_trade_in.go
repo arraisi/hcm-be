@@ -1,0 +1,27 @@
+package tradein
+
+import (
+	"context"
+
+	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/elgris/sqrl"
+	"github.com/jmoiron/sqlx"
+)
+
+func (r *repository) DeleteTradeIn(ctx context.Context, tx *sqlx.Tx, id string) error {
+	model := domain.LeadsTradeIn{}
+
+	query, args, err := sqrl.Delete(model.TableName()).
+		Where(sqrl.Eq{"i_id": id}).ToSql()
+	if err != nil {
+		return err
+	}
+
+	query = r.db.Rebind(query)
+	_, err = tx.ExecContext(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
