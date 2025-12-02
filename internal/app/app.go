@@ -28,7 +28,9 @@ import (
 	customerreminderRepository "github.com/arraisi/hcm-be/internal/repository/customerreminder"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
 	employeeRepository "github.com/arraisi/hcm-be/internal/repository/employee"
+	hasjratidRepository "github.com/arraisi/hcm-be/internal/repository/hasjratid"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
+	outletRepository "github.com/arraisi/hcm-be/internal/repository/outlet"
 	salesorderRepository "github.com/arraisi/hcm-be/internal/repository/salesorder"
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	spkRepository "github.com/arraisi/hcm-be/internal/repository/spk"
@@ -39,6 +41,7 @@ import (
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	customerreminderService "github.com/arraisi/hcm-be/internal/service/customerreminder"
 	customervehicleService "github.com/arraisi/hcm-be/internal/service/customervehicle"
+	hasjratidService "github.com/arraisi/hcm-be/internal/service/hasjratid"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	"github.com/arraisi/hcm-be/internal/service/leads"
 	oneaccessService "github.com/arraisi/hcm-be/internal/service/oneaccess"
@@ -108,6 +111,8 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	customerVehicleRepo := customervehicleRepository.New(cfg, dbHcm)
 	employeeRepo := employeeRepository.New(cfg, dbHcm)
 	customerReminderRepo := customerreminderRepository.New(cfg, dbHcm)
+	outletRepo := outletRepository.New(dbHcm)
+	hasjratIDRepo := hasjratidRepository.New(dbHcm)
 	salesOrderRepo := salesorderRepository.New(cfg, dbHcm)
 	spkRepo := spkRepository.New(cfg, dbHcm)
 
@@ -159,6 +164,11 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		Repo:               customerReminderRepo,
 		CustomerSvc:        customerSvc,
 		CustomerVehicleSvc: customerVehicleSvc,
+	})
+	_ = hasjratidService.New(hasjratidService.ServiceContainer{
+		TransactionRepo: txRepo,
+		Repo:            hasjratIDRepo,
+		OutletRepo:      outletRepo,
 	})
 	tokenGenerator, err := auth.New(cfg.JWT)
 	if err != nil {
