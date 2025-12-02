@@ -34,10 +34,16 @@ type leadsRepository interface {
 
 type financeSimulationRepository interface {
 	CreateFinanceSimulation(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsFinanceSimulation) error
+	CreateFinanceSimulationCredit(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsFinanceSimulationCredit) error
 }
 
 type tradeInRepository interface {
 	CreateTradeIn(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsTradeIn) error
+}
+
+type interestedPartRepository interface {
+	CreateInterestedPart(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsInterestedPart) error
+	CreateInterestedPartItem(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsInterestedPartItem) error
 }
 
 type customerService interface {
@@ -51,6 +57,7 @@ type ServiceContainer struct {
 	LeadsRepo             leadsRepository
 	FinanceSimulationRepo financeSimulationRepository
 	TradeInRepo           tradeInRepository
+	InterestedPartRepo    interestedPartRepository
 	CustomerSvc           customerService
 }
 
@@ -62,6 +69,7 @@ type service struct {
 	leadsRepo             leadsRepository
 	financeSimulationRepo financeSimulationRepository
 	tradeInRepo           tradeInRepository
+	interestedPartRepo    interestedPartRepository
 	customerSvc           customerService
 }
 
@@ -74,6 +82,7 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		leadsRepo:             container.LeadsRepo,
 		financeSimulationRepo: container.FinanceSimulationRepo,
 		tradeInRepo:           container.TradeInRepo,
+		interestedPartRepo:    container.InterestedPartRepo,
 		customerSvc:           container.CustomerSvc,
 	}
 }

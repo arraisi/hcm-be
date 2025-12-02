@@ -143,12 +143,15 @@ var (
 	}
 
 	// Leads domain errors
-	ErrLeadsNotFound                 = errors.New("leads not found")
-	ErrLeadsInvalidData              = errors.New("invalid leads data")
-	ErrLeadsCreateFailed             = errors.New("failed to create leads")
-	ErrLeadsUpdateFailed             = errors.New("failed to update leads")
-	ErrFinanceSimulationCreateFailed = errors.New("failed to create finance simulation")
-	ErrTradeInCreateFailed           = errors.New("failed to create trade-in")
+	ErrLeadsNotFound                       = errors.New("leads not found")
+	ErrLeadsInvalidData                    = errors.New("invalid leads data")
+	ErrLeadsCreateFailed                   = errors.New("failed to create leads")
+	ErrLeadsUpdateFailed                   = errors.New("failed to update leads")
+	ErrFinanceSimulationCreateFailed       = errors.New("failed to create finance simulation")
+	ErrTradeInCreateFailed                 = errors.New("failed to create trade-in")
+	ErrInterestedPartCreateFailed          = errors.New("failed to create interested part")
+	ErrInterestedPartItemCreateFailed      = errors.New("failed to create interested part item")
+	ErrFinanceSimulationCreditCreateFailed = errors.New("failed to create finance simulation credit")
 	// Leads-specific error list
 	ErrListLeads = ErrList{
 		{Error: ErrLeadsNotFound, Code: http.StatusNotFound},
@@ -157,6 +160,9 @@ var (
 		{Error: ErrLeadsUpdateFailed, Code: http.StatusInternalServerError},
 		{Error: ErrFinanceSimulationCreateFailed, Code: http.StatusInternalServerError},
 		{Error: ErrTradeInCreateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrInterestedPartCreateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrInterestedPartItemCreateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrFinanceSimulationCreditCreateFailed, Code: http.StatusInternalServerError},
 		{Error: ErrLeadsFollowUpStatusInvalid, Code: http.StatusBadRequest},
 		{Error: ErrLeadsTypeInvalid, Code: http.StatusBadRequest},
 		{Error: ErrLeadsSourceInvalid, Code: http.StatusBadRequest},

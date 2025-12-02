@@ -58,8 +58,25 @@ func (s *service) RequestFinanceSimulation(ctx context.Context, request dtoLeads
 		}
 	}
 
-	// TODO: delete insert interested_part
-	// TODO: delete insert package_parts/interested_part_item
+	// TODO: delete before insert new insert interested_part
+	for _, interestedPart := range request.Data.Leads.InterestedPart {
+		// Create interested part
+		part := interestedPart.ToDomain(leadsData.LeadsID)
+		if err := s.interestedPartRepo.CreateInterestedPart(ctx, tx, &part); err != nil {
+			return errors.ErrInterestedPartCreateFailed
+		}
+
+		// TODO: delete before insert new package_parts/interested_part_item
+		// Create package parts if it's a package type
+		if interestedPart.InterestedPartType == "PACKAGE" && len(interestedPart.PackageParts) > 0 {
+			for _, packagePart := range interestedPart.PackageParts {
+				item := packagePart.ToDomain(leadsData.LeadsID, part.ID)
+				if err := s.interestedPartRepo.CreateInterestedPartItem(ctx, tx, &item); err != nil {
+					return errors.ErrInterestedPartItemCreateFailed
+				}
+			}
+		}
+	}
 
 	// 3. Create finance simulation
 	financeSimData := request.Data.FinanceSimulation
@@ -68,15 +85,23 @@ func (s *service) RequestFinanceSimulation(ctx context.Context, request dtoLeads
 	if err := s.financeSimulationRepo.CreateFinanceSimulation(ctx, tx, &financeSimulation); err != nil {
 		return errors.ErrFinanceSimulationCreateFailed
 	}
-	// TODO:delete insert finance_simulation_credit
+	// TODO:delete before insert new finance_simulation_credit
+	for _, creditResult := range financeSimData.CreditSimulationResults {
+		credit := creditResult.ToDomain(leadsData.LeadsID, financeSimulation.ID)
+		if err := s.financeSimulationRepo.CreateFinanceSimulationCredit(ctx, tx, &credit); err != nil {
+			return errors.ErrFinanceSimulationCreditCreateFailed
+		}
+	}
 
 	// 4. Create trade-in if flag is true
 	tradeInData := request.Data.TradeIn
 	tradeIn := tradeInData.ToDomain(leadsData.LeadsID)
 
+	// TODO:get trade in before decide update or insert
 	if err := s.tradeInRepo.CreateTradeIn(ctx, tx, &tradeIn); err != nil {
 		return errors.ErrTradeInCreateFailed
 	}
+	// TODO: implement update trade in if already exists
 
 	// Commit transaction
 	if err := s.transactionRepo.CommitTransaction(tx); err != nil {

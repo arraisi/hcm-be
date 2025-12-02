@@ -2,10 +2,12 @@ package leads
 
 import (
 	"strings"
+	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/pkg/utils"
+	"github.com/google/uuid"
 )
 
 // FinanceSimulationWebhookEvent represents the webhook event for finance simulation
@@ -127,5 +129,65 @@ func (req *FinanceSimulationDetailsRequest) ToDomain(simulationID, simulationNum
 		InsuranceType:        req.InsuranceType,
 		InsurancePaymentType: req.InsurancePaymentType,
 		InsuranceCoverage:    strings.Join(req.InsuranceCoverage, ","),
+	}
+}
+
+// ToDomain converts InterestedPart to domain.LeadsInterestedPart
+func (ip *InterestedPart) ToDomain(leadsID string) domain.LeadsInterestedPart {
+	var packageID *string
+	if ip.PackageID != "" {
+		packageID = &ip.PackageID
+	}
+
+	var partSize *string
+	if ip.InterestedPartSize != "" {
+		partSize = &ip.InterestedPartSize
+	}
+
+	var partColor *string
+	if ip.InterestedPartColor != "" {
+		partColor = &ip.InterestedPartColor
+	}
+
+	return domain.LeadsInterestedPart{
+		ID:                       uuid.New().String(),
+		LeadsID:                  leadsID,
+		PartType:                 ip.InterestedPartType,
+		PackageID:                packageID,
+		PartNumber:               ip.InterestedPartNumber,
+		PartName:                 ip.InterestedPartName,
+		PartQuantity:             ip.InterestedPartQuantity,
+		PartSize:                 partSize,
+		PartColor:                partColor,
+		PartEstPrice:             &ip.InterestedPartEstPrice,
+		PartInstallationEstPrice: &ip.InterestedPartInstallationEstPrice,
+		FlagPartNeedDownPayment:  ip.FlagInterestedPartNeedDownPayment,
+		CreatedAt:                time.Now(),
+	}
+}
+
+// ToDomain converts PackagePart to domain.LeadsInterestedPartItem
+func (pp *PackagePart) ToDomain(leadsID, interestedPartID string) domain.LeadsInterestedPartItem {
+	return domain.LeadsInterestedPartItem{
+		ID:                    uuid.New().String(),
+		LeadsID:               leadsID,
+		LeadsInterestedPartID: interestedPartID,
+		PartNumber:            pp.InterestedPartNumber,
+		PartName:              pp.InterestedPartName,
+		CreatedAt:             time.Now(),
+	}
+}
+
+// ToDomain converts CreditSimulationResult to domain.LeadsFinanceSimulationCredit
+func (csr *CreditSimulationResult) ToDomain(leadsID, financeSimulationID string) domain.LeadsFinanceSimulationCredit {
+	return domain.LeadsFinanceSimulationCredit{
+		ID:                       uuid.New().String(),
+		LeadsID:                  leadsID,
+		LeadsFinanceSimulationID: financeSimulationID,
+		Tenor:                    csr.Tenor,
+		DownPayment:              csr.DownPayment,
+		TotalFirstPayment:        csr.TotalFirstPayment,
+		MonthlyInstallment:       csr.MonthlyInstallment,
+		IsActive:                 true,
 	}
 }
