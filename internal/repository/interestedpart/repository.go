@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/arraisi/hcm-be/internal/config"
+	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -22,10 +23,17 @@ type repository struct {
 	db  iDB
 }
 
-// New creates a new finance simulation repository instance
+// New creates a new interested part repository instance
 func New(cfg *config.Config, db iDB) *repository {
 	return &repository{
 		db:  db,
 		cfg: cfg,
 	}
+}
+
+type Repository interface {
+	CreateInterestedPart(ctx context.Context, tx *sqlx.Tx, interestedPart *domain.LeadsInterestedPart) error
+	CreateInterestedPartItem(ctx context.Context, tx *sqlx.Tx, item *domain.LeadsInterestedPartItem) error
+	DeleteInterestedPartByLeadsID(ctx context.Context, tx *sqlx.Tx, leadsID string) error
+	DeleteInterestedPartItemsByLeadsID(ctx context.Context, tx *sqlx.Tx, leadsID string) error
 }

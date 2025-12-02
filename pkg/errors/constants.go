@@ -148,7 +148,9 @@ var (
 	ErrLeadsCreateFailed                   = errors.New("failed to create leads")
 	ErrLeadsUpdateFailed                   = errors.New("failed to update leads")
 	ErrFinanceSimulationCreateFailed       = errors.New("failed to create finance simulation")
+	ErrFinanceSimulationUpdateFailed       = errors.New("failed to update finance simulation")
 	ErrTradeInCreateFailed                 = errors.New("failed to create trade-in")
+	ErrTradeInUpdateFailed                 = errors.New("failed to update trade-in")
 	ErrInterestedPartCreateFailed          = errors.New("failed to create interested part")
 	ErrInterestedPartItemCreateFailed      = errors.New("failed to create interested part item")
 	ErrFinanceSimulationCreditCreateFailed = errors.New("failed to create finance simulation credit")
@@ -159,7 +161,9 @@ var (
 		{Error: ErrLeadsCreateFailed, Code: http.StatusInternalServerError},
 		{Error: ErrLeadsUpdateFailed, Code: http.StatusInternalServerError},
 		{Error: ErrFinanceSimulationCreateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrFinanceSimulationUpdateFailed, Code: http.StatusInternalServerError},
 		{Error: ErrTradeInCreateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrTradeInUpdateFailed, Code: http.StatusInternalServerError},
 		{Error: ErrInterestedPartCreateFailed, Code: http.StatusInternalServerError},
 		{Error: ErrInterestedPartItemCreateFailed, Code: http.StatusInternalServerError},
 		{Error: ErrFinanceSimulationCreditCreateFailed, Code: http.StatusInternalServerError},

@@ -34,16 +34,23 @@ type leadsRepository interface {
 
 type financeSimulationRepository interface {
 	CreateFinanceSimulation(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsFinanceSimulation) error
+	GetFinanceSimulation(ctx context.Context, req dtoLeads.GetFinanceSimulationRequest) (domain.LeadsFinanceSimulation, error)
+	UpdateFinanceSimulation(ctx context.Context, tx *sqlx.Tx, req domain.LeadsFinanceSimulation) error
 	CreateFinanceSimulationCredit(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsFinanceSimulationCredit) error
+	DeleteCreditsByLeadsID(ctx context.Context, tx *sqlx.Tx, leadsID string) error
 }
 
 type tradeInRepository interface {
 	CreateTradeIn(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsTradeIn) error
+	GetTradeIn(ctx context.Context, req dtoLeads.GetTradeInRequest) (domain.LeadsTradeIn, error)
+	UpdateTradeIn(ctx context.Context, tx *sqlx.Tx, req domain.LeadsTradeIn) error
 }
 
 type interestedPartRepository interface {
 	CreateInterestedPart(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsInterestedPart) error
 	CreateInterestedPartItem(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsInterestedPartItem) error
+	DeleteInterestedPartByLeadsID(ctx context.Context, tx *sqlx.Tx, leadsID string) error
+	DeleteInterestedPartItemsByLeadsID(ctx context.Context, tx *sqlx.Tx, leadsID string) error
 }
 
 type customerService interface {
