@@ -1,5 +1,11 @@
 package appraisalbooking
 
+import (
+	"github.com/arraisi/hcm-be/internal/domain"
+	"strings"
+	"time"
+)
+
 // =======================
 // Top-level event
 // =======================
@@ -30,6 +36,62 @@ type OneAccountDTO struct {
 	Email                   string   `json:"email"`                     // VARCHAR(64)
 	KTPNumber               string   `json:"ktp_number"`                // VARCHAR(16), conditional
 	PreferredContactChannel []string `json:"preferred_contact_channel"` // MTOYOTA, WHATSAPP_OR_SMS, EMAIL, PHONE_CALL
+}
+
+func (dto OneAccountDTO) ToCustomerModel() domain.Customer {
+
+	// PreferredContactChannel di DTO adalah []string,
+	// sedangkan di domain hanya 1 string → kita gabungkan saja dengan comma.
+	contactChannel := strings.Join(dto.PreferredContactChannel, ",")
+
+	// NOTE:
+	// Banyak field tidak tersedia di DTO → isi default value.
+	// Nanti kalau butuh enrichment dari tempat lain tinggal update.
+	empty := ""
+	now := time.Now()
+
+	return domain.Customer{
+		ID:                      "", // created by DB on upsert
+		OneAccountID:            dto.OneAccountID,
+		HasjratID:               "", // unknown
+		FirstName:               dto.FirstName,
+		LastName:                dto.LastName,
+		Gender:                  nil, // tidak ada di DTO
+		PhoneNumber:             dto.PhoneNumber,
+		Email:                   dto.Email,
+		IsNew:                   true,  // default: new customer from mTOYOTA
+		IsMerge:                 false, // default
+		PrimaryUser:             nil,
+		DealerCustomerID:        "",
+		IsValid:                 true, // dianggap valid karena datang dari mTOYOTA
+		IsOmnichannel:           true, // mTOYOTA customer considered omnichannel
+		LeadsInID:               "",
+		CustomerCategory:        "GENERAL", // default guess
+		KTPNumber:               dto.KTPNumber,
+		BirthDate:               time.Time{}, // unknown
+		ResidenceAddress:        "",
+		ResidenceSubdistrict:    "",
+		ResidenceDistrict:       "",
+		ResidenceCity:           "",
+		ResidenceProvince:       "",
+		ResidencePostalCode:     "",
+		CustomerType:            "INDIVIDUAL", // default; update if needed
+		LeadsID:                 "",
+		Occupation:              "",
+		RegistrationChannel:     "MTOYOTA", // dari mTOYOTA
+		RegistrationDatetime:    now,
+		ConsentGiven:            false, // unknown
+		ConsentGivenAt:          time.Time{},
+		ConsentGivenDuring:      "",
+		AddressLabel:            "",
+		DetailAddress:           "",
+		ToyotaIDSingleStatus:    "",
+		PreferredContactChannel: contactChannel, // comma-separated string
+		CreatedAt:               now,
+		CreatedBy:               "system",
+		UpdatedAt:               now,
+		UpdatedBy:               &empty,
+	}
 }
 
 // =======================
