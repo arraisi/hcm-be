@@ -116,6 +116,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 
 			webhooks.Post("/finance-simulation", handler.LeadsHandler.RequestFinanceSimulation)
 
+			webhooks.Post("/get-offer", handler.LeadsHandler.RequestGetOffer)
+
 			webhooks.Post("/track-order-status", handler.OrderHandler.TrackOrderStatus)
 		})
 

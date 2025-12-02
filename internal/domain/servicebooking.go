@@ -26,7 +26,7 @@ type ServiceBooking struct {
 	PreferenceContactTimeStart   string    `db:"t_preference_contact_time_start"`
 	PreferenceContactTimeEnd     string    `db:"t_preference_contact_time_end"`
 	ServiceLocation              *string   `db:"c_service_location"`
-	OutletID                     string    `db:"c_outlet_id"`
+	OutletID                     string    `db:"i_outlet_id"`
 	OutletName                   string    `db:"n_outlet_name"`
 	MobileServiceAddress         *string   `db:"e_mobile_service_address"`
 	Province                     *string   `db:"c_province"`
@@ -78,7 +78,7 @@ func (sb *ServiceBooking) Columns() []string {
 		"t_preference_contact_time_start",
 		"t_preference_contact_time_end",
 		"c_service_location",
-		"c_outlet_id",
+		"i_outlet_id",
 		"n_outlet_name",
 		"e_mobile_service_address",
 		"c_province",
@@ -123,7 +123,7 @@ func (sb *ServiceBooking) SelectColumns() []string {
 		"t_preference_contact_time_start",
 		"t_preference_contact_time_end",
 		"c_service_location",
-		"c_outlet_id",
+		"i_outlet_id",
 		"n_outlet_name",
 		"e_mobile_service_address",
 		"c_province",
@@ -231,7 +231,7 @@ func (sb *ServiceBooking) ToCreateMap() ([]string, []interface{}) {
 		values = append(values, sb.ServiceLocation)
 	}
 	if sb.OutletID != "" {
-		columns = append(columns, "c_outlet_id")
+		columns = append(columns, "i_outlet_id")
 		values = append(values, sb.OutletID)
 	}
 	if sb.OutletName != "" {
@@ -352,7 +352,7 @@ func (sb *ServiceBooking) ToUpdateMap() map[string]interface{} {
 		updateMap["c_service_location"] = sb.ServiceLocation
 	}
 	if sb.OutletID != "" {
-		updateMap["c_outlet_id"] = sb.OutletID
+		updateMap["i_outlet_id"] = sb.OutletID
 	}
 	if sb.OutletName != "" {
 		updateMap["n_outlet_name"] = sb.OutletName
