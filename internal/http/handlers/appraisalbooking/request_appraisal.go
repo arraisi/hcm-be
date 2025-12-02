@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-func (h *Handler) AppraisalRequest(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RequestAppraisal(w http.ResponseWriter, r *http.Request) {
 	// Headers are already validated by middleware, just verify they exist
 	_, ok := middleware.GetWebhookHeaders(r.Context())
 	if !ok {
@@ -52,7 +52,7 @@ func (h *Handler) AppraisalRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.svc.AppraisalRequest(r.Context(), request)
+	err = h.svc.RequestAppraisal(r.Context(), request)
 	if err != nil {
 		// Combine webhook and test drive error lists
 		errorResponse := errors.NewErrorResponseFromList(err, errors.ErrListWebhook)
