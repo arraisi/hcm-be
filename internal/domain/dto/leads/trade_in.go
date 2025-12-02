@@ -90,9 +90,9 @@ type TradeInPagination struct {
 }
 
 // ToDomain converts the request to the internal LeadsTradeIn model
-func (req *TradeInRequest) ToDomain() domain.LeadsTradeIn {
+func (req *TradeInRequest) ToDomain(leadsID string) domain.LeadsTradeIn {
 	return domain.LeadsTradeIn{
-		LeadsID:                      req.LeadsID,
+		LeadsID:                      leadsID,
 		TradeInFlag:                  req.TradeInFlag,
 		VIN:                          req.VIN,
 		PoliceNumber:                 req.PoliceNumber,

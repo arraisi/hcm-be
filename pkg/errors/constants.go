@@ -142,6 +142,28 @@ var (
 		{Error: ErrCustomerNotFound, Code: http.StatusNotFound},
 	}
 
+	// Leads domain errors
+	ErrLeadsNotFound                 = errors.New("leads not found")
+	ErrLeadsInvalidData              = errors.New("invalid leads data")
+	ErrLeadsCreateFailed             = errors.New("failed to create leads")
+	ErrLeadsUpdateFailed             = errors.New("failed to update leads")
+	ErrFinanceSimulationCreateFailed = errors.New("failed to create finance simulation")
+	ErrTradeInCreateFailed           = errors.New("failed to create trade-in")
+	// Leads-specific error list
+	ErrListLeads = ErrList{
+		{Error: ErrLeadsNotFound, Code: http.StatusNotFound},
+		{Error: ErrLeadsInvalidData, Code: http.StatusBadRequest},
+		{Error: ErrLeadsCreateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrLeadsUpdateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrFinanceSimulationCreateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrTradeInCreateFailed, Code: http.StatusInternalServerError},
+		{Error: ErrLeadsFollowUpStatusInvalid, Code: http.StatusBadRequest},
+		{Error: ErrLeadsTypeInvalid, Code: http.StatusBadRequest},
+		{Error: ErrLeadsSourceInvalid, Code: http.StatusBadRequest},
+		{Error: ErrLeadsTAMLeadScoreInvalid, Code: http.StatusBadRequest},
+		{Error: ErrLeadsOutletLeadScoreInvalid, Code: http.StatusBadRequest},
+	}
+
 	// Service errors
 	ErrDatabaseConnection = errors.New("database connection failed")
 	ErrExternalService    = errors.New("external service error")

@@ -7,6 +7,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
+	dtoLeads "github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -25,24 +26,54 @@ type customerVehicleRepository interface {
 	GetCustomerVehicles(ctx context.Context, req customervehicle.GetCustomerVehicleRequest) ([]domain.CustomerVehicle, error)
 }
 
+type leadsRepository interface {
+	CreateLeads(ctx context.Context, tx *sqlx.Tx, req *domain.Leads) error
+	UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error
+	GetLeads(ctx context.Context, req dtoLeads.GetLeadsRequest) (domain.Leads, error)
+}
+
+type financeSimulationRepository interface {
+	CreateFinanceSimulation(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsFinanceSimulation) error
+}
+
+type tradeInRepository interface {
+	CreateTradeIn(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsTradeIn) error
+}
+
+type customerService interface {
+	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest) (string, error)
+}
+
 type ServiceContainer struct {
-	TransactionRepo     transactionRepository
-	CustomerRepo        customerRepository
-	CustomerVehicleRepo customerVehicleRepository
+	TransactionRepo       transactionRepository
+	CustomerRepo          customerRepository
+	CustomerVehicleRepo   customerVehicleRepository
+	LeadsRepo             leadsRepository
+	FinanceSimulationRepo financeSimulationRepository
+	TradeInRepo           tradeInRepository
+	CustomerSvc           customerService
 }
 
 type service struct {
-	cfg                 *config.Config
-	transactionRepo     transactionRepository
-	customerRepo        customerRepository
-	customerVehicleRepo customerVehicleRepository
+	cfg                   *config.Config
+	transactionRepo       transactionRepository
+	customerRepo          customerRepository
+	customerVehicleRepo   customerVehicleRepository
+	leadsRepo             leadsRepository
+	financeSimulationRepo financeSimulationRepository
+	tradeInRepo           tradeInRepository
+	customerSvc           customerService
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
 	return &service{
-		cfg:                 cfg,
-		transactionRepo:     container.TransactionRepo,
-		customerRepo:        container.CustomerRepo,
-		customerVehicleRepo: container.CustomerVehicleRepo,
+		cfg:                   cfg,
+		transactionRepo:       container.TransactionRepo,
+		customerRepo:          container.CustomerRepo,
+		customerVehicleRepo:   container.CustomerVehicleRepo,
+		leadsRepo:             container.LeadsRepo,
+		financeSimulationRepo: container.FinanceSimulationRepo,
+		tradeInRepo:           container.TradeInRepo,
+		customerSvc:           container.CustomerSvc,
 	}
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
+	"github.com/arraisi/hcm-be/internal/http/handlers/leads"
 	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
 	"github.com/arraisi/hcm-be/internal/http/handlers/queue"
 	"github.com/arraisi/hcm-be/internal/http/handlers/servicebooking"
@@ -32,6 +33,7 @@ type Handler struct {
 	OneAccessHandler        oneaccess.Handler
 	ToyotaIDHandler         toyotaid.Handler
 	CustomerReminderHandler customerreminder.Handler
+	LeadsHandler            leads.Handler
 	QueueHandler            *queue.Handler
 	TokenHandler            handlers.TokenHandler
 	OrderHandler            order.Handler
@@ -111,6 +113,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 
 			webhooks.Get("/customer-inquiry", handler.CustomerHandler.InquiryCustomer)
 			webhooks.Get("/customer-inquiry/list", handler.CustomerHandler.GetCustomers)
+
+			webhooks.Post("/finance-simulation", handler.LeadsHandler.RequestFinanceSimulation)
 
 			webhooks.Post("/track-order-status", handler.OrderHandler.TrackOrderStatus)
 		})

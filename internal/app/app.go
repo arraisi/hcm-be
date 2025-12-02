@@ -12,6 +12,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
+	leadsHandler "github.com/arraisi/hcm-be/internal/http/handlers/leads"
 	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
 	"github.com/arraisi/hcm-be/internal/http/handlers/order"
 	"github.com/arraisi/hcm-be/internal/http/handlers/queue"
@@ -28,11 +29,13 @@ import (
 	customerreminderRepository "github.com/arraisi/hcm-be/internal/repository/customerreminder"
 	customervehicleRepository "github.com/arraisi/hcm-be/internal/repository/customervehicle"
 	employeeRepository "github.com/arraisi/hcm-be/internal/repository/employee"
+	financesimulationRepository "github.com/arraisi/hcm-be/internal/repository/financesimulation"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
 	salesorderRepository "github.com/arraisi/hcm-be/internal/repository/salesorder"
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	spkRepository "github.com/arraisi/hcm-be/internal/repository/spk"
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
+	tradeinRepository "github.com/arraisi/hcm-be/internal/repository/tradein"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
 	"github.com/arraisi/hcm-be/internal/scheduler"
 	authService "github.com/arraisi/hcm-be/internal/service/auth"
@@ -110,6 +113,8 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	customerReminderRepo := customerreminderRepository.New(cfg, dbHcm)
 	salesOrderRepo := salesorderRepository.New(cfg, dbHcm)
 	spkRepo := spkRepository.New(cfg, dbHcm)
+	financeSimulationRepo := financesimulationRepository.New(cfg, dbHcm)
+	tradeInRepo := tradeinRepository.New(cfg, dbHcm)
 
 	// init services
 	userSvc := userService.NewUserService(mockApiClient)
@@ -175,9 +180,13 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 
 	// Scheduler Services
 	roAutomationSvc := leads.New(cfg, leads.ServiceContainer{
-		TransactionRepo:     txRepo,
-		CustomerRepo:        customerRepo,
-		CustomerVehicleRepo: customerVehicleRepo,
+		TransactionRepo:       txRepo,
+		CustomerRepo:          customerRepo,
+		CustomerVehicleRepo:   customerVehicleRepo,
+		LeadsRepo:             leadRepo,
+		FinanceSimulationRepo: financeSimulationRepo,
+		TradeInRepo:           tradeInRepo,
+		CustomerSvc:           customerSvc,
 	})
 
 	// Scheduler
@@ -197,6 +206,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	queueHandler := queue.NewHandler(queueInspector)
 	tokenHandler := handlers.NewTokenHandler(tokenSvc)
 	orderHandler := order.New(cfg, salesOrderSvc, idempotencyStore)
+	leadsHandler := leadsHandler.New(cfg, roAutomationSvc, idempotencyStore)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                  cfg,
@@ -207,6 +217,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		OneAccessHandler:        oneAccessHandler,
 		ToyotaIDHandler:         toyotaIDHandler,
 		CustomerReminderHandler: customerReminderHandler,
+		LeadsHandler:            leadsHandler,
 		QueueHandler:            queueHandler,
 		TokenHandler:            tokenHandler,
 		OrderHandler:            orderHandler,
