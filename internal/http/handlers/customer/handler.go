@@ -3,6 +3,7 @@ package customer
 //go:generate mockgen -package=customer -source=handler.go -destination=handler_mock_test.go
 import (
 	"context"
+
 	"github.com/arraisi/hcm-be/internal/config"
 
 	"github.com/arraisi/hcm-be/internal/domain"
