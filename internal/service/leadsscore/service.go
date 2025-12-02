@@ -13,7 +13,7 @@ type transactionRepository interface {
 }
 
 type Repository interface {
-	CreateLeadsScore(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsScore) (string, error)
+	CreateLeadsScore(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsScore) error
 	UpdateLeadsScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadsScore) error
 	GetLeadsScore(ctx context.Context, leadsID string) (domain.LeadsScore, error)
 }

@@ -23,11 +23,11 @@ func (s *service) UpsertLeadsScore(ctx context.Context, tx *sqlx.Tx, req domain.
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		leadsScoreID, err := s.repo.CreateLeadsScore(ctx, tx, &req)
+		err := s.repo.CreateLeadsScore(ctx, tx, &req)
 		if err != nil {
-			return leadsScoreID, err
+			return req.ID, err
 		}
-		return leadsScoreID, nil
+		return req.ID, nil
 	}
 
 	// other error
