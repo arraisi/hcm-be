@@ -28,19 +28,21 @@ type Leads struct {
 	UpdatedAt                       time.Time `json:"updated_at" db:"d_updated_at"`
 	UpdatedBy                       *string   `json:"updated_by" db:"c_updated_by"`
 	CustomerVehicleID               string    `json:"customer_vehicle_id" db:"i_customer_vehicle_id"`
+	GetOfferNumber                  *string   `json:"get_offer_number" db:"c_get_offer_number"`
+	OutletID                        *string   `json:"outlet_id" db:"i_outlet_id"`
+	OutletName                      *string   `json:"outlet_name" db:"n_outlet_name"`
+	KatashikiSuffix                 *string   `json:"katashiki_suffix" db:"c_katashiki_suffix"`
+	ColorCode                       *string   `json:"color_code" db:"c_color_code"`
+	Model                           *string   `json:"model" db:"c_model"`
+	Variant                         *string   `json:"variant" db:"c_variant"`
+	Color                           *string   `json:"color" db:"c_color"`
+	FinanceSimulationID             *string   `json:"finance_simulation_id" db:"i_finance_simulation_id"`
+	FinanceSimulationNumber         *string   `json:"finance_simulation_number" db:"c_finance_simulation_number"`
 
 	// to be confirmed old table columns
 	LastFollowUpDatetime         *time.Time `json:"last_follow_up_datetime" db:"d_last_follow_up_datetime"`
 	FollowUpTargetDate           *time.Time `json:"follow_up_target_date" db:"d_follow_up_target_date"`
-	GetOfferNumber               *string    `json:"get_offer_number" db:"c_get_offer_number"`
-	KatashikiSuffix              *string    `json:"katashiki_suffix" db:"c_katashiki_suffix"`
-	ColorCode                    *string    `json:"color_code" db:"c_color_code"`
-	Model                        *string    `json:"model" db:"c_model"`
-	Variant                      *string    `json:"variant" db:"c_variant"`
-	Color                        *string    `json:"color" db:"c_color"`
 	VehicleOTRPrice              *float64   `json:"vehicle_otr_price" db:"v_vehicle_otr_price"`
-	OutletID                     *string    `json:"outlet_id" db:"i_outlet_id"`
-	OutletName                   *string    `json:"outlet_name" db:"n_outlet_name"`
 	ServicePackageID             *string    `json:"service_package_id" db:"i_service_package_id"`
 	ServicePackageName           *string    `json:"service_package_name" db:"n_service_package_name"`
 	CreatedDatetime              time.Time  `json:"created_datetime" db:"d_created_datetime"`
@@ -49,8 +51,6 @@ type Leads struct {
 	ReasonLeadsStatusUpdateOther *string    `json:"reason_leads_status_update_other" db:"c_reason_leads_status_update_other"`
 	VehicleCategory              *string    `json:"vehicle_category" db:"c_vehicle_category"`
 	DemandStructure              *string    `json:"demand_structure" db:"d_demand_structure"`
-	FinanceSimulationID          *string    `json:"finance_simulation_id" db:"i_finance_simulation_id"`
-	FinanceSimulationNumber      *string    `json:"finance_simulation_number" db:"c_finance_simulation_number"`
 }
 
 // TableName returns the database table name for the User model
@@ -186,6 +186,95 @@ func (u *Leads) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "c_negotiation_criteria")
 		values = append(values, u.NegotiationCriteria)
 	}
+	if u.GetOfferNumber != nil {
+		columns = append(columns, "c_get_offer_number")
+		values = append(values, u.GetOfferNumber)
+	}
+	if u.OutletID != nil {
+		columns = append(columns, "i_outlet_id")
+		values = append(values, u.OutletID)
+	}
+	if u.OutletName != nil {
+		columns = append(columns, "n_outlet_name")
+		values = append(values, u.OutletName)
+	}
+	if u.KatashikiSuffix != nil {
+		columns = append(columns, "c_katashiki_suffix")
+		values = append(values, u.KatashikiSuffix)
+	}
+	if u.Model != nil {
+		columns = append(columns, "c_model")
+		values = append(values, u.Model)
+	}
+	if u.Variant != nil {
+		columns = append(columns, "c_variant")
+		values = append(values, u.Variant)
+	}
+	if u.Color != nil {
+		columns = append(columns, "c_color")
+		values = append(values, u.Color)
+	}
+	if u.ColorCode != nil {
+		columns = append(columns, "c_color_code")
+		values = append(values, u.ColorCode)
+	}
+	if u.VehicleOTRPrice != nil {
+		columns = append(columns, "v_vehicle_otr_price")
+		values = append(values, u.VehicleOTRPrice)
+	}
+	if u.ServicePackageID != nil {
+		columns = append(columns, "i_service_package_id")
+		values = append(values, u.ServicePackageID)
+	}
+	if u.ServicePackageName != nil {
+		columns = append(columns, "n_service_package_name")
+		values = append(values, u.ServicePackageName)
+	}
+	if u.FinanceSimulationID != nil {
+		columns = append(columns, "i_finance_simulation_id")
+		values = append(values, u.FinanceSimulationID)
+	}
+	if u.FinanceSimulationNumber != nil {
+		columns = append(columns, "c_finance_simulation_number")
+		values = append(values, u.FinanceSimulationNumber)
+	}
+	if u.CustomerVehicleID != "" {
+		columns = append(columns, "i_customer_vehicle_id")
+		values = append(values, u.CustomerVehicleID)
+	}
+	if u.LastFollowUpDatetime != nil {
+		columns = append(columns, "d_last_follow_up_datetime")
+		values = append(values, u.LastFollowUpDatetime)
+	}
+	if u.FollowUpTargetDate != nil {
+		columns = append(columns, "d_follow_up_target_date")
+		values = append(values, u.FollowUpTargetDate)
+	}
+	if u.LeadsStatus != nil {
+		columns = append(columns, "c_leads_status")
+		values = append(values, u.LeadsStatus)
+	}
+	if u.ReasonLeadsStatusUpdate != nil {
+		columns = append(columns, "c_reason_leads_status_update")
+		values = append(values, u.ReasonLeadsStatusUpdate)
+	}
+	if u.ReasonLeadsStatusUpdateOther != nil {
+		columns = append(columns, "c_reason_leads_status_update_other")
+		values = append(values, u.ReasonLeadsStatusUpdateOther)
+	}
+	if u.VehicleCategory != nil {
+		columns = append(columns, "c_vehicle_category")
+		values = append(values, u.VehicleCategory)
+	}
+	if u.DemandStructure != nil {
+		columns = append(columns, "d_demand_structure")
+		values = append(values, u.DemandStructure)
+	}
+	if !u.CreatedDatetime.IsZero() {
+		columns = append(columns, "d_created_datetime")
+		values = append(values, u.CreatedDatetime.UTC())
+	}
+
 	columns = append(columns, "c_created_by")
 	values = append(values, u.CreatedBy)
 	columns = append(columns, "c_updated_by")
@@ -241,7 +330,72 @@ func (u *Leads) ToUpdateMap() map[string]interface{} {
 	if u.NegotiationCriteria != nil {
 		updateMap["c_negotiation_criteria"] = u.NegotiationCriteria
 	}
-	updateMap["d_updated_at"] = u.UpdatedAt.UTC()
+	if u.GetOfferNumber != nil {
+		updateMap["c_get_offer_number"] = u.GetOfferNumber
+	}
+	if u.OutletID != nil {
+		updateMap["i_outlet_id"] = u.OutletID
+	}
+	if u.OutletName != nil {
+		updateMap["n_outlet_name"] = u.OutletName
+	}
+	if u.KatashikiSuffix != nil {
+		updateMap["c_katashiki_suffix"] = u.KatashikiSuffix
+	}
+	if u.ColorCode != nil {
+		updateMap["c_color_code"] = u.ColorCode
+	}
+	if u.Model != nil {
+		updateMap["c_model"] = u.Model
+	}
+	if u.Variant != nil {
+		updateMap["c_variant"] = u.Variant
+	}
+	if u.Color != nil {
+		updateMap["c_color"] = u.Color
+	}
+	if u.VehicleOTRPrice != nil {
+		updateMap["v_vehicle_otr_price"] = u.VehicleOTRPrice
+	}
+	if u.ServicePackageID != nil {
+		updateMap["i_service_package_id"] = u.ServicePackageID
+	}
+	if u.ServicePackageName != nil {
+		updateMap["n_service_package_name"] = u.ServicePackageName
+	}
+	if u.FinanceSimulationID != nil {
+		updateMap["i_finance_simulation_id"] = u.FinanceSimulationID
+	}
+	if u.FinanceSimulationNumber != nil {
+		updateMap["c_finance_simulation_number"] = u.FinanceSimulationNumber
+	}
+	if u.CustomerVehicleID != "" {
+		updateMap["i_customer_vehicle_id"] = u.CustomerVehicleID
+	}
+	if u.LastFollowUpDatetime != nil {
+		updateMap["d_last_follow_up_datetime"] = u.LastFollowUpDatetime
+	}
+	if u.FollowUpTargetDate != nil {
+		updateMap["d_follow_up_target_date"] = u.FollowUpTargetDate
+	}
+	if u.LeadsStatus != nil {
+		updateMap["c_leads_status"] = u.LeadsStatus
+	}
+	if u.ReasonLeadsStatusUpdate != nil {
+		updateMap["c_reason_leads_status_update"] = u.ReasonLeadsStatusUpdate
+	}
+	if u.ReasonLeadsStatusUpdateOther != nil {
+		updateMap["c_reason_leads_status_update_other"] = u.ReasonLeadsStatusUpdateOther
+	}
+	if u.VehicleCategory != nil {
+		updateMap["c_vehicle_category"] = u.VehicleCategory
+	}
+	if u.DemandStructure != nil {
+		updateMap["d_demand_structure"] = u.DemandStructure
+	}
+	if !u.CreatedDatetime.IsZero() {
+		updateMap["d_created_datetime"] = u.CreatedDatetime.UTC()
+	}
 	updateMap["c_updated_by"] = u.UpdatedBy
 	return updateMap
 }

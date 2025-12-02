@@ -33,98 +33,24 @@ func (s *service) RequestFinanceSimulation(ctx context.Context, request dtoLeads
 
 	// 2. Upsert leads
 	leadsData := request.Data.Leads
-	leads, err := s.processLeads(ctx, tx, leadsData, customerID)
+	leads, err := s.processLeadsFinanceSim(ctx, tx, leadsData, customerID)
 	if err != nil {
 		return err
 	}
 
-	// Delete existing interested parts before inserting new ones
-	if err := s.interestedPartRepo.DeleteInterestedPartItemsByLeadsID(ctx, tx, leads.ID); err != nil {
-		return fmt.Errorf("failed to delete interested part items: %w", err)
-	}
-	if err := s.interestedPartRepo.DeleteInterestedPartByLeadsID(ctx, tx, leads.ID); err != nil {
-		return fmt.Errorf("failed to delete interested parts: %w", err)
+	// 3. Process interested parts
+	if err := s.processInterestedParts(ctx, tx, leads.ID, request.Data.Leads.InterestedPart); err != nil {
+		return err
 	}
 
-	for _, interestedPart := range request.Data.Leads.InterestedPart {
-		// Create interested part
-		part := interestedPart.ToDomain(leads.ID)
-		if err := s.interestedPartRepo.CreateInterestedPart(ctx, tx, &part); err != nil {
-			return errors.ErrInterestedPartCreateFailed
-		}
-
-		// Create package parts if it's a package type
-		if interestedPart.InterestedPartType == "PACKAGE" && len(interestedPart.PackageParts) > 0 {
-			for _, packagePart := range interestedPart.PackageParts {
-				item := packagePart.ToDomain(leads.ID, part.ID)
-				if err := s.interestedPartRepo.CreateInterestedPartItem(ctx, tx, &item); err != nil {
-					return errors.ErrInterestedPartItemCreateFailed
-				}
-			}
-		}
+	// 4. Process finance simulation
+	if err := s.processLeadsFinanceSimulation(ctx, tx, leads.ID, leadsData.FinanceSimulationID, leadsData.FinanceSimulationNumber, request.Data.FinanceSimulation); err != nil {
+		return err
 	}
 
-	// 3. Upsert finance simulation
-	financeSimData := request.Data.FinanceSimulation
-	financeSimulation := financeSimData.ToDomain(leadsData.FinanceSimulationID, leadsData.FinanceSimulationNumber, leads.ID)
-
-	// Check if finance simulation already exists
-	existingFinanceSim, err := s.financeSimulationRepo.GetFinanceSimulation(ctx, dtoLeads.GetFinanceSimulationRequest{
-		SimulationID: utils.ToPointer(leadsData.FinanceSimulationID),
-		LeadsID:      utils.ToPointer(leads.ID),
-	})
-	if err != nil && err != sql.ErrNoRows {
-		return fmt.Errorf("failed to check existing finance simulation: %w", err)
-	}
-
-	if existingFinanceSim.ID != "" {
-		// Update existing finance simulation
-		financeSimulation.ID = existingFinanceSim.ID
-		if err := s.financeSimulationRepo.UpdateFinanceSimulation(ctx, tx, financeSimulation); err != nil {
-			return errors.ErrFinanceSimulationUpdateFailed
-		}
-	} else {
-		// Create new finance simulation
-		if err := s.financeSimulationRepo.CreateFinanceSimulation(ctx, tx, &financeSimulation); err != nil {
-			return errors.ErrFinanceSimulationCreateFailed
-		}
-	}
-
-	// Delete existing credits before inserting new ones
-	if err := s.financeSimulationRepo.DeleteCreditsByLeadsID(ctx, tx, leads.ID); err != nil {
-		return fmt.Errorf("failed to delete finance simulation credits: %w", err)
-	}
-
-	for _, creditResult := range financeSimData.CreditSimulationResults {
-		credit := creditResult.ToDomain(leads.ID, financeSimulation.ID)
-		if err := s.financeSimulationRepo.CreateFinanceSimulationCredit(ctx, tx, &credit); err != nil {
-			return errors.ErrFinanceSimulationCreditCreateFailed
-		}
-	}
-
-	// 4. Upsert trade-in
-	tradeInData := request.Data.TradeIn
-	tradeIn := tradeInData.ToDomain(leads.ID)
-
-	// Check if trade-in already exists
-	existingTradeIn, err := s.tradeInRepo.GetTradeIn(ctx, dtoLeads.GetTradeInRequest{
-		LeadsID: utils.ToPointer(leads.ID),
-	})
-	if err != nil && err != sql.ErrNoRows {
-		return fmt.Errorf("failed to check existing trade-in: %w", err)
-	}
-
-	if existingTradeIn.ID != "" {
-		// Update existing trade-in
-		tradeIn.ID = existingTradeIn.ID
-		if err := s.tradeInRepo.UpdateTradeIn(ctx, tx, tradeIn); err != nil {
-			return errors.ErrTradeInUpdateFailed
-		}
-	} else {
-		// Create new trade-in
-		if err := s.tradeInRepo.CreateTradeIn(ctx, tx, &tradeIn); err != nil {
-			return errors.ErrTradeInCreateFailed
-		}
+	// 5. Upsert trade-in
+	if err := s.processTradeIn(ctx, tx, leads.ID, request.Data.TradeIn); err != nil {
+		return err
 	}
 
 	// Commit transaction
@@ -135,7 +61,7 @@ func (s *service) RequestFinanceSimulation(ctx context.Context, request dtoLeads
 	return nil
 }
 
-func (s *service) processLeads(ctx context.Context, tx *sqlx.Tx, leadsData dtoLeads.FinanceSimulationLeadsRequest, customerID string) (domain.Leads, error) {
+func (s *service) processLeadsFinanceSim(ctx context.Context, tx *sqlx.Tx, leadsData dtoLeads.FinanceSimulationLeadsRequest, customerID string) (domain.Leads, error) {
 	leads := leadsData.ToDomain(customerID)
 	leads.CreatedBy = "SYSTEM"
 	leads.UpdatedAt = time.Now()
@@ -160,4 +86,46 @@ func (s *service) processLeads(ctx context.Context, tx *sqlx.Tx, leadsData dtoLe
 		}
 	}
 	return leads, nil
+}
+
+// processLeadsFinanceSimulation handles upsert logic for finance simulation and credits
+func (s *service) processLeadsFinanceSimulation(ctx context.Context, tx *sqlx.Tx, leadsID, financeSimulationID, financeSimulationNumber string, financeSimData dtoLeads.FinanceSimulationDetailsRequest) error {
+	financeSimulation := financeSimData.ToDomain(financeSimulationID, financeSimulationNumber, leadsID)
+
+	// Check if finance simulation already exists
+	existingFinanceSim, err := s.financeSimulationRepo.GetFinanceSimulation(ctx, dtoLeads.GetFinanceSimulationRequest{
+		SimulationID: utils.ToPointer(financeSimulationID),
+		LeadsID:      utils.ToPointer(leadsID),
+	})
+	if err != nil && err != sql.ErrNoRows {
+		return fmt.Errorf("failed to check existing finance simulation: %w", err)
+	}
+
+	if existingFinanceSim.ID != "" {
+		// Update existing finance simulation
+		financeSimulation.ID = existingFinanceSim.ID
+		if err := s.financeSimulationRepo.UpdateFinanceSimulation(ctx, tx, financeSimulation); err != nil {
+			return errors.ErrFinanceSimulationUpdateFailed
+		}
+	} else {
+		// Create new finance simulation
+		if err := s.financeSimulationRepo.CreateFinanceSimulation(ctx, tx, &financeSimulation); err != nil {
+			return errors.ErrFinanceSimulationCreateFailed
+		}
+	}
+
+	// Delete existing credits before inserting new ones
+	if err := s.financeSimulationRepo.DeleteCreditsByLeadsID(ctx, tx, leadsID); err != nil {
+		return fmt.Errorf("failed to delete finance simulation credits: %w", err)
+	}
+
+	// Insert new credits
+	for _, creditResult := range financeSimData.CreditSimulationResults {
+		credit := creditResult.ToDomain(leadsID, financeSimulation.ID)
+		if err := s.financeSimulationRepo.CreateFinanceSimulationCredit(ctx, tx, &credit); err != nil {
+			return errors.ErrFinanceSimulationCreditCreateFailed
+		}
+	}
+
+	return nil
 }
