@@ -204,3 +204,46 @@ type UsedCarDTO struct {
 	AdditionalNotes        string  `json:"additional_notes"`         // VARCHAR(256), N
 	CustomerRequestedPrice float64 `json:"customer_requested_price"` // FLOAT, N
 }
+
+func (dto UsedCarDTO) ToUsedCarModel(customerID string) domain.UsedCar {
+	now := time.Now()
+
+	var stnkExpiry time.Time
+	if dto.StnkExpiryDate > 0 {
+		// asumsi timestamp dalam detik
+		stnkExpiry = time.Unix(dto.StnkExpiryDate, 0)
+	}
+
+	model := domain.UsedCar{
+		ID:                           0, // identity di DB
+		CustomerID:                   customerID,
+		UsedCarBrand:                 dto.UsedCarBrand,
+		VIN:                          dto.VIN,
+		PoliceNumber:                 dto.PoliceNumber,
+		KatashikiSuffix:              dto.KatashikiSuffix,
+		ColorCode:                    dto.ColorCode,
+		UsedCarModel:                 dto.UsedCarModel,
+		UsedCarVariant:               dto.UsedCarVariant,
+		UsedCarColor:                 dto.UsedCarColor,
+		InitialEstimatedUsedCarPrice: dto.InitialEstimatedUsedCarPrice,
+		UsedCarYear:                  dto.UsedCarYear,
+		UsedCarFuel:                  dto.Fuel,
+		UsedCarEngineCapacity:        int(dto.EngineCapacity),
+		UsedCarTransmission:          dto.Transmission,
+		Mileage:                      int(dto.Mileage),
+		Province:                     dto.Province,
+		Mover:                        dto.Mover,
+		StnkExpiryDate:               stnkExpiry,
+		Stnk:                         dto.Stnk,
+		Bpkb:                         dto.Bpkb,
+		Faktur:                       dto.Faktur,
+		ServiceBook:                  dto.ServiceBook,
+		AvailabilitySpareKey:         dto.AvailabilitySpareKey,
+		SpareTireCheck:               dto.SpareTireCheck,
+		CustomerRequestedPrice:       dto.CustomerRequestedPrice,
+		AdditionalNotes:              dto.AdditionalNotes,
+		CreatedAt:                    now,
+	}
+
+	return model
+}

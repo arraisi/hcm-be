@@ -7,6 +7,7 @@ import (
 // UsedCar domain model matching DDL tr_used_car
 type UsedCar struct {
 	ID                           int       `json:"id" db:"i_id"`
+	CustomerID                   string    `json:"customer_id" db:"i_customer_id"`
 	UsedCarBrand                 string    `json:"used_car_brand" db:"used_car_brand"`
 	VIN                          string    `json:"vin" db:"vin"`
 	PoliceNumber                 string    `json:"police_number" db:"police_number"`
@@ -54,6 +55,7 @@ func (u *UsedCar) TableName() string {
 func (u *UsedCar) Columns() []string {
 	return []string{
 		"i_id",
+		"i_customer_id",
 		"used_car_brand",
 		"vin",
 		"police_number",
@@ -92,6 +94,7 @@ func (u *UsedCar) Columns() []string {
 func (u *UsedCar) SelectColumns() []string {
 	return []string{
 		"CAST(i_id AS INT) as i_id",
+		"i_customer_id",
 		"used_car_brand",
 		"vin",
 		"police_number",
@@ -130,6 +133,11 @@ func (u *UsedCar) SelectColumns() []string {
 func (u *UsedCar) ToCreateMap() (columns []string, values []interface{}) {
 	columns = []string{}
 	values = []interface{}{}
+
+	if u.CustomerID != "" {
+		columns = append(columns, "i_customer_id")
+		values = append(values, u.CustomerID)
+	}
 
 	if u.UsedCarBrand != "" {
 		columns = append(columns, "used_car_brand")
@@ -242,6 +250,10 @@ func (u *UsedCar) ToCreateMap() (columns []string, values []interface{}) {
 
 func (u *UsedCar) ToUpdateMap() map[string]interface{} {
 	m := map[string]interface{}{}
+
+	if u.CustomerID != "" {
+		m["i_customer_id"] = u.CustomerID
+	}
 
 	if u.UsedCarBrand != "" {
 		m["used_car_brand"] = u.UsedCarBrand
