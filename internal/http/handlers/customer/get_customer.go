@@ -16,19 +16,19 @@ func (h *Handler) GetCustomers(w http.ResponseWriter, r *http.Request) {
 
 	// Parse query parameters
 	req := customer.GetCustomerRequest{
-		Limit:  10, // default limit
-		Offset: 0,
+		Page:     1,  // default page
+		PageSize: 20, // default page size
 	}
 
-	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
-		if limit, err := strconv.Atoi(limitStr); err == nil && limit > 0 {
-			req.Limit = limit
+	if pageStr := r.URL.Query().Get("page"); pageStr != "" {
+		if page, err := strconv.Atoi(pageStr); err == nil && page > 0 {
+			req.Page = page
 		}
 	}
 
-	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
-		if offset, err := strconv.Atoi(offsetStr); err == nil && offset >= 0 {
-			req.Offset = offset
+	if pageSizeStr := r.URL.Query().Get("page_size"); pageSizeStr != "" {
+		if pageSize, err := strconv.Atoi(pageSizeStr); err == nil && pageSize > 0 {
+			req.PageSize = pageSize
 		}
 	}
 
@@ -52,5 +52,5 @@ func (h *Handler) GetCustomers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.OK(w, result, "User retrieved successfully")
+	response.JSON(w, http.StatusOK, result)
 }

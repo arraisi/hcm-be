@@ -11,6 +11,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
+	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -29,7 +30,7 @@ func TestConfirmServiceBooking_Success(t *testing.T) {
 				OneAccountID: "test-one-account-id",
 				FirstName:    "John",
 				LastName:     "Doe",
-				Gender:       "MALE",
+				Gender:       utils.ToPointer("MALE"),
 				PhoneNumber:  "1234567890",
 			},
 			CustomerVehicle: customervehicle.CustomerVehicleRequest{
@@ -118,7 +119,7 @@ func TestConfirmServiceBooking_ServiceError(t *testing.T) {
 				OneAccountID: "test-one-account-id",
 				FirstName:    "John",
 				LastName:     "Doe",
-				Gender:       "MALE",
+				Gender:       utils.ToPointer("MALE"),
 				PhoneNumber:  "1234567890",
 			},
 			CustomerVehicle: customervehicle.CustomerVehicleRequest{
@@ -169,7 +170,7 @@ func TestConfirmServiceBookingGR_Success(t *testing.T) {
 				OneAccountID: "test-one-account-id",
 				FirstName:    "John",
 				LastName:     "Doe",
-				Gender:       "MALE",
+				Gender:       utils.ToPointer("MALE"),
 				PhoneNumber:  "1234567890",
 			},
 			CustomerVehicle: customervehicle.CustomerVehicleRequest{
@@ -218,7 +219,7 @@ func TestConfirmServiceBookingBP_Success(t *testing.T) {
 				OneAccountID: "test-one-account-id",
 				FirstName:    "John",
 				LastName:     "Doe",
-				Gender:       "MALE",
+				Gender:       utils.ToPointer("MALE"),
 				PhoneNumber:  "1234567890",
 			},
 			CustomerVehicle: customervehicle.CustomerVehicleRequest{
@@ -267,7 +268,7 @@ func TestConfirmServiceBooking_BP_Process(t *testing.T) {
 				OneAccountID: "test-one-account-id",
 				FirstName:    "John",
 				LastName:     "Doe",
-				Gender:       "MALE",
+				Gender:       utils.ToPointer("MALE"),
 				PhoneNumber:  "1234567890",
 			},
 			CustomerVehicle: customervehicle.CustomerVehicleRequest{

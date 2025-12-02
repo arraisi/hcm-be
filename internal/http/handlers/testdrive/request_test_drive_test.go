@@ -19,6 +19,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
+	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -41,7 +42,7 @@ func TestWebhookHandler_TestDriveBooking(t *testing.T) {
 				OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 				FirstName:    "John",
 				LastName:     "Doe",
-				Gender:       "MALE",
+				Gender:       utils.ToPointer("MALE"),
 				PhoneNumber:  "1234567890",
 				Email:        "john.doe@example.com",
 			},
@@ -154,7 +155,7 @@ func TestWebhookHandler_TestDriveBooking_InvalidSignature(t *testing.T) {
 				OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 				FirstName:    "John",
 				LastName:     "Doe",
-				Gender:       "MALE",
+				Gender:       utils.ToPointer("MALE"),
 				PhoneNumber:  "1234567890",
 				Email:        "john.doe@example.com",
 			},
@@ -265,7 +266,7 @@ func TestWebhookHandler_TestDriveBooking_StoreFailure(t *testing.T) {
 					OneAccountID: "GMA04GNYBSI0D85IP6K59OYGJZ6VOKW3Y",
 					FirstName:    "John",
 					LastName:     "Doe",
-					Gender:       "MALE",
+					Gender:       utils.ToPointer("MALE"),
 					PhoneNumber:  "1234567890",
 					Email:        "john.doe@example.com",
 				},

@@ -11,4 +11,7 @@ const (
 	ProcessServiceBookingGrSlotConfirm = "service_booking_gr_slot_confirm"
 	ProcessServiceBookingBpRequest     = "service_booking_bp_request"
 	ProcessServiceBookingBpConfirm     = "service_booking_bp_confirm"
+
+	PaymentTypePayment     = "PAYMENT"
+	PaymentTypeDownPayment = "DOWN_PAYMENT"
 )

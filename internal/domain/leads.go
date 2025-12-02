@@ -7,27 +7,27 @@ import (
 type Leads struct {
 	ID                              string    `json:"id" db:"i_id"`
 	CustomerID                      string    `json:"customer_id" db:"i_customer_id"`
-	TestDriveID                     string    `json:"test_drive_id" db:"i_test_drive_id"`
 	LeadsID                         string    `json:"leads_id" db:"i_leads_id"`
 	LeadsType                       string    `json:"leads_type" db:"c_leads_type"`
 	LeadsFollowUpStatus             string    `json:"leads_follow_up_status" db:"c_leads_follow_up_status"`
-	LeadsPreferenceContactTimeStart string    `json:"leads_preference_contact_time_start" db:"t_leads_preference_contact_time_start"`
-	LeadsPreferenceContactTimeEnd   string    `json:"leads_preference_contact_time_end" db:"t_leads_preference_contact_time_end"`
+	LeadsPreferenceContactTimeStart *string   `json:"leads_preference_contact_time_start" db:"t_leads_preference_contact_time_start"`
+	LeadsPreferenceContactTimeEnd   *string   `json:"leads_preference_contact_time_end" db:"t_leads_preference_contact_time_end"`
 	LeadSource                      string    `json:"lead_source" db:"c_leads_source"`
 	AdditionalNotes                 *string   `json:"additional_notes" db:"e_additional_notes"`
 	TAMLeadScore                    string    `json:"tam_lead_score" db:"c_tam_lead_score"`
 	OutletLeadScore                 string    `json:"outlet_lead_score" db:"c_outlet_lead_score"`
-	PurchasePlanCriteria            string    `json:"purchase_plan_criteria" db:"c_purchase_plan_criteria"`
-	PaymentPreferCriteria           string    `json:"payment_prefer_criteria" db:"c_payment_prefer_criteria"`
-	TestDriveCriteria               string    `json:"test_drive_criteria" db:"c_test_drive_criteria"`
-	TradeInCriteria                 string    `json:"trade_in_criteria" db:"c_trade_in_criteria"`
-	BrowsingHistoryCriteria         string    `json:"browsing_history_criteria" db:"c_browsing_history_criteria"`
-	VehicleAgeCriteria              string    `json:"vehicle_age_criteria" db:"c_vehicle_age_criteria"`
-	NegotiationCriteria             string    `json:"negotiation_criteria" db:"c_negotiation_criteria"`
+	PurchasePlanCriteria            *string   `json:"purchase_plan_criteria" db:"c_purchase_plan_criteria"`
+	PaymentPreferCriteria           *string   `json:"payment_prefer_criteria" db:"c_payment_prefer_criteria"`
+	TestDriveCriteria               *string   `json:"test_drive_criteria" db:"c_test_drive_criteria"`
+	TradeInCriteria                 *string   `json:"trade_in_criteria" db:"c_trade_in_criteria"`
+	BrowsingHistoryCriteria         *string   `json:"browsing_history_criteria" db:"c_browsing_history_criteria"`
+	VehicleAgeCriteria              *string   `json:"vehicle_age_criteria" db:"c_vehicle_age_criteria"`
+	NegotiationCriteria             *string   `json:"negotiation_criteria" db:"c_negotiation_criteria"`
 	CreatedAt                       time.Time `json:"created_at" db:"d_created_at"`
 	CreatedBy                       string    `json:"created_by" db:"c_created_by"`
 	UpdatedAt                       time.Time `json:"updated_at" db:"d_updated_at"`
 	UpdatedBy                       *string   `json:"updated_by" db:"c_updated_by"`
+	CustomerVehicleID               string    `json:"customer_vehicle_id" db:"i_customer_vehicle_id"`
 
 	// to be confirmed old table columns
 	LastFollowUpDatetime         *time.Time `json:"last_follow_up_datetime" db:"d_last_follow_up_datetime"`
@@ -63,7 +63,6 @@ func (u *Leads) Columns() []string {
 	return []string{
 		"i_id",
 		"i_customer_id",
-		"i_test_drive_id",
 		"i_leads_id",
 		"c_leads_type",
 		"c_leads_follow_up_status",
@@ -92,7 +91,6 @@ func (u *Leads) SelectColumns() []string {
 	return []string{
 		"i_id",
 		"i_customer_id",
-		"i_test_drive_id",
 		"i_leads_id",
 		"c_leads_type",
 		"c_leads_follow_up_status",
@@ -124,10 +122,6 @@ func (u *Leads) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "i_customer_id")
 		values = append(values, u.CustomerID)
 	}
-	if u.TestDriveID != "" {
-		columns = append(columns, "i_test_drive_id")
-		values = append(values, u.TestDriveID)
-	}
 	if u.LeadsID != "" {
 		columns = append(columns, "i_leads_id")
 		values = append(values, u.LeadsID)
@@ -140,11 +134,11 @@ func (u *Leads) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "c_leads_follow_up_status")
 		values = append(values, u.LeadsFollowUpStatus)
 	}
-	if u.LeadsPreferenceContactTimeStart != "" {
+	if u.LeadsPreferenceContactTimeStart != nil {
 		columns = append(columns, "t_leads_preference_contact_time_start")
 		values = append(values, u.LeadsPreferenceContactTimeStart)
 	}
-	if u.LeadsPreferenceContactTimeEnd != "" {
+	if u.LeadsPreferenceContactTimeEnd != nil {
 		columns = append(columns, "t_leads_preference_contact_time_end")
 		values = append(values, u.LeadsPreferenceContactTimeEnd)
 	}
@@ -164,31 +158,31 @@ func (u *Leads) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "c_outlet_lead_score")
 		values = append(values, u.OutletLeadScore)
 	}
-	if u.PurchasePlanCriteria != "" {
+	if u.PurchasePlanCriteria != nil {
 		columns = append(columns, "c_purchase_plan_criteria")
 		values = append(values, u.PurchasePlanCriteria)
 	}
-	if u.PaymentPreferCriteria != "" {
+	if u.PaymentPreferCriteria != nil {
 		columns = append(columns, "c_payment_prefer_criteria")
 		values = append(values, u.PaymentPreferCriteria)
 	}
-	if u.TestDriveCriteria != "" {
+	if u.TestDriveCriteria != nil {
 		columns = append(columns, "c_test_drive_criteria")
 		values = append(values, u.TestDriveCriteria)
 	}
-	if u.TradeInCriteria != "" {
+	if u.TradeInCriteria != nil {
 		columns = append(columns, "c_trade_in_criteria")
 		values = append(values, u.TradeInCriteria)
 	}
-	if u.BrowsingHistoryCriteria != "" {
+	if u.BrowsingHistoryCriteria != nil {
 		columns = append(columns, "c_browsing_history_criteria")
 		values = append(values, u.BrowsingHistoryCriteria)
 	}
-	if u.VehicleAgeCriteria != "" {
+	if u.VehicleAgeCriteria != nil {
 		columns = append(columns, "c_vehicle_age_criteria")
 		values = append(values, u.VehicleAgeCriteria)
 	}
-	if u.NegotiationCriteria != "" {
+	if u.NegotiationCriteria != nil {
 		columns = append(columns, "c_negotiation_criteria")
 		values = append(values, u.NegotiationCriteria)
 	}
@@ -208,10 +202,10 @@ func (u *Leads) ToUpdateMap() map[string]interface{} {
 	if u.LeadsFollowUpStatus != "" {
 		updateMap["c_leads_follow_up_status"] = u.LeadsFollowUpStatus
 	}
-	if u.LeadsPreferenceContactTimeStart != "" {
+	if u.LeadsPreferenceContactTimeStart != nil {
 		updateMap["t_leads_preference_contact_time_start"] = u.LeadsPreferenceContactTimeStart
 	}
-	if u.LeadsPreferenceContactTimeEnd != "" {
+	if u.LeadsPreferenceContactTimeEnd != nil {
 		updateMap["t_leads_preference_contact_time_end"] = u.LeadsPreferenceContactTimeEnd
 	}
 	if u.LeadSource != "" {
@@ -226,25 +220,25 @@ func (u *Leads) ToUpdateMap() map[string]interface{} {
 	if u.OutletLeadScore != "" {
 		updateMap["c_outlet_lead_score"] = u.OutletLeadScore
 	}
-	if u.PurchasePlanCriteria != "" {
+	if u.PurchasePlanCriteria != nil {
 		updateMap["c_purchase_plan_criteria"] = u.PurchasePlanCriteria
 	}
-	if u.PaymentPreferCriteria != "" {
+	if u.PaymentPreferCriteria != nil {
 		updateMap["c_payment_prefer_criteria"] = u.PaymentPreferCriteria
 	}
-	if u.TestDriveCriteria != "" {
+	if u.TestDriveCriteria != nil {
 		updateMap["c_test_drive_criteria"] = u.TestDriveCriteria
 	}
-	if u.TradeInCriteria != "" {
+	if u.TradeInCriteria != nil {
 		updateMap["c_trade_in_criteria"] = u.TradeInCriteria
 	}
-	if u.BrowsingHistoryCriteria != "" {
+	if u.BrowsingHistoryCriteria != nil {
 		updateMap["c_browsing_history_criteria"] = u.BrowsingHistoryCriteria
 	}
-	if u.VehicleAgeCriteria != "" {
+	if u.VehicleAgeCriteria != nil {
 		updateMap["c_vehicle_age_criteria"] = u.VehicleAgeCriteria
 	}
-	if u.NegotiationCriteria != "" {
+	if u.NegotiationCriteria != nil {
 		updateMap["c_negotiation_criteria"] = u.NegotiationCriteria
 	}
 	updateMap["d_updated_at"] = u.UpdatedAt.UTC()

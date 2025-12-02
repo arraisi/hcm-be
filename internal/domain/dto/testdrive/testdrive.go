@@ -93,7 +93,7 @@ func (be *TestDriveEvent) ToTestDriveModel(customerID string) domain.TestDrive {
 		OtherReason:            utils.ToValue(be.Data.TestDrive.OtherCancellationReason),
 		CustomerDrivingConsent: be.Data.TestDrive.CustomerDrivingConsent,
 		CustomerID:             customerID,
-		LeadsID:                be.Data.Leads.LeadsID,
+		LeadsID:                utils.ToPointer(be.Data.Leads.LeadsID),
 		EventID:                be.EventID,
 		CreatedAt:              time.Now(),
 		CreatedBy:              constants.System,

@@ -6,24 +6,22 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
-	"github.com/arraisi/hcm-be/internal/service"
 	"github.com/go-co-op/gocron"
 )
 
-type Scheduler struct {
-	scheduler *gocron.Scheduler
-	cfg       config.SchedulerConfig
-
-	customerSegSvc  service.CustomerSegmentationService
-	outletAssignSvc service.OutletAssignmentService
-	salesAssignSvc  service.SalesAssignmentService
+type RoAutomationService interface {
+	RunRoAutomation(ctx context.Context) error
+	RoAutomationOutletAssignment(ctx context.Context) error
+	RoAutomationSalesAssignment(ctx context.Context) error
 }
 
-func New(cfg config.SchedulerConfig,
-	customerSegSvc service.CustomerSegmentationService,
-	outletAssignSvc service.OutletAssignmentService,
-	salesAssignSvc service.SalesAssignmentService,
-) (*Scheduler, error) {
+type Scheduler struct {
+	scheduler       *gocron.Scheduler
+	cfg             config.SchedulerConfig
+	roAutomationSvc RoAutomationService
+}
+
+func New(cfg config.SchedulerConfig, roAutomationSvc RoAutomationService) (*Scheduler, error) {
 	log.Printf("[Scheduler] Config: %+v", cfg)
 	loc, err := time.LoadLocation(cfg.Timezone)
 	if err != nil {
@@ -35,9 +33,7 @@ func New(cfg config.SchedulerConfig,
 	return &Scheduler{
 		scheduler:       s,
 		cfg:             cfg,
-		customerSegSvc:  customerSegSvc,
-		outletAssignSvc: outletAssignSvc,
-		salesAssignSvc:  salesAssignSvc,
+		roAutomationSvc: roAutomationSvc,
 	}, nil
 }
 
@@ -45,7 +41,7 @@ func (s *Scheduler) Start() error {
 	// Register jobs
 	if _, err := s.scheduler.Cron(s.cfg.CustomerSegCron).Do(func() {
 		ctx := context.Background()
-		if err := s.customerSegSvc.RunMonthlySegmentation(ctx); err != nil {
+		if err := s.roAutomationSvc.RunRoAutomation(ctx); err != nil {
 			log.Printf("[Scheduler] Error running monthly segmentation: %v", err)
 		}
 	}); err != nil {
@@ -54,7 +50,7 @@ func (s *Scheduler) Start() error {
 
 	if _, err := s.scheduler.Cron(s.cfg.OutletAssignCron).Do(func() {
 		ctx := context.Background()
-		if err := s.outletAssignSvc.RunDailyOutletAssignment(ctx); err != nil {
+		if err := s.roAutomationSvc.RoAutomationOutletAssignment(ctx); err != nil {
 			log.Printf("[Scheduler] Error running daily outlet assignment: %v", err)
 		}
 	}); err != nil {
@@ -63,7 +59,7 @@ func (s *Scheduler) Start() error {
 
 	if _, err := s.scheduler.Cron(s.cfg.SalesAssignCron).Do(func() {
 		ctx := context.Background()
-		if err := s.salesAssignSvc.RunDailySalesAssignment(ctx); err != nil {
+		if err := s.roAutomationSvc.RoAutomationSalesAssignment(ctx); err != nil {
 			log.Printf("[Scheduler] Error running daily sales assignment: %v", err)
 		}
 	}); err != nil {

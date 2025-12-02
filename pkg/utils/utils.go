@@ -79,3 +79,20 @@ func OpenDatabase(cfg config.DatabaseConfig) (*sqlx.DB, error) {
 
 	return db, nil
 }
+
+// UnixToTimePtr converts unix timestamp to *time.Time, returns nil if timestamp is 0
+func UnixToTimePtr(unix int64) *time.Time {
+	if unix == 0 {
+		return nil
+	}
+	t := time.Unix(unix, 0)
+	return &t
+}
+
+// ToPointerIf returns a pointer to the value if condition is true, otherwise nil
+func ToPointerIf[T any](condition bool, v T) *T {
+	if condition {
+		return &v
+	}
+	return nil
+}
