@@ -1,4 +1,4 @@
-package appraisalbooking
+package appraisal
 
 //go:generate mockgen -package=appraisalbooking -source=handler.go -destination=handler_mock_test.go
 import (

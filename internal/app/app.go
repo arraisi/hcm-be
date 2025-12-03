@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/arraisi/hcm-be/internal/http/handlers/appraisal"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
@@ -247,6 +248,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	tokenHandler := handlers.NewTokenHandler(tokenSvc)
 	orderHandler := order.New(cfg, salesOrderSvc, idempotencyStore)
 	leadsHandler := leadsHandler.New(cfg, roAutomationSvc, idempotencyStore)
+	appraisalHandler := appraisal.New(appraisalSvc, idempotencyStore)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                  cfg,
@@ -261,6 +263,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		QueueHandler:            queueHandler,
 		TokenHandler:            tokenHandler,
 		OrderHandler:            orderHandler,
+		AppraisalHandler:        appraisalHandler,
 	})
 
 	srv := apphttp.NewServer(cfg, router)

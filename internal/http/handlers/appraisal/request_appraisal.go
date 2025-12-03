@@ -1,4 +1,4 @@
-package appraisalbooking
+package appraisal
 
 import (
 	"encoding/json"
