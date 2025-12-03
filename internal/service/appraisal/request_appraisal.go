@@ -1,9 +1,9 @@
-package appraisalbooking
+package appraisal
 
 import (
 	"context"
 	"fmt"
-	"github.com/arraisi/hcm-be/internal/domain/dto/appraisalbooking"
+	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 	"github.com/arraisi/hcm-be/internal/queue"
 )
 
@@ -13,7 +13,7 @@ import (
 
 // RequestAppraisal
 // G01: DI/DX menerima "request appraisal booking" + leads dari mTOYOTA, simpan ke DB, lalu kirim ke DMS.
-func (s *service) RequestAppraisal(ctx context.Context, event appraisalbooking.EventRequest) error {
+func (s *service) RequestAppraisal(ctx context.Context, event appraisal.EventRequest) error {
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
 		return fmt.Errorf("begin tx: %w", err)
@@ -66,7 +66,7 @@ func (s *service) RequestAppraisal(ctx context.Context, event appraisalbooking.E
 		AppraisalBookingRequest: event,
 	}
 
-	if err := s.queueClient.EnqueueAppraisalBookingRequest(context.Background(), payload); err != nil {
+	if err := s.queueClient.EnqueueDMSAppraisalBookingRequest(context.Background(), payload); err != nil {
 		return fmt.Errorf("enqueue appraisal booking request: %w", err)
 	}
 

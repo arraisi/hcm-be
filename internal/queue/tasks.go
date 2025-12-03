@@ -3,7 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/arraisi/hcm-be/internal/domain/dto/appraisalbooking"
+	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
 	"github.com/arraisi/hcm-be/internal/domain/dto/toyotaid"
 
@@ -74,7 +74,7 @@ func NewDMSCreateToyotaIDTask(payload DMSCreateToyotaIDPayload) (*asynq.Task, er
 
 // DMSAppraisalBookingRequestPayload represents the payload for the DMS appraisal booking request task
 type DMSAppraisalBookingRequestPayload struct {
-	AppraisalBookingRequest appraisalbooking.EventRequest `json:"appraisal_booking_request"`
+	AppraisalBookingRequest appraisal.EventRequest `json:"appraisal_booking_request"`
 }
 
 // NewDMSAppraisalBookingRequestTask creates a new Asynq task for DMS appraisal booking request

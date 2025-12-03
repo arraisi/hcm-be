@@ -1,4 +1,4 @@
-package appraisalbooking
+package appraisal
 
 import (
 	"github.com/elgris/sqrl"

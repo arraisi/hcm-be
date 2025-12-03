@@ -1,4 +1,4 @@
-package appraisalbooking
+package appraisal
 
 import (
 	"github.com/arraisi/hcm-be/internal/domain"

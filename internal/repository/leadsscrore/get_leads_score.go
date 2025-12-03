@@ -6,7 +6,7 @@ import (
 	"github.com/elgris/sqrl"
 )
 
-func (r *repository) GetLeadScore(ctx context.Context, leadsID string) (domain.LeadsScore, error) {
+func (r *repository) GetLeadsScore(ctx context.Context, leadsID string) (domain.LeadsScore, error) {
 	var model domain.LeadsScore
 
 	query := sqrl.Select(model.SelectColumns()...).

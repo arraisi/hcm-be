@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) UpdateUsedCar(ctx context.Context, tx *sqlx.Tx, req domain.LeadsScore) error {
+func (r *repository) UpdateLeadsScore(ctx context.Context, tx *sqlx.Tx, req domain.LeadsScore) error {
 	model := domain.LeadsScore{}
 
 	query, args, err := sqrl.Update(model.TableName()).

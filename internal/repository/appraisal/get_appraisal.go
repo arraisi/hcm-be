@@ -2,14 +2,14 @@ package appraisal
 
 import (
 	"context"
-	"github.com/arraisi/hcm-be/internal/domain/dto/appraisalbooking"
+	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/elgris/sqrl"
 )
 
 // GetAppraisal gets a single appraisal
-func (r *repository) GetAppraisal(ctx context.Context, req appraisalbooking.GetAppraisalRequest) (domain.Appraisal, error) {
+func (r *repository) GetAppraisal(ctx context.Context, req appraisal.GetAppraisalRequest) (domain.Appraisal, error) {
 	var model domain.Appraisal
 
 	query := sqrl.

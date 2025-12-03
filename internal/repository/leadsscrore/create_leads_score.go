@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *repository) CreateLeadScore(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsScore) error {
+func (r *repository) CreateLeadsScore(ctx context.Context, tx *sqlx.Tx, req *domain.LeadsScore) error {
 	columns, values := req.ToCreateMap()
 
 	// Generate a new UUID for the lead ID

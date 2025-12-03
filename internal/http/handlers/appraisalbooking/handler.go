@@ -3,7 +3,7 @@ package appraisalbooking
 //go:generate mockgen -package=appraisalbooking -source=handler.go -destination=handler_mock_test.go
 import (
 	"context"
-	"github.com/arraisi/hcm-be/internal/domain/dto/appraisalbooking"
+	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 
 	"github.com/arraisi/hcm-be/internal/config"
 )
@@ -16,7 +16,7 @@ type IdempotencyService interface {
 }
 
 type Service interface {
-	RequestAppraisal(ctx context.Context, req appraisalbooking.EventRequest) error
+	RequestAppraisal(ctx context.Context, req appraisal.EventRequest) error
 }
 
 // Handler handles HTTP requests for user operations

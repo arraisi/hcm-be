@@ -2,7 +2,7 @@ package appraisalbooking
 
 import (
 	"encoding/json"
-	"github.com/arraisi/hcm-be/internal/domain/dto/appraisalbooking"
+	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/arraisi/hcm-be/pkg/errors"
@@ -31,7 +31,7 @@ func (h *Handler) RequestAppraisal(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse JSON body
-	var request appraisalbooking.EventRequest
+	var request appraisal.EventRequest
 	if err := json.Unmarshal(body, &request); err != nil {
 		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookInvalidPayload, errors.ErrListWebhook)
 		response.ErrorResponseJSON(w, errorResponse)
