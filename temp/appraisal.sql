@@ -5,6 +5,11 @@ CREATE TABLE tr_appraisal
         CONSTRAINT DF_tr_appraisal_i_id DEFAULT NEWID()
         CONSTRAINT PK_tr_appraisal PRIMARY KEY,
 
+    -- Mapping
+    i_leads_id        VARCHAR(50) NULL;
+    i_one_account_id  VARCHAR(50) NULL;
+    c_vin             VARCHAR(50) NULL;
+
     -- From appraisal request / confirm / update
     i_appraisal_booking_id     UNIQUEIDENTIFIER        NOT NULL, -- "appraisal_booking_ID"
     c_appraisal_booking_number VARCHAR(50)             NOT NULL, -- "appraisal_booking_number"
