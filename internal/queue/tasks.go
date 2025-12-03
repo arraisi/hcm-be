@@ -24,7 +24,22 @@ func NewDIDXServiceBookingConfirmTask(payload DIDXServiceBookingConfirmPayload) 
 	if err != nil {
 		return nil, err
 	}
-	taskKey := fmt.Sprintf("%s:%s", TaskTypeDIDXConfirm, payload.ServiceBookingEvent.EventID)
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDIDXServiceBookingConfirm, payload.ServiceBookingEvent.EventID)
+	return asynq.NewTask(taskKey, b), nil
+}
+
+// DIDXTestDriveConfirmPayload represents the payload for DIDX test drive confirm task
+type DIDXTestDriveConfirmPayload struct {
+	TestDriveEvent testdrive.TestDriveEvent `json:"test_drive_event"`
+}
+
+// NewDIDXTestDriveConfirmTask creates a new Asynq task for DIDX test drive confirm
+func NewDIDXTestDriveConfirmTask(payload DIDXTestDriveConfirmPayload) (*asynq.Task, error) {
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDIDXTestDriveConfirm, payload.TestDriveEvent.EventID)
 	return asynq.NewTask(taskKey, b), nil
 }
 
