@@ -2,55 +2,6 @@ package domain
 
 import "time"
 
-//
-// ENUM TYPES
-//
-
-type AppraisalBookingStatus string
-
-const (
-	AppraisalStatusSubmitted AppraisalBookingStatus = "SUBMITTED"
-	AppraisalStatusConfirmed AppraisalBookingStatus = "CONFIRMED"
-	AppraisalStatusCancelled AppraisalBookingStatus = "CANCELLED"
-	AppraisalStatusNoShow    AppraisalBookingStatus = "NO_SHOW"
-)
-
-type TradeInStatus string
-
-const (
-	TradeInStatusNegotiation TradeInStatus = "NEGOTIATION"
-	TradeInStatusHandover    TradeInStatus = "HANDOVER"
-	TradeInStatusNoDeal      TradeInStatus = "NO_DEAL"
-	TradeInStatusCancelled   TradeInStatus = "CANCELLED"
-)
-
-type CancellationReason string
-
-const (
-	CancellationReasonNoShow   CancellationReason = "NO_SHOW"
-	CancellationReasonOthers   CancellationReason = "OTHERS"
-	CancellationReasonSystem   CancellationReason = "SYSTEM"
-	CancellationReasonCustomer CancellationReason = "CUSTOMER"
-	CancellationReasonDealer   CancellationReason = "DEALER"
-)
-
-type TradeInHandoverStatus string
-
-const (
-	HandoverStatusCompleted TradeInHandoverStatus = "COMPLETED"
-)
-
-type TradeInHandoverLocation string
-
-const (
-	HandoverLocationDealer TradeInHandoverLocation = "DEALER"
-	HandoverLocationHome   TradeInHandoverLocation = "HOME"
-)
-
-//
-// MAIN MODEL (FLAT) – matches table tr_appraisal
-//
-
 type Appraisal struct {
 	ID                     string `json:"id" db:"i_id"`
 	AppraisalBookingID     string `json:"appraisal_booking_id" db:"i_appraisal_booking_id"`
@@ -59,6 +10,10 @@ type Appraisal struct {
 
 	OutletID   string `json:"outlet_id" db:"i_outlet_id"`
 	OutletName string `json:"outlet_name" db:"n_outlet_name"`
+
+	OneAccountID string `json:"one_account_id" db:"i_one_account_id"`
+	VIN          string `json:"vin" db:"c_vin"`
+	LeadsID      string `json:"leads_id" db:"i_leads_id"`
 
 	AppraisalLocation string `json:"appraisal_location" db:"c_appraisal_location"`
 	HomeAddress       string `json:"home_address" db:"e_home_address"`
@@ -75,10 +30,11 @@ type Appraisal struct {
 	ConfirmStartDatetime *time.Time `json:"appraisal_confirmation_start_datetime" db:"d_appraisal_confirmation_start_datetime"`
 	ConfirmEndDatetime   *time.Time `json:"appraisal_confirmation_end_datetime" db:"d_appraisal_confirmation_end_datetime"`
 
-	BookingStatus           AppraisalBookingStatus `json:"appraisal_booking_status" db:"c_appraisal_booking_status"`
-	CancelledBy             *string                `json:"cancelled_by" db:"c_cancelled_by"`
-	CancellationReason      *string                `json:"cancellation_reason" db:"c_cancellation_reason"`
-	OtherCancellationReason string                 `json:"other_cancellation_reason" db:"e_other_cancellation_reason"`
+	BookingStatus           string  `json:"appraisal_booking_status" db:"c_appraisal_booking_status"`
+	CancelledBy             *string `json:"cancelled_by" db:"c_cancelled_by"`
+	CancellationReason      *string `json:"cancellation_reason" db:"c_cancellation_reason"`
+	OtherCancellationReason string  `json:"other_cancellation_reason" db:"e_other_cancellation_reason"`
+	BookingServiceFlag      bool    `json:"booking_service_flag" db:"c_booking_service_flag"`
 
 	// vehicle
 	KatashikiSuffix string `json:"katashiki_suffix" db:"c_katashiki_suffix"`
@@ -108,16 +64,16 @@ type Appraisal struct {
 	NoDealReasonNewVehicleOthers       string   `json:"no_deal_reason_new_vehicle_others" db:"e_no_deal_reason_new_vehicle_others"`
 
 	// handover (snapshot of latest HANDOVER)
-	TradeInPaymentDatetime  *time.Time               `json:"trade_in_payment_datetime" db:"d_trade_in_payment_datetime"`
-	TradeInHandoverStatus   *TradeInHandoverStatus   `json:"trade_in_handover_status" db:"c_trade_in_handover_status"`
-	TradeInHandoverDatetime *time.Time               `json:"trade_in_handover_datetime" db:"d_trade_in_handover_datetime"`
-	TradeInHandoverLocation *TradeInHandoverLocation `json:"trade_in_handover_location" db:"c_trade_in_handover_location"`
-	TradeInHandoverAddress  string                   `json:"trade_in_handover_address" db:"e_trade_in_handover_address"`
-	HandoverProvince        string                   `json:"handover_province" db:"e_handover_province"`
-	HandoverCity            string                   `json:"handover_city" db:"e_handover_city"`
-	HandoverDistrict        string                   `json:"handover_district" db:"e_handover_district"`
-	HandoverSubdistrict     string                   `json:"handover_subdistrict" db:"e_handover_subdistrict"`
-	HandoverPostalCode      string                   `json:"handover_postal_code" db:"e_handover_postal_code"`
+	TradeInPaymentDatetime  *time.Time `json:"trade_in_payment_datetime" db:"d_trade_in_payment_datetime"`
+	TradeInHandoverStatus   *string    `json:"trade_in_handover_status" db:"c_trade_in_handover_status"`
+	TradeInHandoverDatetime *time.Time `json:"trade_in_handover_datetime" db:"d_trade_in_handover_datetime"`
+	TradeInHandoverLocation *string    `json:"trade_in_handover_location" db:"c_trade_in_handover_location"`
+	TradeInHandoverAddress  string     `json:"trade_in_handover_address" db:"e_trade_in_handover_address"`
+	HandoverProvince        string     `json:"handover_province" db:"e_handover_province"`
+	HandoverCity            string     `json:"handover_city" db:"e_handover_city"`
+	HandoverDistrict        string     `json:"handover_district" db:"e_handover_district"`
+	HandoverSubdistrict     string     `json:"handover_subdistrict" db:"e_handover_subdistrict"`
+	HandoverPostalCode      string     `json:"handover_postal_code" db:"e_handover_postal_code"`
 
 	CreatedDate time.Time  `json:"created_date" db:"d_createdate"`
 	UpdatedDate *time.Time `json:"updated_date" db:"d_updatedate"`
@@ -151,6 +107,7 @@ func (a *Appraisal) Columns() []string {
 		"c_cancelled_by",
 		"c_cancellation_reason",
 		"e_other_cancellation_reason",
+		"c_booking_service_flag",
 		"c_katashiki_suffix",
 		"c_color_code",
 		"n_model",
@@ -200,6 +157,7 @@ func (a *Appraisal) SelectColumns() []string {
 		"c_appraisal_booking_status",
 		"c_final_trade_in_status",
 		"d_last_trade_in_status_datetime",
+		"c_booking_service_flag",
 		"d_createdate",
 		"d_updatedate",
 	}
@@ -286,6 +244,9 @@ func (a *Appraisal) ToCreateMap() (cols []string, vals []interface{}) {
 		cols = append(cols, "e_other_cancellation_reason")
 		vals = append(vals, a.OtherCancellationReason)
 	}
+
+	cols = append(cols, "c_booking_service_flag")
+	vals = append(vals, a.BookingServiceFlag)
 
 	if a.KatashikiSuffix != "" {
 		cols = append(cols, "c_katashiki_suffix")

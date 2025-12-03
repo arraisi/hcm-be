@@ -9,10 +9,7 @@ import (
 
 // GetStatusUpdatesByAppraisalID returns all status history rows for an appraisal,
 // ordered by datetime ascending.
-func (r *repository) GetStatusUpdatesByAppraisalID(
-	ctx context.Context,
-	appraisalID string,
-) ([]domain.AppraisalStatusUpdate, error) {
+func (r *repository) GetStatusUpdatesByAppraisalID(ctx context.Context, appraisalID string) ([]domain.AppraisalStatusUpdate, error) {
 	var models []domain.AppraisalStatusUpdate
 
 	model := domain.AppraisalStatusUpdate{}

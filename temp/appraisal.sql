@@ -13,7 +13,6 @@ CREATE TABLE tr_appraisal
     -- From appraisal request / confirm / update
     i_appraisal_booking_id     UNIQUEIDENTIFIER        NOT NULL, -- "appraisal_booking_ID"
     c_appraisal_booking_number VARCHAR(50)             NOT NULL, -- "appraisal_booking_number"
-    c_appraisal_type           VARCHAR(50)             NULL,     -- "APPRAISAL_BOOKING"
 
     i_outlet_id                VARCHAR(50)             NOT NULL, -- "outlet_ID"
     n_outlet_name              VARCHAR(150)            NOT NULL, -- "outlet_name"
@@ -38,6 +37,7 @@ CREATE TABLE tr_appraisal
     c_cancelled_by              VARCHAR(30)   NULL,     -- DEALER / CUSTOMER / SYSTEM
     c_cancellation_reason       VARCHAR(50)   NULL,     -- NO_SHOW / OTHERS / etc.
     e_other_cancellation_reason NVARCHAR(255) NULL,
+    c_booking_service_flag                  BIT          NOT NULL DEFAULT 0,
 
     -- Vehicle info from update
     c_katashiki_suffix          VARCHAR(50)   NULL,

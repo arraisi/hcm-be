@@ -2,6 +2,8 @@ package appraisalbooking
 
 import (
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/constants"
+	"github.com/arraisi/hcm-be/pkg/utils"
 	"strings"
 	"time"
 )
@@ -125,6 +127,100 @@ type RequestAppraisalDTO struct {
 	BookingServiceFlag bool `json:"booking_service_flag"` // true / false
 }
 
+// ToModel converts RequestAppraisalDTO into domain.Appraisal.
+func (dto RequestAppraisalDTO) ToAppraisalModel(OneAccountID, vin, leadsID string) domain.Appraisal {
+	entity := domain.Appraisal{
+		AppraisalBookingID:     dto.AppraisalBookingID,
+		AppraisalBookingNumber: dto.AppraisalBookingNumber,
+
+		OutletID:   dto.OutletID,
+		OutletName: dto.OutletName,
+
+		OneAccountID: OneAccountID,
+		VIN:          vin,
+		LeadsID:      leadsID,
+
+		AppraisalLocation: dto.AppraisalLocation,
+		HomeAddress:       dto.HomeAddress,
+		Province:          dto.Province,
+		City:              dto.City,
+		District:          dto.District,
+		Subdistrict:       dto.Subdistrict,
+		PostalCode:        dto.PostalCode,
+
+		CreatedDatetime: utils.GetTimeUnix(dto.CreatedDatetime),
+
+		ConfirmStartDatetime: nil, // belum ada di request
+		ConfirmEndDatetime:   nil,
+
+		BookingStatus: dto.AppraisalBookingStatus,
+
+		OtherCancellationReason: dto.OtherCancellationReason,
+		BookingServiceFlag:      dto.BookingServiceFlag,
+
+		// vehicle (not present in request, filled on update)
+		KatashikiSuffix: "",
+		ColorCode:       "",
+		Model:           "",
+		Variant:         "",
+		Color:           "",
+
+		// trade-in summary (not present on request)
+		FinalTradeInStatus:        nil,
+		LastTradeInStatusDatetime: nil,
+
+		// sales docs (not present on request)
+		SPKNumber: "",
+		SONumber:  "",
+
+		// negotiation (not present on request)
+		CustomerNegotiationPrice:           nil,
+		DealerNegotiationPrice:             nil,
+		DealPrice:                          nil,
+		DownPaymentEstimation:              nil,
+		EstimatedRemainingPayment:          nil,
+		NoDealReason:                       "",
+		NoDealReasonOldVehicleOthers:       "",
+		NoDealReasonOldVehicleExpectedSell: nil,
+		NoDealReasonOldVehiclePriceSold:    nil,
+		NoDealReasonNewVehicleOthers:       "",
+
+		// handover (not present on request)
+		TradeInPaymentDatetime:  nil,
+		TradeInHandoverStatus:   nil,
+		TradeInHandoverDatetime: nil,
+		TradeInHandoverLocation: nil,
+		TradeInHandoverAddress:  "",
+		HandoverProvince:        "",
+		HandoverCity:            "",
+		HandoverDistrict:        "",
+		HandoverSubdistrict:     "",
+		HandoverPostalCode:      "",
+
+		// audit – d_createdate/d_updatedate diisi oleh DB / service layer
+		CreatedDate: time.Time{},
+		UpdatedDate: nil,
+	}
+
+	if dto.AppraisalStartDatetime > 0 {
+		entity.AppraisalStartDatetime = utils.ToPointer(utils.GetTimeUnix(dto.AppraisalStartDatetime))
+	}
+
+	if dto.AppraisalEndDatetime > 0 {
+		entity.AppraisalEndDatetime = utils.ToPointer(utils.GetTimeUnix(dto.AppraisalEndDatetime))
+	}
+
+	if dto.CancelledBy != "" {
+		entity.CancelledBy = &dto.CancelledBy
+	}
+
+	if dto.CancellationReason != "" {
+		entity.CancellationReason = &dto.CancellationReason
+	}
+
+	return entity
+}
+
 // =======================
 // leads (+ score)
 // =======================
@@ -144,14 +240,15 @@ type LeadsDTO struct {
 
 	LeadsPreferenceContactTimeStart string `json:"leads_preference_contact_time_start"` // "HH:mm", step 30 minutes
 	LeadsPreferenceContactTimeEnd   string `json:"leads_preference_contact_time_end"`   // "HH:mm", step 30 minutes
+	AdditionalNotes                 string `json:"additional_notes"`                    // optional: catatan dari customer untuk dealer
 
-	TamLeadScore    string `json:"tam_lead_score"`    // LOW, MEDIUM, HOT
-	OutletLeadScore string `json:"outlet_lead_score"` // LOW, MEDIUM, HOT
+	Score LeadScoreDTO `json:"score"`
+}
 
-	ScoreParameter LeadScoreParameterDTO `json:"parameter"`
-
-	// row 72: additional_notes (leads)
-	AdditionalNotes string `json:"additional_notes"` // optional: catatan dari customer untuk dealer
+type LeadScoreDTO struct {
+	TamLeadScore    string                `json:"tam_lead_score"`    // LOW, MEDIUM, HOT
+	OutletLeadScore string                `json:"outlet_lead_score"` // LOW, MEDIUM, HOT
+	Parameter       LeadScoreParameterDTO `json:"parameter"`
 }
 
 type LeadScoreParameterDTO struct {
@@ -162,6 +259,86 @@ type LeadScoreParameterDTO struct {
 	TradeInCriteria         string `json:"trade_in_criteria"`         // DELIVERY, HANDOVER, PAYMENT, NEGOTIATION, CONFIRMED, SUBMITTED, CANCELLED, UNSPECIFIED
 	BrowsingHistoryCriteria string `json:"browsing_history_criteria"` // MORE_THAN_5_PAGES, LESS_THAN_5_PAGES, UNSPECIFIED
 	VehicleAgeCriteria      string `json:"vehicle_age_criteria"`      // MORE_THAN_2.5_YEARS, LESS_THAN_2.5_YEARS, UNSPECIFIED
+}
+
+func (dto LeadsDTO) ToLeadsModel(customerID string) (domain.Leads, domain.LeadsScore) {
+	timeNow := time.Now()
+
+	lead := domain.Leads{
+		ID:                "", // generated by DB
+		CustomerID:        customerID,
+		CustomerVehicleID: "",
+
+		LeadsID:             dto.LeadsID,
+		LeadsType:           dto.LeadsType,
+		LeadsFollowUpStatus: dto.LeadsFollowUpStatus,
+		LeadSource:          dto.LeadsSource,
+
+		LeadsPreferenceContactTimeStart: utils.ToPointer(dto.LeadsPreferenceContactTimeStart),
+		LeadsPreferenceContactTimeEnd:   utils.ToPointer(dto.LeadsPreferenceContactTimeEnd),
+		AdditionalNotes:                 utils.ToPointer(dto.AdditionalNotes),
+
+		TAMLeadScore:    dto.Score.TamLeadScore,
+		OutletLeadScore: dto.Score.OutletLeadScore,
+
+		PurchasePlanCriteria:    utils.ToPointer(dto.Score.Parameter.PurchasePlanCriteria),
+		PaymentPreferCriteria:   utils.ToPointer(dto.Score.Parameter.PaymentPreferCriteria),
+		TestDriveCriteria:       utils.ToPointer(dto.Score.Parameter.TestDriveCriteria),
+		TradeInCriteria:         utils.ToPointer(dto.Score.Parameter.TradeInCriteria),
+		BrowsingHistoryCriteria: utils.ToPointer(dto.Score.Parameter.BrowsingHistoryCriteria),
+		VehicleAgeCriteria:      utils.ToPointer(dto.Score.Parameter.VehicleAgeCriteria),
+		NegotiationCriteria:     utils.ToPointer(dto.Score.Parameter.NegotiationCriteria),
+
+		CreatedAt: timeNow,
+		CreatedBy: constants.System,
+		UpdatedAt: timeNow,
+		UpdatedBy: nil,
+
+		// field-field “legacy/old table” yang belum ada di DTO → biarkan kosong
+		LastFollowUpDatetime:         nil,
+		FollowUpTargetDate:           nil,
+		GetOfferNumber:               nil,
+		KatashikiSuffix:              utils.ToPointer(dto.Katashiki),
+		ColorCode:                    utils.ToPointer(dto.ColorCode),
+		Model:                        utils.ToPointer(dto.Model),
+		Variant:                      utils.ToPointer(dto.Variant),
+		Color:                        utils.ToPointer(dto.Color),
+		VehicleOTRPrice:              nil,
+		OutletID:                     nil,
+		OutletName:                   nil,
+		ServicePackageID:             nil,
+		ServicePackageName:           nil,
+		CreatedDatetime:              timeNow,
+		LeadsStatus:                  nil,
+		ReasonLeadsStatusUpdate:      nil,
+		ReasonLeadsStatusUpdateOther: nil,
+		VehicleCategory:              nil,
+		DemandStructure:              nil,
+		FinanceSimulationID:          nil,
+		FinanceSimulationNumber:      nil,
+	}
+
+	leadScore := domain.LeadsScore{
+		ID:              "", // generated by DB
+		LeadsID:         dto.LeadsID,
+		TamLeadScore:    dto.Score.TamLeadScore,
+		OutletLeadScore: dto.Score.OutletLeadScore,
+
+		PurchasePlanCriteria:    dto.Score.Parameter.PurchasePlanCriteria,
+		PaymentPreferCriteria:   dto.Score.Parameter.PaymentPreferCriteria,
+		NegotiationCriteria:     dto.Score.Parameter.NegotiationCriteria,
+		TestDriveCriteria:       dto.Score.Parameter.TestDriveCriteria,
+		TradeInCriteria:         dto.Score.Parameter.TradeInCriteria,
+		BrowsingHistoryCriteria: dto.Score.Parameter.BrowsingHistoryCriteria,
+		VehicleAgeCriteria:      dto.Score.Parameter.VehicleAgeCriteria,
+
+		CreatedAt: timeNow,
+		CreatedBy: constants.System,
+		UpdatedAt: timeNow,
+		UpdatedBy: constants.System,
+	}
+
+	return lead, leadScore
 }
 
 // =======================

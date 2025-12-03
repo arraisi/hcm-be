@@ -11,11 +11,7 @@ import (
 )
 
 // CreateStatusUpdate inserts a new trade-in status history row
-func (r *repository) CreateStatusUpdate(
-	ctx context.Context,
-	tx *sqlx.Tx,
-	req *domain.AppraisalStatusUpdate,
-) error {
+func (r *repository) CreateStatusUpdate(ctx context.Context, tx *sqlx.Tx, req *domain.AppraisalStatusUpdate) error {
 	if req.ID == "" {
 		req.ID = uuid.NewString()
 	}
