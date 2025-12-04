@@ -6,7 +6,6 @@ type Appraisal struct {
 	ID                     string `json:"id" db:"i_id"`
 	AppraisalBookingID     string `json:"appraisal_booking_id" db:"i_appraisal_booking_id"`
 	AppraisalBookingNumber string `json:"appraisal_booking_number" db:"c_appraisal_booking_number"`
-	AppraisalType          string `json:"appraisal_type" db:"c_appraisal_type"`
 
 	OutletID   string `json:"outlet_id" db:"i_outlet_id"`
 	OutletName string `json:"outlet_name" db:"n_outlet_name"`
@@ -88,7 +87,6 @@ func (a *Appraisal) Columns() []string {
 		"i_id",
 		"i_appraisal_booking_id",
 		"c_appraisal_booking_number",
-		"c_appraisal_type",
 		"i_outlet_id",
 		"n_outlet_name",
 		"c_appraisal_location",
@@ -147,7 +145,6 @@ func (a *Appraisal) SelectColumns() []string {
 		"i_id",
 		"i_appraisal_booking_id",
 		"c_appraisal_booking_number",
-		"c_appraisal_type",
 		"i_outlet_id",
 		"n_outlet_name",
 		"c_appraisal_location",
@@ -176,9 +173,6 @@ func (a *Appraisal) ToCreateMap() (cols []string, vals []interface{}) {
 
 	cols = append(cols, "c_appraisal_booking_number")
 	vals = append(vals, a.AppraisalBookingNumber)
-
-	cols = append(cols, "c_appraisal_type")
-	vals = append(vals, a.AppraisalType)
 
 	cols = append(cols, "i_outlet_id")
 	vals = append(vals, a.OutletID)
