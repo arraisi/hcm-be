@@ -53,7 +53,7 @@ import (
 	hasjratidService "github.com/arraisi/hcm-be/internal/service/hasjratid"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	"github.com/arraisi/hcm-be/internal/service/leads"
-	leadsscoreService "github.com/arraisi/hcm-be/internal/service/leadsScore"
+	leadsscoreService "github.com/arraisi/hcm-be/internal/service/leadsscore"
 	oneaccessService "github.com/arraisi/hcm-be/internal/service/oneaccess"
 	salesOrderService "github.com/arraisi/hcm-be/internal/service/salesorder"
 	servicebookingService "github.com/arraisi/hcm-be/internal/service/servicebooking"
