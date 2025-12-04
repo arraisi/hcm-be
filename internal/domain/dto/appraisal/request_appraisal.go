@@ -4,6 +4,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/utils"
+	"github.com/shopspring/decimal"
 	"strings"
 	"time"
 )
@@ -358,7 +359,7 @@ type UsedCarDTO struct {
 	UsedCarVariant string `json:"used_car_variant"` // VARCHAR(64), conditional
 	UsedCarColor   string `json:"used_car_color"`   // VARCHAR(64), conditional
 
-	InitialEstimatedUsedCarPrice float64 `json:"initial_estimated_used_car_price"` // FLOAT, Y
+	InitialEstimatedUsedCarPrice decimal.Decimal `json:"initial_estimated_used_car_price"` // FLOAT, Y
 
 	Mileage        int64  `json:"mileage"`                  // INTEGER, Y (KM)
 	Province       string `json:"province"`                 // VARCHAR(64), Y
@@ -378,8 +379,8 @@ type UsedCarDTO struct {
 	AvailabilitySpareKey bool `json:"availability_spare_key"` // BOOLEAN, N
 	SpareTireCheck       bool `json:"spare_tire_check"`       // BOOLEAN, N
 
-	AdditionalNotes        string  `json:"additional_notes"`         // VARCHAR(256), N
-	CustomerRequestedPrice float64 `json:"customer_requested_price"` // FLOAT, N
+	AdditionalNotes        string          `json:"additional_notes"`         // VARCHAR(256), N
+	CustomerRequestedPrice decimal.Decimal `json:"customer_requested_price"` // FLOAT, N
 }
 
 func (dto UsedCarDTO) ToUsedCarModel(customerID string) domain.UsedCar {

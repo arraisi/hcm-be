@@ -13,10 +13,10 @@ type GetUsedCarRequest struct {
 // Apply applies the request parameters to the given SelectBuilder
 func (req GetUsedCarRequest) Apply(q *sqrl.SelectBuilder) {
 	if req.VIN != "" {
-		q.Where(sqrl.Eq{"i_one_account_id": req.VIN})
+		q.Where(sqrl.Eq{"c_vin": req.VIN})
 	}
 
 	if req.PoliceNumber != "" {
-		q.Where(sqrl.Eq{"c_ktp_number": req.PoliceNumber})
+		q.Where(sqrl.Eq{"c_police_number": req.PoliceNumber})
 	}
 }
