@@ -173,6 +173,36 @@ func (c *client) EnqueueDMSCreateToyotaID(ctx context.Context, payload interface
 	return err
 }
 
+// EnqueueDMSAppraisalBookingRequest enqueues a DMS Appraisal Booking request task with custom retry configuration
+func (c *client) EnqueueDMSAppraisalBookingRequest(ctx context.Context, payload interface{}) error {
+	// Type asserts to DMSAppraisalBookingRequestPayload
+	body, ok := payload.(queue.DMSAppraisalBookingRequestPayload)
+	if !ok {
+		return fmt.Errorf("invalid payload type: expected queue.EnqueueDMSAppraisalBookingRequest")
+	}
+
+	task, err := queue.NewDMSAppraisalBookingRequestTask(body)
+
+	if err != nil {
+		return err
+	}
+
+	// Retry 3 times with custom backoff: 1m, 5m, 10m
+	taskInfo, err := c.asynqClient.EnqueueContext(
+		ctx,
+		task,
+		asynq.Queue(c.cfg.Queue),
+		asynq.MaxRetry(3),
+		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
+		asynq.Timeout(30*time.Second), // Task timeout
+		asynq.Unique(5*time.Minute),   // Prevent duplicate tasks within 5 minutes
+	)
+
+	fmt.Printf("EnqueueDMSAppraisalBookingRequest taskInfo: %+v\n", taskInfo)
+
+	return err
+}
+
 // EnqueueDMSCreateGetOffer enqueues a DMS create get offer task with custom retry configuration
 func (c *client) EnqueueDMSCreateGetOffer(ctx context.Context, payload interface{}) error {
 	// Type asserts to DMSCreateGetOfferPayload
@@ -182,6 +212,7 @@ func (c *client) EnqueueDMSCreateGetOffer(ctx context.Context, payload interface
 	}
 
 	task, err := queue.NewDMSCreateGetOfferTask(body)
+
 	if err != nil {
 		return err
 	}

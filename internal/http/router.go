@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/arraisi/hcm-be/internal/http/handlers/appraisal"
 	"log"
 	"net/http"
 	stdprof "net/http/pprof"
@@ -37,6 +38,7 @@ type Handler struct {
 	QueueHandler            *queue.Handler
 	TokenHandler            handlers.TokenHandler
 	OrderHandler            order.Handler
+	AppraisalHandler        appraisal.Handler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -119,6 +121,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Post("/get-offer", handler.LeadsHandler.RequestGetOffer)
 
 			webhooks.Post("/track-order-status", handler.OrderHandler.TrackOrderStatus)
+
+			webhooks.Post("/appraisal-booking-request", handler.AppraisalHandler.RequestAppraisal)
 		})
 
 		// Queue monitoring endpoints

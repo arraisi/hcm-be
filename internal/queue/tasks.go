@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
@@ -99,6 +100,25 @@ func NewDMSCreateGetOfferTask(payload DMSCreateGetOfferPayload) (*asynq.Task, er
 	if err != nil {
 		return nil, err
 	}
+
 	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSCreateGetOffer, payload.GetOfferEvent.EventID)
+
+	return asynq.NewTask(taskKey, b), nil
+}
+
+// DMSAppraisalBookingRequestPayload represents the payload for the DMS appraisal booking request task
+type DMSAppraisalBookingRequestPayload struct {
+	AppraisalBookingRequest appraisal.EventRequest `json:"appraisal_booking_request"`
+}
+
+// NewDMSAppraisalBookingRequestTask creates a new Asynq task for DMS appraisal booking request
+func NewDMSAppraisalBookingRequestTask(payload DMSAppraisalBookingRequestPayload) (*asynq.Task, error) {
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSAppraisalBookingRequest, payload.AppraisalBookingRequest.EventID)
+
 	return asynq.NewTask(taskKey, b), nil
 }

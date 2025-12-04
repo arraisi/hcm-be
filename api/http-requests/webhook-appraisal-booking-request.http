@@ -1,0 +1,113 @@
+### Generate token
+POST http://localhost:8080/api/v1/token/generate
+X-API-Key: you-api-key
+
+### Appraisal Booking Request (G01 & G08)
+POST http://localhost:8080/api/v1/hcm/webhooks/appraisal-booking-request
+Content-Type: application/json
+Authorization: Bearer token
+X-API-Key: you-api-key
+
+
+{
+  "process": "appraisal_booking_request",
+  "event_ID": "0d5be854-7f4a-4ed0-be00-da098d3569d6",
+  "timestamp": 1708726960,
+  "data": {
+    "one_account": {
+      "one_account_ID": "GMO4GNYBSID0B5IP6K5P0YGJZ6V0KW3Y",
+      "first_name": "Nkok",
+      "last_name": "Maf",
+      "phone_number": "MFV8O1O4Y46K",
+      "email": "pgb.terxgfsfnuw@v",
+      "ktp_number": "PRPJK9AEScwC068h",
+      "preferred_contact_channel": [
+        "SMS",
+        "WHATSAPP",
+        "EMAIL"
+      ]
+    },
+
+    "request_appraisal": {
+      "appraisal_booking_ID": "038A96AD-8676-496B-8D63-EB179BF57A61",
+      "appraisal_booking_number": "ASTO1502-05-2025-04-02-ZvG",
+      "created_datetime": 1709096400,
+
+      "outlet_ID": "AST001329",
+      "outlet_name": "Astrido Toyota Bitung",
+
+      "appraisal_location": "HOME_OR_OTHER_ADDRESS",
+      "home_address": "BasgF RT3Rk Mluv/7 Jwg2h PS.ii.8J.R7/6m.M,s2R4uB lzFEl, QReePQ",
+      "province": "DKI Jakarta",
+      "city": "Jakarta Barat",
+      "district": "Kembangan",
+      "subdistrict": "Kembangan Utara",
+      "postal_code": "11610",
+
+      "appraisal_start_datetime": 1708938000,
+      "appraisal_end_datetime": 1709085600,
+      "appraisal_booking_status": "SUBMITTED",
+      "cancelled_by": "DEALER",
+      "cancellation_reason": "OTHERS",
+      "other_cancellation_reason": "Customer salah schedule",
+      "booking_service_flag": false
+    },
+
+    "leads": {
+      "leads_ID": "4a4e2529-98e4-41f4-bae6-f305f609932d",
+      "katashiki_suffix": "NSP170R-MWYKQD02",
+      "color_code": "3R6",
+      "model": "Innova Zenix",
+      "variant": "2.0 Q AT",
+      "color": "Putih",
+      "leads_source": "CUSTOMER_DATABASE",
+      "leads_type": "APPRAISAL_REQUEST",
+      "leads_follow_up_status": "ON_CONSIDERATION",
+      "leads_preference_contact_time_start": "09:30",
+      "leads_preference_contact_time_end": "10:30",
+      "additional_notes": "I am loyal customer can you give me a discount?",
+
+      "score": {
+        "tam_lead_score": "HOT",
+        "outlet_lead_score": "MEDIUM",
+        "parameter": {
+          "purchase_plan_criteria": "31_DAYS_TO_INFINITE",
+          "payment_prefer_criteria": "CASH",
+          "negotiation_criteria": "HAVE_STARTED_NEGOTIATIONS",
+          "test_drive_criteria": "COMPLETED",
+          "trade_in_criteria": "DELIVERY",
+          "browsing_history_criteria": "MORE_THAN_5_PAGES",
+          "vehicle_age_criteria": "MORE_THAN_2.5_YEARS"
+        }
+      }
+    },
+
+    "used_car": {
+      "used_car_brand": "TOYOTA",
+      "vin": "MHFA1BYP9M0000011",
+      "police_number": "V*096*XXP",
+      "katashiki_suffix": "NSP170R-MWYKQD02",
+      "color_code": "3R6",
+      "used_car_model": "YARIS",
+      "used_car_variant": "S TFSI QUATTRO 2.0 GASOLINE",
+      "used_car_color": "ORANGE METALLIC",
+      "initial_estimated_used_car_price": 150000000.00,
+      "mileage": 45000,
+      "province": "Jakarta",
+      "used_car_year": 2024,
+      "used_car_transmission": "CVT",
+      "used_car_fuel": "GASOLINE",
+      "used_car_engine_capacity": 2500,
+      "mover": "4x2",
+      "stnk_expiry_date": 1741626000,
+      "stnk": true,
+      "bpkb": true,
+      "faktur": true,
+      "service_book": true,
+      "availability_spare_key": true,
+      "spare_tire_check": true,
+      "additional_notes": "Pemakaian kendaraan jarak dekat",
+      "customer_requested_price": 150000000
+    }
+  }
+}
