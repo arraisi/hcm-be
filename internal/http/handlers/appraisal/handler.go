@@ -3,9 +3,8 @@ package appraisal
 //go:generate mockgen -package=appraisalbooking -source=handler.go -destination=handler_mock_test.go
 import (
 	"context"
-	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 
-	"github.com/arraisi/hcm-be/internal/config"
+	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 )
 
 type IdempotencyService interface {
@@ -21,7 +20,6 @@ type Service interface {
 
 // Handler handles HTTP requests for user operations
 type Handler struct {
-	cfg            *config.Config
 	svc            Service
 	idempotencySvc IdempotencyService
 }
