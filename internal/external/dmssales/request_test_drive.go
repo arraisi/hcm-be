@@ -7,7 +7,9 @@ import (
 )
 
 func (c *client) TestDriveRequest(ctx context.Context, body any) error {
-	header := map[string]string{}
+	header := map[string]string{
+		"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkRNU0FQSSIsIm5iZiI6MTY1NzY4Njk0OCwiZXhwIjoxNjU3NzczMzQ4LCJpYXQiOjE2NTc2ODY5NDh9.bUYAvpDlEGnQl386hYhkHTaOp2msMX2jtQYcKma2JJQ",
+	}
 	token := c.cfg.Http.DMSApi.APIKey
 
 	p, _ := json.Marshal(body)
