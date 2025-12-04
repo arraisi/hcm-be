@@ -8,6 +8,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
+	"github.com/arraisi/hcm-be/internal/queue"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/utils"
 )
@@ -72,12 +73,13 @@ func (s *service) ConfirmTestDrive(ctx context.Context, request testdrive.TestDr
 		return err
 	}
 
-	// If there's PIC assignment, send confirmation to external API
-	if request.Data.PICAssignment != nil {
-		err = s.apimDIDXSvc.Confirm(ctx, request)
-		if err != nil {
-			return err
-		}
+	// If there's PIC assignment, enqueue task to send confirmation to external API
+	// Enqueue the task to Asynq for external API call
+	err = s.queueClient.EnqueueDIDXTestDriveConfirm(context.Background(), queue.DIDXTestDriveConfirmPayload{
+		TestDriveEvent: request,
+	})
+	if err != nil {
+		return err
 	}
 
 	return nil

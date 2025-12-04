@@ -21,6 +21,7 @@ type DMSSvc interface {
 	CreateOneAccess(ctx context.Context, body any) error
 	CreateToyotaID(ctx context.Context, body any) error
 	AppraisalBookingRequest(ctx context.Context, body any) error
+	GetOfferRequest(ctx context.Context, body any) error
 }
 
 // Worker handles Asynq task processing
@@ -78,11 +79,13 @@ func New(cfg config.AsynqConfig, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
 	}
 
 	// Register task handlers
-	mux.HandleFunc(queue.TaskTypeDIDXConfirm, w.handleServiceBookingConfirm)
+	mux.HandleFunc(queue.TaskTypeDIDXServiceBookingConfirm, w.handleServiceBookingConfirm)
+	mux.HandleFunc(queue.TaskTypeDIDXTestDriveConfirm, w.handleTestDriveConfirm)
 	mux.HandleFunc(queue.TaskTypeDMSTestDriveRequest, w.handleDMSTestDriveRequest)
 	mux.HandleFunc(queue.TaskTypeDMSCreateOneAccess, w.handleDMSCreateOneAccess)
 	mux.HandleFunc(queue.TaskTypeDMSCreateToyotaID, w.handleDMSCreateToyotaID)
 	mux.HandleFunc(queue.TaskTypeDMSAppraisalBookingRequest, w.handleDMSAppraisalBookingRequest)
+	mux.HandleFunc(queue.TaskTypeDMSCreateGetOffer, w.handleDMSGetOfferRequest)
 
 	return w
 }

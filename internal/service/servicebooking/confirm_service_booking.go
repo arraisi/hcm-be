@@ -117,7 +117,7 @@ func (s *service) confirmServiceBookingFromEvent(ctx context.Context, request se
 		ServiceBookingEvent: request,
 	}
 
-	err = s.queueClient.EnqueueDIDXConfirm(context.Background(), payload)
+	err = s.queueClient.EnqueueDIDXServiceBookingConfirm(context.Background(), payload)
 	if err != nil {
 		return fmt.Errorf("failed to enqueue DIDX confirm task: %w", err)
 	}
@@ -198,7 +198,7 @@ func (s *service) ConfirmServiceBooking(ctx context.Context, request servicebook
 		ServiceBookingEvent: sbEventConfirmRequest,
 	}
 
-	err = s.queueClient.EnqueueDIDXConfirm(context.Background(), payload)
+	err = s.queueClient.EnqueueDIDXServiceBookingConfirm(context.Background(), payload)
 	if err != nil {
 		return fmt.Errorf("failed to enqueue DIDX confirm task: %w", err)
 	}

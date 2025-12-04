@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
+
+	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
 	"github.com/arraisi/hcm-be/internal/domain/dto/toyotaid"
 
@@ -23,7 +25,22 @@ func NewDIDXServiceBookingConfirmTask(payload DIDXServiceBookingConfirmPayload) 
 	if err != nil {
 		return nil, err
 	}
-	taskKey := fmt.Sprintf("%s:%s", TaskTypeDIDXConfirm, payload.ServiceBookingEvent.EventID)
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDIDXServiceBookingConfirm, payload.ServiceBookingEvent.EventID)
+	return asynq.NewTask(taskKey, b), nil
+}
+
+// DIDXTestDriveConfirmPayload represents the payload for DIDX test drive confirm task
+type DIDXTestDriveConfirmPayload struct {
+	TestDriveEvent testdrive.TestDriveEvent `json:"test_drive_event"`
+}
+
+// NewDIDXTestDriveConfirmTask creates a new Asynq task for DIDX test drive confirm
+func NewDIDXTestDriveConfirmTask(payload DIDXTestDriveConfirmPayload) (*asynq.Task, error) {
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDIDXTestDriveConfirm, payload.TestDriveEvent.EventID)
 	return asynq.NewTask(taskKey, b), nil
 }
 
@@ -72,6 +89,23 @@ func NewDMSCreateToyotaIDTask(payload DMSCreateToyotaIDPayload) (*asynq.Task, er
 	return asynq.NewTask(taskKey, b), nil
 }
 
+// DMSCreateGetOfferPayload represents the payload for DMS create get offer task
+type DMSCreateGetOfferPayload struct {
+	GetOfferEvent leads.GetOfferWebhookEvent `json:"get_offer_event"`
+}
+
+// NewDMSCreateGetOfferTask creates a new Asynq task for DMS get offer
+func NewDMSCreateGetOfferTask(payload DMSCreateGetOfferPayload) (*asynq.Task, error) {
+  b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+  
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSCreateGetOffer, payload.GetOfferEvent.EventID)
+    
+	return asynq.NewTask(taskKey, b), nil
+}
+
 // DMSAppraisalBookingRequestPayload represents the payload for the DMS appraisal booking request task
 type DMSAppraisalBookingRequestPayload struct {
 	AppraisalBookingRequest appraisal.EventRequest `json:"appraisal_booking_request"`
@@ -79,10 +113,12 @@ type DMSAppraisalBookingRequestPayload struct {
 
 // NewDMSAppraisalBookingRequestTask creates a new Asynq task for DMS appraisal booking request
 func NewDMSAppraisalBookingRequestTask(payload DMSAppraisalBookingRequestPayload) (*asynq.Task, error) {
-	b, err := json.Marshal(payload)
+  b, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
+  
 	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSAppraisalBookingRequest, payload.AppraisalBookingRequest.EventID)
+  
 	return asynq.NewTask(taskKey, b), nil
 }

@@ -84,7 +84,7 @@ type ApimDIDXService interface {
 }
 
 type QueueClient interface {
-	EnqueueDIDXConfirm(ctx context.Context, payload interface{}) error
+	EnqueueDIDXServiceBookingConfirm(ctx context.Context, payload interface{}) error
 }
 
 type DMSAfterSalesClient interface {

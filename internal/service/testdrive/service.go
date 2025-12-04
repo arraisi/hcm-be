@@ -52,6 +52,7 @@ type Repository interface {
 
 type QueueClient interface {
 	EnqueueDMSTestDriveRequest(ctx context.Context, payload interface{}) error
+	EnqueueDIDXTestDriveConfirm(ctx context.Context, payload interface{}) error
 }
 
 type ServiceContainer struct {
