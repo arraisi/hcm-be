@@ -105,10 +105,11 @@ func (be *TestDriveEvent) ToTestDriveModel(customerID string) domain.TestDrive {
 }
 
 type GetTestDriveRequest struct {
-	ID           *string
-	TestDriveID  *string
-	CustomerID   *string
-	OneAccountID *string
+	ID              *string
+	TestDriveID     *string
+	CustomerID      *string
+	OneAccountID    *string
+	TestDriveStatus []string
 }
 
 // Apply applies the request parameters to the given SelectBuilder
@@ -124,6 +125,9 @@ func (req GetTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
 	}
 	if req.OneAccountID != nil {
 		q.Where(sqrl.Eq{"i_one_account_id": req.OneAccountID})
+	}
+	if len(req.TestDriveStatus) > 0 {
+		q.Where(sqrl.Eq{"d_status": req.TestDriveStatus})
 	}
 }
 

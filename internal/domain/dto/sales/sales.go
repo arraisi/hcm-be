@@ -16,6 +16,7 @@ type GetSalesScoringRequest struct {
 	BranchCode    string
 	Page          int
 	PageSize      int
+	HighestScore  bool
 }
 
 // Apply applies the request parameters to the given SelectBuilder
@@ -40,6 +41,10 @@ func (req GetSalesScoringRequest) Apply(q *sqrl.SelectBuilder) {
 		q.Where(sqrl.Eq{"ss.Branch_code": req.BranchCode})
 	}
 
+	if req.HighestScore {
+		q.OrderBy("ss.total_score DESC")
+	}
+
 	if req.PageSize > 0 {
 		// Calculate offset: (page - 1) * pageSize
 		offset := 0
@@ -59,6 +64,6 @@ type Pagination struct {
 }
 
 type GetSalesScoringResponse struct {
-	Data       []domain.SalesScoring `json:"data"`
-	Pagination Pagination            `json:"pagination"`
+	Data       domain.SalesScorings `json:"data"`
+	Pagination Pagination           `json:"pagination"`
 }

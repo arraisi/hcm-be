@@ -79,6 +79,26 @@ func (req GetLeadsRequest) Apply(q *sqrl.SelectBuilder) {
 	}
 }
 
+type GetLeadsTestDriveRequest struct {
+	LeadsID         *string
+	TestDriveStatus []string
+	SalesIDs        []string
+}
+
+// Apply applies the request parameters to the given SelectBuilder
+func (req GetLeadsTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
+	if req.LeadsID != nil {
+		q.Where(sqrl.Eq{"l.i_leads_id": req.LeadsID})
+	}
+	if len(req.TestDriveStatus) > 0 {
+		q.Where(sqrl.Eq{"td.c_test_drive_status": req.TestDriveStatus})
+	}
+	if len(req.SalesIDs) > 0 {
+		q.Where(sqrl.Eq{"l.c_sales_id": req.SalesIDs})
+	}
+	q.Where(sqrl.Eq{"l.c_leads_type": constants.LeadsTypeTestDriveRequest})
+}
+
 // ToDomain converts the RequestTestDrive to the internal Leads model
 func (be *LeadsRequest) ToDomain(customerID string) domain.Leads {
 	return domain.Leads{
