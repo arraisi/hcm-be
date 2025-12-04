@@ -20,6 +20,7 @@ type DMSSvc interface {
 	TestDriveRequest(ctx context.Context, body any) error
 	CreateOneAccess(ctx context.Context, body any) error
 	CreateToyotaID(ctx context.Context, body any) error
+	AppraisalBookingRequest(ctx context.Context, body any) error
 	GetOfferRequest(ctx context.Context, body any) error
 }
 
@@ -83,6 +84,7 @@ func New(cfg config.AsynqConfig, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
 	mux.HandleFunc(queue.TaskTypeDMSTestDriveRequest, w.handleDMSTestDriveRequest)
 	mux.HandleFunc(queue.TaskTypeDMSCreateOneAccess, w.handleDMSCreateOneAccess)
 	mux.HandleFunc(queue.TaskTypeDMSCreateToyotaID, w.handleDMSCreateToyotaID)
+	mux.HandleFunc(queue.TaskTypeDMSAppraisalBookingRequest, w.handleDMSAppraisalBookingRequest)
 	mux.HandleFunc(queue.TaskTypeDMSCreateGetOffer, w.handleDMSGetOfferRequest)
 
 	return w

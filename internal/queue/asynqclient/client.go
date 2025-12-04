@@ -173,16 +173,17 @@ func (c *client) EnqueueDMSCreateToyotaID(ctx context.Context, payload interface
 	return err
 }
 
-// EnqueueDMSCreateGetOffer enqueues a DMS create get offer task with custom retry configuration
-func (c *client) EnqueueDMSCreateGetOffer(ctx context.Context, payload interface{}) error {
-	// Type asserts to DMSCreateGetOfferPayload
-	body, ok := payload.(queue.DMSCreateGetOfferPayload)
+// EnqueueDMSAppraisalBookingRequest enqueues a DMS Appraisal Booking request task with custom retry configuration
+func (c *client) EnqueueDMSAppraisalBookingRequest(ctx context.Context, payload interface{}) error {
+	// Type asserts to DMSAppraisalBookingRequestPayload
+	body, ok := payload.(queue.DMSAppraisalBookingRequestPayload)
 	if !ok {
-		return fmt.Errorf("invalid payload type: expected queue.DMSCreateGetOfferPayload")
+		return fmt.Errorf("invalid payload type: expected queue.EnqueueDMSAppraisalBookingRequest")
 	}
 
-	task, err := queue.NewDMSCreateGetOfferTask(body)
-	if err != nil {
+	task, err := queue.NewDMSAppraisalBookingRequestTask(body)
+  
+  if err != nil {
 		return err
 	}
 
@@ -197,8 +198,39 @@ func (c *client) EnqueueDMSCreateGetOffer(ctx context.Context, payload interface
 		asynq.Unique(5*time.Minute),   // Prevent duplicate tasks within 5 minutes
 	)
 
-	fmt.Printf("EnqueueDMSCreateGetOffer taskInfo: %+v\n", taskInfo)
+	fmt.Printf("EnqueueDMSAppraisalBookingRequest taskInfo: %+v\n", taskInfo)
 
+	return err
+}
+  
+
+// EnqueueDMSCreateGetOffer enqueues a DMS create get offer task with custom retry configuration
+func (c *client) EnqueueDMSCreateGetOffer(ctx context.Context, payload interface{}) error {
+	// Type asserts to DMSCreateGetOfferPayload
+	body, ok := payload.(queue.DMSCreateGetOfferPayload)
+	if !ok {
+		return fmt.Errorf("invalid payload type: expected queue.DMSCreateGetOfferPayload")
+	}
+
+	task, err := queue.NewDMSCreateGetOfferTask(body)
+  
+  if err != nil {
+		return err
+	}
+
+	// Retry 3 times with custom backoff: 1m, 5m, 10m
+	taskInfo, err := c.asynqClient.EnqueueContext(
+		ctx,
+		task,
+		asynq.Queue(c.cfg.Queue),
+		asynq.MaxRetry(3),
+		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
+		asynq.Timeout(30*time.Second), // Task timeout
+		asynq.Unique(5*time.Minute),   // Prevent duplicate tasks within 5 minutes
+	)
+  
+	fmt.Printf("EnqueueDMSCreateGetOffer taskInfo: %+v\n", taskInfo)
+  
 	return err
 }
 

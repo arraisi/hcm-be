@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/arraisi/hcm-be/internal/http/handlers/appraisal"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
@@ -24,6 +25,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/queue/asynqclient"
 	"github.com/arraisi/hcm-be/internal/queue/asynqworker"
 	"github.com/arraisi/hcm-be/internal/queue/inspector"
+	appraisalRepository "github.com/arraisi/hcm-be/internal/repository/appraisal"
 	"github.com/arraisi/hcm-be/internal/repository/auth"
 	customerRepository "github.com/arraisi/hcm-be/internal/repository/customer"
 	customerreminderRepository "github.com/arraisi/hcm-be/internal/repository/customerreminder"
@@ -33,6 +35,7 @@ import (
 	hasjratidRepository "github.com/arraisi/hcm-be/internal/repository/hasjratid"
 	interestedpartRepository "github.com/arraisi/hcm-be/internal/repository/interestedpart"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
+	leadsScoreRepository "github.com/arraisi/hcm-be/internal/repository/leadsscrore"
 	outletRepository "github.com/arraisi/hcm-be/internal/repository/outlet"
 	salesorderRepository "github.com/arraisi/hcm-be/internal/repository/salesorder"
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
@@ -40,7 +43,9 @@ import (
 	testdriveRepository "github.com/arraisi/hcm-be/internal/repository/testdrive"
 	tradeinRepository "github.com/arraisi/hcm-be/internal/repository/tradein"
 	transactionRepository "github.com/arraisi/hcm-be/internal/repository/transaction"
+	usedCarRepository "github.com/arraisi/hcm-be/internal/repository/usedcar"
 	"github.com/arraisi/hcm-be/internal/scheduler"
+	appraisalService "github.com/arraisi/hcm-be/internal/service/appraisal"
 	authService "github.com/arraisi/hcm-be/internal/service/auth"
 	customerService "github.com/arraisi/hcm-be/internal/service/customer"
 	customerreminderService "github.com/arraisi/hcm-be/internal/service/customerreminder"
@@ -48,11 +53,13 @@ import (
 	hasjratidService "github.com/arraisi/hcm-be/internal/service/hasjratid"
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	"github.com/arraisi/hcm-be/internal/service/leads"
+	leadsscoreService "github.com/arraisi/hcm-be/internal/service/leadsscore"
 	oneaccessService "github.com/arraisi/hcm-be/internal/service/oneaccess"
 	salesOrderService "github.com/arraisi/hcm-be/internal/service/salesorder"
 	servicebookingService "github.com/arraisi/hcm-be/internal/service/servicebooking"
 	testdriveService "github.com/arraisi/hcm-be/internal/service/testdrive"
 	toyotaidService "github.com/arraisi/hcm-be/internal/service/toyotaid"
+	usedcarService "github.com/arraisi/hcm-be/internal/service/usedcar"
 	userService "github.com/arraisi/hcm-be/internal/service/user"
 
 	"github.com/arraisi/hcm-be/pkg/utils"
@@ -122,6 +129,9 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	financeSimulationRepo := financesimulationRepository.New(cfg, dbHcm)
 	tradeInRepo := tradeinRepository.New(cfg, dbHcm)
 	interestedPartRepo := interestedpartRepository.New(cfg, dbHcm)
+	usedCarRepo := usedCarRepository.New(dbHcm)
+	leadsScoreRepo := leadsScoreRepository.New(dbHcm)
+	appraisalRepo := appraisalRepository.New(dbHcm)
 
 	// init services
 	userSvc := userService.NewUserService(mockApiClient)
@@ -189,6 +199,14 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		Repository:      salesOrderRepo,
 		SpkRepository:   spkRepo,
 	})
+	usedCarSvc := usedcarService.New(usedcarService.ServiceContainer{
+		TransactionRepo: txRepo,
+		Repo:            usedCarRepo,
+	})
+	leadsScoreSvc := leadsscoreService.New(leadsscoreService.ServiceContainer{
+		TransactionRepo: txRepo,
+		Repo:            leadsScoreRepo,
+	})
 
 	// Scheduler Services
 	roAutomationSvc := leads.New(cfg, leads.ServiceContainer{
@@ -201,6 +219,16 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		InterestedPartRepo:    interestedPartRepo,
 		CustomerSvc:           customerSvc,
 		QueueClient:           queueClient,
+	})
+
+	appraisalSvc := appraisalService.New(appraisalService.ServiceContainer{
+		TransactionRepo: txRepo,
+		CustomerSvc:     customerSvc,
+		UsedCarSvc:      usedCarSvc,
+		LeadsSvc:        roAutomationSvc,
+		LeadsScoreSvc:   leadsScoreSvc,
+		AppraisalRepo:   appraisalRepo,
+		QueueClient:     queueClient,
 	})
 
 	// Scheduler
@@ -221,6 +249,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	tokenHandler := handlers.NewTokenHandler(tokenSvc)
 	orderHandler := order.New(cfg, salesOrderSvc, idempotencyStore)
 	leadsHandler := leadsHandler.New(cfg, roAutomationSvc, idempotencyStore)
+	appraisalHandler := appraisal.New(appraisalSvc, idempotencyStore)
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                  cfg,
@@ -235,6 +264,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		QueueHandler:            queueHandler,
 		TokenHandler:            tokenHandler,
 		OrderHandler:            orderHandler,
+		AppraisalHandler:        appraisalHandler,
 	})
 
 	srv := apphttp.NewServer(cfg, router)
