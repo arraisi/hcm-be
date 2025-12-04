@@ -61,9 +61,11 @@ type TestDriveEventData struct {
 
 // PICAssignmentRequest represents the PIC assignment information from the webhook
 type PICAssignmentRequest struct {
-	EmployeeID string `json:"employee_id" validate:"required"`
-	FirstName  string `json:"first_name" validate:"required"`
-	LastName   string `json:"last_name" validate:"required"`
+	EmployeeID string `json:"employee_ID"`
+	FirstName  string `json:"first_name" `
+	LastName   string `json:"last_name"`
+
+	NIK string `json:"nik"`
 }
 
 // TestDriveEvent represents the complete webhook payload for test drive booking
