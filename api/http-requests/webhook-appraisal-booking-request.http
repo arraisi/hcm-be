@@ -1,12 +1,12 @@
 ### Generate token
 POST http://localhost:8080/api/v1/token/generate
-X-API-Key: YmLhbgVYIA9Fa7i1NSfgIgN2heBvyKNXkIqcsXC+9PUgj+PrL6xyAVgRoPpotNjrcYF2ImVHQqXVnbvbmkZ3mQ==
+X-API-Key: you-api-key
 
 ### Appraisal Booking Request (G01 & G08)
 POST http://localhost:8080/api/v1/hcm/webhooks/appraisal-booking-request
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiWW1MaGJnVllJQTlGYTdpMU5TZmdJZ04yaGVCdnlLTlhrSXFjc1hDKzlQVWdqK1ByTDZ4eUFWZ1JvUHBvdE5qcmNZRjJJbVZIUXFYVm5idmJta1ozbVE9PSIsImlzcyI6ImhjbS1iZSIsInR5cCI6InNlcnZpY2UtdG9rZW4ifQ.RM7hZsEJGZw5teaBBmOZyyOekqtwpaM2zEfOi4fCGlE
-X-API-Key: YmLhbgVYIA9Fa7i1NSfgIgN2heBvyKNXkIqcsXC+9PUgj+PrL6xyAVgRoPpotNjrcYF2ImVHQqXVnbvbmkZ3mQ==
+Authorization: Bearer token
+X-API-Key: you-api-key
 
 
 {
