@@ -82,7 +82,7 @@ func New(cfg config.AsynqConfig, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
 	mux.HandleFunc(queue.TaskTypeDMSTestDriveRequest, w.handleDMSTestDriveRequest)
 	mux.HandleFunc(queue.TaskTypeDMSCreateOneAccess, w.handleDMSCreateOneAccess)
 	mux.HandleFunc(queue.TaskTypeDMSCreateToyotaID, w.handleDMSCreateToyotaID)
-	mux.HandleFunc(queue.TaskTypeDMSCreateToyotaID, w.handleDMSCreateToyotaID)
+	mux.HandleFunc(queue.TaskTypeDMSAppraisalBookingRequest, w.handleDMSAppraisalBookingRequest)
 
 	return w
 }

@@ -6,5 +6,5 @@ const (
 	TaskTypeDMSTestDriveRequest        = "dms:test_drive_request"
 	TaskTypeDMSCreateOneAccess         = "dms:create_one_access"
 	TaskTypeDMSCreateToyotaID          = "dms:create_toyota_id"
-	TaskTypeDMSAppraisalBookingRequest = "dms:appiraisal_booking_request"
+	TaskTypeDMSAppraisalBookingRequest = "dms:appraisal_booking_request"
 )
