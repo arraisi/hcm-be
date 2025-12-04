@@ -5,6 +5,9 @@ const (
 	TestDriveBookingStatusChangeRequest   = "CHANGE_REQUEST"
 	TestDriveBookingStatusCancelSubmitted = "CANCEL_SUBMITTED"
 	TestDriveBookingStatusConfirmed       = "CONFIRMED"
+	TestDriveBookingStatusCancelled       = "CANCELLED"
+	TestDriveBookingStatusCompleted       = "COMPLETED"
+	TestDriveBookingStatusNoShow          = "NO_SHOW"
 
 	// Test Drive Locations
 	TestDriveLocationHome   = "HOME"
@@ -25,6 +28,16 @@ var (
 		TestDriveBookingStatusSubmitted:       "Submitted",
 		TestDriveBookingStatusChangeRequest:   "Change Request",
 		TestDriveBookingStatusCancelSubmitted: "Cancel Submitted",
+		TestDriveBookingStatusConfirmed:       "Confirmed",
+		TestDriveBookingStatusCancelled:       "Cancelled",
+		TestDriveBookingStatusCompleted:       "Completed",
+		TestDriveBookingStatusNoShow:          "No Show",
+	}
+
+	TestDriveOnGoingStatus = []string{
+		TestDriveBookingStatusSubmitted,
+		TestDriveBookingStatusChangeRequest,
+		TestDriveBookingStatusConfirmed,
 	}
 
 	TestDriveLocationMap = map[string]string{
