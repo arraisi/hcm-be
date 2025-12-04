@@ -22,6 +22,22 @@ type SalesScoring struct {
 	TAMOutletCode sql.NullString `json:"tam_outlet_code" db:"c_tamoutlet"` // from tr_outlet join
 }
 
+type SalesScorings []SalesScoring
+
+func (s SalesScorings) GetUniqueNIKs() []string {
+	nikMap := make(map[string]struct{})
+	for _, scoring := range s {
+		nikMap[scoring.NIK] = struct{}{}
+	}
+
+	uniqueNIKs := make([]string, 0, len(nikMap))
+	for nik := range nikMap {
+		uniqueNIKs = append(uniqueNIKs, nik)
+	}
+
+	return uniqueNIKs
+}
+
 // TableName returns the database table name for the SalesScoring model
 func (s *SalesScoring) TableName() string {
 	return "dbo.tm_salesscoring"

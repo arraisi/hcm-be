@@ -5,57 +5,64 @@ import (
 )
 
 type Leads struct {
-	ID                              string    `json:"id" db:"i_id"`
-	CustomerID                      string    `json:"customer_id" db:"i_customer_id"`
-	LeadsID                         string    `json:"leads_id" db:"i_leads_id"`
-	LeadsType                       string    `json:"leads_type" db:"c_leads_type"`
-	LeadsFollowUpStatus             string    `json:"leads_follow_up_status" db:"c_leads_follow_up_status"`
-	LeadsPreferenceContactTimeStart *string   `json:"leads_preference_contact_time_start" db:"t_leads_preference_contact_time_start"`
-	LeadsPreferenceContactTimeEnd   *string   `json:"leads_preference_contact_time_end" db:"t_leads_preference_contact_time_end"`
-	LeadSource                      string    `json:"lead_source" db:"c_leads_source"`
-	AdditionalNotes                 *string   `json:"additional_notes" db:"e_additional_notes"`
-	TAMLeadScore                    string    `json:"tam_lead_score" db:"c_tam_lead_score"`
-	OutletLeadScore                 string    `json:"outlet_lead_score" db:"c_outlet_lead_score"`
-	PurchasePlanCriteria            *string   `json:"purchase_plan_criteria" db:"c_purchase_plan_criteria"`
-	PaymentPreferCriteria           *string   `json:"payment_prefer_criteria" db:"c_payment_prefer_criteria"`
-	TestDriveCriteria               *string   `json:"test_drive_criteria" db:"c_test_drive_criteria"`
-	TradeInCriteria                 *string   `json:"trade_in_criteria" db:"c_trade_in_criteria"`
-	BrowsingHistoryCriteria         *string   `json:"browsing_history_criteria" db:"c_browsing_history_criteria"`
-	VehicleAgeCriteria              *string   `json:"vehicle_age_criteria" db:"c_vehicle_age_criteria"`
-	NegotiationCriteria             *string   `json:"negotiation_criteria" db:"c_negotiation_criteria"`
-	CreatedAt                       time.Time `json:"created_at" db:"d_created_at"`
-	CreatedBy                       string    `json:"created_by" db:"c_created_by"`
-	UpdatedAt                       time.Time `json:"updated_at" db:"d_updated_at"`
-	UpdatedBy                       *string   `json:"updated_by" db:"c_updated_by"`
-	CustomerVehicleID               string    `json:"customer_vehicle_id" db:"i_customer_vehicle_id"`
-	GetOfferNumber                  *string   `json:"get_offer_number" db:"c_get_offer_number"`
-	OutletID                        *string   `json:"outlet_id" db:"i_outlet_id"`
-	OutletName                      *string   `json:"outlet_name" db:"n_outlet_name"`
-	KatashikiSuffix                 *string   `json:"katashiki_suffix" db:"c_katashiki_suffix"`
-	ColorCode                       *string   `json:"color_code" db:"c_color_code"`
-	Model                           *string   `json:"model" db:"c_model"`
-	Variant                         *string   `json:"variant" db:"c_variant"`
-	Color                           *string   `json:"color" db:"c_color"`
-	FinanceSimulationID             *string   `json:"finance_simulation_id" db:"i_finance_simulation_id"`
-	FinanceSimulationNumber         *string   `json:"finance_simulation_number" db:"c_finance_simulation_number"`
+	ID                              string     `json:"id" db:"i_id"`
+	CustomerID                      string     `json:"customer_id" db:"i_customer_id"`
+	LeadsID                         string     `json:"leads_id" db:"i_leads_id"`
+	LeadsType                       string     `json:"leads_type" db:"c_leads_type"`
+	LeadsFollowUpStatus             string     `json:"leads_follow_up_status" db:"c_leads_follow_up_status"`
+	LeadsPreferenceContactTimeStart *string    `json:"leads_preference_contact_time_start" db:"t_leads_preference_contact_time_start"`
+	LeadsPreferenceContactTimeEnd   *string    `json:"leads_preference_contact_time_end" db:"t_leads_preference_contact_time_end"`
+	LeadSource                      string     `json:"lead_source" db:"c_leads_source"`
+	AdditionalNotes                 *string    `json:"additional_notes" db:"e_additional_notes"`
+	TAMLeadScore                    string     `json:"tam_lead_score" db:"c_tam_lead_score"`
+	OutletLeadScore                 string     `json:"outlet_lead_score" db:"c_outlet_lead_score"`
+	PurchasePlanCriteria            *string    `json:"purchase_plan_criteria" db:"c_purchase_plan_criteria"`
+	PaymentPreferCriteria           *string    `json:"payment_prefer_criteria" db:"c_payment_prefer_criteria"`
+	TestDriveCriteria               *string    `json:"test_drive_criteria" db:"c_test_drive_criteria"`
+	TradeInCriteria                 *string    `json:"trade_in_criteria" db:"c_trade_in_criteria"`
+	BrowsingHistoryCriteria         *string    `json:"browsing_history_criteria" db:"c_browsing_history_criteria"`
+	VehicleAgeCriteria              *string    `json:"vehicle_age_criteria" db:"c_vehicle_age_criteria"`
+	CreatedAt                       time.Time  `json:"created_at" db:"d_created_at"`
+	CreatedBy                       string     `json:"created_by" db:"c_created_by"`
+	UpdatedAt                       time.Time  `json:"updated_at" db:"d_updated_at"`
+	UpdatedBy                       *string    `json:"updated_by" db:"c_updated_by"`
+	NegotiationCriteria             *string    `json:"negotiation_criteria" db:"c_negotiation_criteria"`
+	KatashikiSuffix                 *string    `json:"katashiki_suffix" db:"c_katashiki_suffix"`
+	ColorCode                       *string    `json:"color_code" db:"c_color_code"`
+	Model                           *string    `json:"model" db:"c_model"`
+	Variant                         *string    `json:"variant" db:"c_variant"`
+	Color                           *string    `json:"color" db:"c_color"`
+	VehicleOTRPrice                 *float64   `json:"vehicle_otr_price" db:"v_vehicle_otr_price"`
+	OutletID                        *string    `json:"outlet_id" db:"i_outlet_id"`
+	OutletName                      *string    `json:"outlet_name" db:"n_outlet_name"`
+	ServicePackageID                *string    `json:"service_package_id" db:"i_service_package_id"`
+	ServicePackageName              *string    `json:"service_package_name" db:"n_service_package_name"`
+	SalesID                         *string    `json:"sales_id" db:"c_sales_id"`
+	SalesName                       *string    `json:"sales_name" db:"n_sales_name"`
+	GetOfferNumber                  *string    `json:"get_offer_number" db:"c_get_offer_number"`
+	FinanceSimulationID             *string    `json:"finance_simulation_id" db:"i_finance_simulation_id"`
+	FinanceSimulationNumber         *string    `json:"finance_simulation_number" db:"c_finance_simulation_number"`
+	CreatedDatetime                 *time.Time `json:"created_datetime" db:"d_created_datetime"`
+}
 
-	// to be confirmed old table columns
-	LastFollowUpDatetime         *time.Time `json:"last_follow_up_datetime" db:"d_last_follow_up_datetime"`
-	FollowUpTargetDate           *time.Time `json:"follow_up_target_date" db:"d_follow_up_target_date"`
-	VehicleOTRPrice              *float64   `json:"vehicle_otr_price" db:"v_vehicle_otr_price"`
-	ServicePackageID             *string    `json:"service_package_id" db:"i_service_package_id"`
-	ServicePackageName           *string    `json:"service_package_name" db:"n_service_package_name"`
-	CreatedDatetime              time.Time  `json:"created_datetime" db:"d_created_datetime"`
-	LeadsStatus                  *string    `json:"leads_status" db:"c_leads_status"`
-	ReasonLeadsStatusUpdate      *string    `json:"reason_leads_status_update" db:"c_reason_leads_status_update"`
-	ReasonLeadsStatusUpdateOther *string    `json:"reason_leads_status_update_other" db:"c_reason_leads_status_update_other"`
-	VehicleCategory              *string    `json:"vehicle_category" db:"c_vehicle_category"`
-	DemandStructure              *string    `json:"demand_structure" db:"d_demand_structure"`
+type LeadsList []Leads
+
+func (l LeadsList) GetMapBySalesID() map[string]Leads {
+	result := make(map[string]Leads)
+	for _, leads := range l {
+		result[leads.LeadsID] = leads
+	}
+	return result
 }
 
 // TableName returns the database table name for the User model
 func (u *Leads) TableName() string {
 	return "dbo.tm_leads"
+}
+
+// TableNameAlias returns the database table name for the User model
+func (u *Leads) TableNameAlias() string {
+	return "dbo.tm_leads AS l"
 }
 
 // Columns returns the list of database columns for the User model
@@ -78,11 +85,27 @@ func (u *Leads) Columns() []string {
 		"c_trade_in_criteria",
 		"c_browsing_history_criteria",
 		"c_vehicle_age_criteria",
-		"c_negotiation_criteria",
 		"d_created_at",
 		"c_created_by",
 		"d_updated_at",
 		"c_updated_by",
+		"c_negotiation_criteria",
+		"c_katashiki_suffix",
+		"c_color_code",
+		"c_model",
+		"c_variant",
+		"c_color",
+		"v_vehicle_otr_price",
+		"i_outlet_id",
+		"n_outlet_name",
+		"i_service_package_id",
+		"n_service_package_name",
+		"c_sales_id",
+		"n_sales_name",
+		"c_get_offer_number",
+		"i_finance_simulation_id",
+		"c_finance_simulation_number",
+		"d_created_datetime",
 	}
 }
 
@@ -106,11 +129,71 @@ func (u *Leads) SelectColumns() []string {
 		"c_trade_in_criteria",
 		"c_browsing_history_criteria",
 		"c_vehicle_age_criteria",
-		"c_negotiation_criteria",
 		"d_created_at",
 		"c_created_by",
 		"d_updated_at",
 		"c_updated_by",
+		"c_negotiation_criteria",
+		"c_katashiki_suffix",
+		"c_color_code",
+		"c_model",
+		"c_variant",
+		"c_color",
+		"v_vehicle_otr_price",
+		"i_outlet_id",
+		"n_outlet_name",
+		"i_service_package_id",
+		"n_service_package_name",
+		"c_sales_id",
+		"n_sales_name",
+		"c_get_offer_number",
+		"i_finance_simulation_id",
+		"c_finance_simulation_number",
+		"d_created_datetime",
+	}
+}
+
+func (u *Leads) LeadsTestDriveColumns() []string {
+	return []string{
+		"l.i_id",
+		"l.i_customer_id",
+		"l.i_leads_id",
+		"l.c_leads_type",
+		"l.c_leads_follow_up_status",
+		"l.t_leads_preference_contact_time_start",
+		"l.t_leads_preference_contact_time_end",
+		"l.c_leads_source",
+		"l.e_additional_notes",
+		"l.c_tam_lead_score",
+		"l.c_outlet_lead_score",
+		"l.c_purchase_plan_criteria",
+		"l.c_payment_prefer_criteria",
+		"l.c_test_drive_criteria",
+		"l.c_trade_in_criteria",
+		"l.c_browsing_history_criteria",
+		"l.c_vehicle_age_criteria",
+		"l.d_created_at",
+		"l.c_created_by",
+		"l.d_updated_at",
+		"l.c_updated_by",
+		"l.c_negotiation_criteria",
+		"l.c_katashiki_suffix",
+		"l.c_color_code",
+		"l.c_model",
+		"l.c_variant",
+		"l.c_color",
+		"l.v_vehicle_otr_price",
+		"l.i_outlet_id",
+		"l.n_outlet_name",
+		"l.i_service_package_id",
+		"l.n_service_package_name",
+		"l.c_sales_id",
+		"l.n_sales_name",
+		"l.c_get_offer_number",
+		"l.i_finance_simulation_id",
+		"l.c_finance_simulation_number",
+		"l.d_created_datetime",
+		"td.c_test_drive_status",
 	}
 }
 
@@ -238,41 +321,17 @@ func (u *Leads) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "c_finance_simulation_number")
 		values = append(values, u.FinanceSimulationNumber)
 	}
-	if u.CustomerVehicleID != "" {
-		columns = append(columns, "i_customer_vehicle_id")
-		values = append(values, u.CustomerVehicleID)
+	if u.SalesID != nil {
+		columns = append(columns, "c_sales_id")
+		values = append(values, u.SalesID)
 	}
-	if u.LastFollowUpDatetime != nil {
-		columns = append(columns, "d_last_follow_up_datetime")
-		values = append(values, u.LastFollowUpDatetime)
+	if u.SalesName != nil {
+		columns = append(columns, "n_sales_name")
+		values = append(values, u.SalesName)
 	}
-	if u.FollowUpTargetDate != nil {
-		columns = append(columns, "d_follow_up_target_date")
-		values = append(values, u.FollowUpTargetDate)
-	}
-	if u.LeadsStatus != nil {
-		columns = append(columns, "c_leads_status")
-		values = append(values, u.LeadsStatus)
-	}
-	if u.ReasonLeadsStatusUpdate != nil {
-		columns = append(columns, "c_reason_leads_status_update")
-		values = append(values, u.ReasonLeadsStatusUpdate)
-	}
-	if u.ReasonLeadsStatusUpdateOther != nil {
-		columns = append(columns, "c_reason_leads_status_update_other")
-		values = append(values, u.ReasonLeadsStatusUpdateOther)
-	}
-	if u.VehicleCategory != nil {
-		columns = append(columns, "c_vehicle_category")
-		values = append(values, u.VehicleCategory)
-	}
-	if u.DemandStructure != nil {
-		columns = append(columns, "d_demand_structure")
-		values = append(values, u.DemandStructure)
-	}
-	if !u.CreatedDatetime.IsZero() {
+	if u.CreatedDatetime != nil {
 		columns = append(columns, "d_created_datetime")
-		values = append(values, u.CreatedDatetime.UTC())
+		values = append(values, u.CreatedDatetime)
 	}
 
 	columns = append(columns, "c_created_by")
@@ -369,32 +428,14 @@ func (u *Leads) ToUpdateMap() map[string]interface{} {
 	if u.FinanceSimulationNumber != nil {
 		updateMap["c_finance_simulation_number"] = u.FinanceSimulationNumber
 	}
-	if u.CustomerVehicleID != "" {
-		updateMap["i_customer_vehicle_id"] = u.CustomerVehicleID
+	if u.SalesID != nil {
+		updateMap["c_sales_id"] = u.SalesID
 	}
-	if u.LastFollowUpDatetime != nil {
-		updateMap["d_last_follow_up_datetime"] = u.LastFollowUpDatetime
+	if u.SalesName != nil {
+		updateMap["n_sales_name"] = u.SalesName
 	}
-	if u.FollowUpTargetDate != nil {
-		updateMap["d_follow_up_target_date"] = u.FollowUpTargetDate
-	}
-	if u.LeadsStatus != nil {
-		updateMap["c_leads_status"] = u.LeadsStatus
-	}
-	if u.ReasonLeadsStatusUpdate != nil {
-		updateMap["c_reason_leads_status_update"] = u.ReasonLeadsStatusUpdate
-	}
-	if u.ReasonLeadsStatusUpdateOther != nil {
-		updateMap["c_reason_leads_status_update_other"] = u.ReasonLeadsStatusUpdateOther
-	}
-	if u.VehicleCategory != nil {
-		updateMap["c_vehicle_category"] = u.VehicleCategory
-	}
-	if u.DemandStructure != nil {
-		updateMap["d_demand_structure"] = u.DemandStructure
-	}
-	if !u.CreatedDatetime.IsZero() {
-		updateMap["d_created_datetime"] = u.CreatedDatetime.UTC()
+	if u.CreatedDatetime != nil {
+		updateMap["d_created_datetime"] = u.CreatedDatetime
 	}
 	updateMap["c_updated_by"] = u.UpdatedBy
 	return updateMap
