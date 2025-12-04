@@ -115,7 +115,7 @@ func (req *FinanceSimulationLeadsRequest) ToDomain(customerID string) domain.Lea
 		VehicleOTRPrice:                 utils.ToPointer(req.VehicleOTRPrice),
 		OutletID:                        utils.ToPointer(req.OutletID),
 		OutletName:                      utils.ToPointer(req.OutletName),
-		CreatedDatetime:                 time.Unix(req.CreatedDatetime, 0),
+		CreatedDatetime:                 utils.ToPointer(time.Unix(req.CreatedDatetime, 0)),
 		PurchasePlanCriteria:            utils.ToPointer(req.Score.Parameter.PurchasePlanCriteria),
 		PaymentPreferCriteria:           utils.ToPointer(req.Score.Parameter.PaymentPreferCriteria),
 		TestDriveCriteria:               utils.ToPointer(req.Score.Parameter.TestDriveCriteria),

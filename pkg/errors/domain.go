@@ -79,6 +79,12 @@ var (
 		Message:    "Service temporarily unavailable",
 		StatusCode: http.StatusServiceUnavailable,
 	}
+
+	ErrNoEligibleSalesAssignment = &DomainError{
+		Code:       "NO_ELIGIBLE_SALES",
+		Message:    "No eligible sales found for assignment",
+		StatusCode: http.StatusNotFound,
+	}
 )
 
 // NewDomainError creates a new domain error with custom message

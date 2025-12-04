@@ -7,8 +7,8 @@ import (
 	"github.com/elgris/sqrl"
 )
 
-// GetSalesScoringRequest represents the request parameters for getting sales scoring data
-type GetSalesScoringRequest struct {
+// GetSalesAssignmentRequest represents the request parameters for getting sales scoring data
+type GetSalesAssignmentRequest struct {
 	TAMOutletCode string
 	OutletCode    string
 	Periode       string
@@ -16,11 +16,10 @@ type GetSalesScoringRequest struct {
 	BranchCode    string
 	Page          int
 	PageSize      int
-	HighestScore  bool
 }
 
 // Apply applies the request parameters to the given SelectBuilder
-func (req GetSalesScoringRequest) Apply(q *sqrl.SelectBuilder) {
+func (req GetSalesAssignmentRequest) Apply(q *sqrl.SelectBuilder) {
 	if req.TAMOutletCode != "" {
 		q.Where(sqrl.Eq{"o.c_tamoutlet": req.TAMOutletCode})
 	}
@@ -41,9 +40,9 @@ func (req GetSalesScoringRequest) Apply(q *sqrl.SelectBuilder) {
 		q.Where(sqrl.Eq{"ss.Branch_code": req.BranchCode})
 	}
 
-	if req.HighestScore {
-		q.OrderBy("ss.total_score DESC")
-	}
+	// Always add ORDER BY for pagination (required by SQL Server OFFSET...FETCH)
+	// Order by performance score (descending) then NIK for deterministic results
+	q.OrderBy("ss.Performa_nilai DESC", "ss.NIK ASC")
 
 	if req.PageSize > 0 {
 		// Calculate offset: (page - 1) * pageSize
@@ -53,6 +52,7 @@ func (req GetSalesScoringRequest) Apply(q *sqrl.SelectBuilder) {
 		}
 		// Use pageSize + 1 to detect if there's a next page
 		limit := req.PageSize + 1
+		// SQL Server syntax: OFFSET n ROWS FETCH NEXT m ROWS ONLY
 		q.Suffix(fmt.Sprintf("OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", offset, limit))
 	}
 }

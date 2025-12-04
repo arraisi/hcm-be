@@ -32,7 +32,7 @@ func New(db iDB) *repository {
 }
 
 // GetSalesScoring retrieves sales scoring data based on request filters
-func (r *repository) GetSalesScoring(ctx context.Context, req sales.GetSalesScoringRequest) (sales.GetSalesScoringResponse, error) {
+func (r *repository) GetSalesScoring(ctx context.Context, req sales.GetSalesAssignmentRequest) (sales.GetSalesScoringResponse, error) {
 	var salesScorings []domain.SalesScoring
 	model := domain.SalesScoring{}
 

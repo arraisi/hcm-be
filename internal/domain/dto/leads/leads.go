@@ -100,7 +100,7 @@ func (req GetLeadsTestDriveRequest) Apply(q *sqrl.SelectBuilder) {
 }
 
 // ToDomain converts the RequestTestDrive to the internal Leads model
-func (be *LeadsRequest) ToDomain(customerID string) domain.Leads {
+func (be *LeadsRequest) ToDomain(customerID string, salesNik, salesName *string) domain.Leads {
 	return domain.Leads{
 		CustomerID:                      customerID,
 		LeadsID:                         be.LeadsID,
@@ -123,5 +123,7 @@ func (be *LeadsRequest) ToDomain(customerID string) domain.Leads {
 		CreatedBy:                       constants.System,
 		UpdatedAt:                       time.Now(),
 		UpdatedBy:                       utils.ToPointer(constants.System),
+		SalesID:                         salesNik,
+		SalesName:                       salesName,
 	}
 }

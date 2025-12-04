@@ -83,6 +83,6 @@ func (req *GetOfferLeadsRequest) ToDomain(customerID string) domain.Leads {
 		OutletName:                      utils.ToPointer(req.OutletName),
 		ServicePackageID:                utils.ToPointer(req.ServicePackageID),
 		ServicePackageName:              utils.ToPointer(req.ServicePackageName),
-		CreatedDatetime:                 createdDatetime,
+		CreatedDatetime:                 &createdDatetime,
 	}
 }

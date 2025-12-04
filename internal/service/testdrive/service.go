@@ -8,6 +8,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
+	"github.com/arraisi/hcm-be/internal/domain/dto/sales"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/jmoiron/sqlx"
 )
@@ -55,6 +56,10 @@ type QueueClient interface {
 	EnqueueDIDXTestDriveConfirm(ctx context.Context, payload interface{}) error
 }
 
+type SalesService interface {
+	GetSalesAssignment(ctx context.Context, request sales.GetSalesAssignmentRequest) (*domain.SalesScoring, error)
+}
+
 type ServiceContainer struct {
 	TransactionRepo transactionRepository
 	Repo            Repository
@@ -64,6 +69,7 @@ type ServiceContainer struct {
 	EmployeeRepo    EmployeeRepository
 	ApimDIDXSvc     ApimDIDXService
 	QueueClient     QueueClient
+	SalesSvc        SalesService
 }
 
 type service struct {
@@ -76,6 +82,7 @@ type service struct {
 	employeeRepo    EmployeeRepository
 	apimDIDXSvc     ApimDIDXService
 	queueClient     QueueClient
+	salesSvc        SalesService
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -89,5 +96,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		employeeRepo:    container.EmployeeRepo,
 		apimDIDXSvc:     container.ApimDIDXSvc,
 		queueClient:     container.QueueClient,
+		salesSvc:        container.SalesSvc,
 	}
 }

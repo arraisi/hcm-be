@@ -2,6 +2,8 @@ package domain
 
 import (
 	"time"
+
+	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
 type Leads struct {
@@ -43,6 +45,9 @@ type Leads struct {
 	FinanceSimulationID             *string    `json:"finance_simulation_id" db:"i_finance_simulation_id"`
 	FinanceSimulationNumber         *string    `json:"finance_simulation_number" db:"c_finance_simulation_number"`
 	CreatedDatetime                 *time.Time `json:"created_datetime" db:"d_created_datetime"`
+
+	// from test drive
+	TestDriveStatus *string `json:"test_drive_status" db:"c_test_drive_status"`
 }
 
 type LeadsList []Leads
@@ -50,7 +55,9 @@ type LeadsList []Leads
 func (l LeadsList) GetMapBySalesID() map[string]Leads {
 	result := make(map[string]Leads)
 	for _, leads := range l {
-		result[leads.LeadsID] = leads
+		if leads.SalesID != nil {
+			result[utils.ToValue(leads.SalesID)] = leads
+		}
 	}
 	return result
 }

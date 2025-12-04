@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
+	"github.com/arraisi/hcm-be/internal/domain/dto/sales"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/arraisi/hcm-be/internal/queue"
 	"github.com/arraisi/hcm-be/pkg/constants"
@@ -54,6 +55,19 @@ func (s *service) RequestTestDriveBooking(ctx context.Context, request testdrive
 				return errorx.ErrTestDriveOtherCancellationReasonRequired
 			}
 		}
+	}
+
+	// Get Sales Assignment
+	salesAssignment, err := s.salesSvc.GetSalesAssignment(ctx, sales.GetSalesAssignmentRequest{
+		TAMOutletCode: request.Data.TestDrive.OutletID,
+	})
+	if err != nil {
+		return err
+	}
+
+	request.Data.PICAssignment = &testdrive.PICAssignmentRequest{
+		NIK:       salesAssignment.NIK,
+		FirstName: salesAssignment.EmpName,
 	}
 
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
@@ -106,7 +120,7 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, customerID strin
 	})
 	if err == nil {
 		// Found → update
-		lds := ev.Data.Leads.ToDomain(customerID)
+		lds := ev.Data.Leads.ToDomain(customerID, utils.ToPointer(ev.Data.PICAssignment.NIK), utils.ToPointer(ev.Data.PICAssignment.FirstName))
 		lds.ID = lead.ID
 		err := s.leadRepo.UpdateLeads(ctx, tx, lds)
 		if err != nil {
@@ -117,7 +131,7 @@ func (s *service) upsertLeads(ctx context.Context, tx *sqlx.Tx, customerID strin
 
 	// Not found → create
 	if errors.Is(err, sql.ErrNoRows) {
-		lds := ev.Data.Leads.ToDomain(customerID)
+		lds := ev.Data.Leads.ToDomain(customerID, utils.ToPointer(ev.Data.PICAssignment.NIK), utils.ToPointer(ev.Data.PICAssignment.FirstName))
 		if err := s.leadRepo.CreateLeads(ctx, tx, &lds); err != nil {
 			return err
 		}

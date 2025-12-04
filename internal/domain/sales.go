@@ -1,25 +1,29 @@
 package domain
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+)
 
 // SalesScoring represents the tm_salesscoring table with outlet information
 type SalesScoring struct {
-	Periode       string         `json:"periode" db:"periode"`
-	BranchName    string         `json:"branch_name" db:"BRANCH_NAME"`
-	OutletName    string         `json:"outlet_name" db:"OUTLET_NAME"`
-	SPVName       string         `json:"spv_name" db:"spv_name"`
-	NIK           string         `json:"nik" db:"NIK"`
-	EmpName       string         `json:"emp_name" db:"EmpName"`
-	Position      string         `json:"position" db:"Position"`
-	Grading       string         `json:"grading" db:"grading"`
-	TipeKendaraan string         `json:"tipe_kendaraan" db:"Tipe_kendaraan"`
-	CustomerGroup string         `json:"customer_group" db:"CustomerGroup"`
-	PerformaNilai sql.NullString `json:"performa_nilai" db:"Performa_nilai"`
-	PerformaHuruf string         `json:"performa_huruf" db:"Performa_Huruf"`
-	IDTowas       string         `json:"id_towas" db:"ID_Towas"`
-	BranchCode    string         `json:"branch_code" db:"Branch_code"`
-	OutletCode    string         `json:"outlet_code" db:"Outlet_code"`
-	TAMOutletCode sql.NullString `json:"tam_outlet_code" db:"c_tamoutlet"` // from tr_outlet join
+	Periode              string         `json:"periode" db:"periode"`
+	BranchName           string         `json:"branch_name" db:"BRANCH_NAME"`
+	OutletName           string         `json:"outlet_name" db:"OUTLET_NAME"`
+	SPVName              string         `json:"spv_name" db:"spv_name"`
+	NIK                  string         `json:"nik" db:"NIK"`
+	EmpName              string         `json:"emp_name" db:"EmpName"`
+	Position             string         `json:"position" db:"Position"`
+	Grading              string         `json:"grading" db:"grading"`
+	TipeKendaraan        string         `json:"tipe_kendaraan" db:"Tipe_kendaraan"`
+	CustomerGroup        string         `json:"customer_group" db:"CustomerGroup"`
+	PerformaNilai        sql.NullString `json:"performa_nilai" db:"Performa_nilai"`
+	PerformaHuruf        string         `json:"performa_huruf" db:"Performa_Huruf"`
+	IDTowas              string         `json:"id_towas" db:"ID_Towas"`
+	BranchCode           string         `json:"branch_code" db:"Branch_code"`
+	OutletCode           string         `json:"outlet_code" db:"Outlet_code"`
+	TAMOutletCode        sql.NullString `json:"tam_outlet_code" db:"c_tamoutlet"`  // from tr_outlet join
+	ActiveTestDriveCount int            `json:"active_test_drive_count,omitempty"` // not from DB, computed field
 }
 
 type SalesScorings []SalesScoring
@@ -36,6 +40,20 @@ func (s SalesScorings) GetUniqueNIKs() []string {
 	}
 
 	return uniqueNIKs
+}
+
+// GetPerformanceScore safely extracts the numeric performance score from PerformaNilai
+// Returns 0 if the value is NULL or cannot be parsed
+func (s *SalesScoring) GetPerformanceScore() float64 {
+	if !s.PerformaNilai.Valid {
+		return 0
+	}
+
+	var score float64
+	if _, err := fmt.Sscanf(s.PerformaNilai.String, "%f", &score); err != nil {
+		return 0
+	}
+	return score
 }
 
 // TableName returns the database table name for the SalesScoring model

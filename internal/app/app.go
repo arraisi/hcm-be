@@ -34,6 +34,7 @@ import (
 	interestedpartRepository "github.com/arraisi/hcm-be/internal/repository/interestedpart"
 	leadsRepository "github.com/arraisi/hcm-be/internal/repository/leads"
 	outletRepository "github.com/arraisi/hcm-be/internal/repository/outlet"
+	salesRepository "github.com/arraisi/hcm-be/internal/repository/sales"
 	salesorderRepository "github.com/arraisi/hcm-be/internal/repository/salesorder"
 	servicebookingRepository "github.com/arraisi/hcm-be/internal/repository/servicebooking"
 	spkRepository "github.com/arraisi/hcm-be/internal/repository/spk"
@@ -49,6 +50,7 @@ import (
 	idempotencyService "github.com/arraisi/hcm-be/internal/service/idempotency"
 	"github.com/arraisi/hcm-be/internal/service/leads"
 	oneaccessService "github.com/arraisi/hcm-be/internal/service/oneaccess"
+	salesService "github.com/arraisi/hcm-be/internal/service/sales"
 	salesOrderService "github.com/arraisi/hcm-be/internal/service/salesorder"
 	servicebookingService "github.com/arraisi/hcm-be/internal/service/servicebooking"
 	testdriveService "github.com/arraisi/hcm-be/internal/service/testdrive"
@@ -122,12 +124,19 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	financeSimulationRepo := financesimulationRepository.New(cfg, dbHcm)
 	tradeInRepo := tradeinRepository.New(cfg, dbHcm)
 	interestedPartRepo := interestedpartRepository.New(cfg, dbHcm)
+	salesRepo := salesRepository.New(dbHcm)
 
 	// init services
 	userSvc := userService.NewUserService(mockApiClient)
 	customerSvc := customerService.New(cfg, customerService.ServiceContainer{
 		TransactionRepo: txRepo,
 		Repo:            customerRepo,
+	})
+	salesSvc := salesService.New(cfg, salesService.ServiceContainer{
+		TransactionRepo: txRepo,
+		Repo:            salesRepo,
+		TestDriveRepo:   testDriveRepo,
+		LeadsRepo:       leadRepo,
 	})
 	testDriveSvc := testdriveService.New(cfg, testdriveService.ServiceContainer{
 		TransactionRepo: txRepo,
@@ -138,6 +147,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		EmployeeRepo:    employeeRepo,
 		ApimDIDXSvc:     apimDIDXApiClient,
 		QueueClient:     queueClient,
+		SalesSvc:        salesSvc,
 	})
 	idempotencyStore := idempotencyService.NewInMemoryIdempotencyStore(24 * time.Hour) // 24 hour TTL
 	customerVehicleSvc := customervehicleService.New(cfg, customervehicleService.ServiceContainer{

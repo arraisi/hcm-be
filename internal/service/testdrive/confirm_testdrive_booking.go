@@ -52,7 +52,7 @@ func (s *service) ConfirmTestDrive(ctx context.Context, request testdrive.TestDr
 	}
 
 	// Update leads
-	leadsModel := request.Data.Leads.ToDomain(customerID)
+	leadsModel := request.Data.Leads.ToDomain(customerID, nil, nil)
 
 	// Get existing leads to preserve ID
 	existingLeads, err := s.leadRepo.GetLeads(ctx, leads.GetLeadsRequest{

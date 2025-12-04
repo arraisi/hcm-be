@@ -8,7 +8,7 @@ import (
 	"github.com/elgris/sqrl"
 )
 
-func (r *repository) GetLeadsTestDrive(ctx context.Context, req leads.GetLeadsTestDriveRequest) ([]domain.Leads, error) {
+func (r *repository) GetLeadsTestDrive(ctx context.Context, req leads.GetLeadsTestDriveRequest) (domain.LeadsList, error) {
 	var model domain.Leads
 	var results []domain.Leads
 
