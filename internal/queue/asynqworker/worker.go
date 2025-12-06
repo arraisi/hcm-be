@@ -2,11 +2,13 @@ package asynqworker
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
+	webhookdto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/queue"
 	"github.com/hibiken/asynq"
 )
@@ -22,6 +24,7 @@ type DMSSvc interface {
 	CreateToyotaID(ctx context.Context, body any) error
 	AppraisalBookingRequest(ctx context.Context, body any) error
 	GetOfferRequest(ctx context.Context, body any) error
+	CallbackTamResponse(ctx context.Context, body any) error
 }
 
 // Worker handles Asynq task processing
@@ -100,4 +103,42 @@ func (w *Worker) Run() error {
 func (w *Worker) Shutdown() {
 	log.Printf("Shutting down Asynq worker...")
 	w.srv.Shutdown()
+}
+
+// sendDMSCallback sends callback response to DMS TAM
+func (w *Worker) sendDMSCallback(ctx context.Context, taskID, eventID, documentID string, err error) {
+	var callback webhookdto.CallbackTamResponse
+
+	if err != nil {
+		callback = webhookdto.NewFailureCallback(eventID, documentID, err)
+	} else {
+		callback = webhookdto.NewSuccessCallback(eventID, documentID, "Test drive confirmed successfully")
+	}
+
+	// Convert struct to map[string]interface{} using JSON marshal
+	var callbackPayload map[string]interface{}
+	jsonData, _ := json.Marshal(callback)
+	if err := json.Unmarshal(jsonData, &callbackPayload); err != nil {
+		log.Printf("[ERROR] TaskID: %s Failed to convert callback to map for DocumentID: %s - Error: %v",
+			taskID,
+			documentID,
+			err,
+		)
+		return
+	}
+
+	if callbackErr := w.dmsSvc.CallbackTamResponse(ctx, callbackPayload); callbackErr != nil {
+		log.Printf("[ERROR] TaskID: %s Failed to send %s callback to DMS for DocumentID: %s - Error: %v",
+			taskID,
+			callback.Status,
+			documentID,
+			callbackErr,
+		)
+	}
+
+	log.Printf("[INFO] TaskID: %s Sent %s callback to DMS for DocumentID: %s",
+		taskID,
+		callback.Status,
+		documentID,
+	)
 }

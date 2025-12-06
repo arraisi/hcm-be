@@ -37,7 +37,7 @@ func main() {
 	dmsApiClient := dmssales.New(cfg, DMSApiHttpUtil)
 
 	// Initialize Asynq worker
-	worker := asynqworker.New(cfg.Asynq, apimDIDXApiClient, dmsApiClient)
+	worker := asynqworker.New(cfg, apimDIDXApiClient, dmsApiClient)
 
 	// Setup graceful shutdown
 	sigChan := make(chan os.Signal, 1)

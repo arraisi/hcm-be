@@ -32,8 +32,18 @@ func (w *Worker) handleTestDriveConfirm(ctx context.Context, t *asynq.Task) erro
 
 	// Call the DIDX external API
 	err := w.didxSvc.ConfirmTestDrive(ctx, payload.TestDriveEvent)
+
+	// Send callback to DMS
+	w.sendDMSCallback(
+		ctx,
+		taskID,
+		payload.TestDriveEvent.EventID,
+		payload.TestDriveEvent.Data.TestDrive.TestDriveID,
+		err,
+	)
+
 	if err != nil {
-		// Log failure and return error to trigger retry
+		// Log failure
 		log.Printf("[ERROR] TaskID: %s DIDX Test Drive Confirm failed (attempt %d) for TestDriveID: %s - Error: %v",
 			taskID,
 			retried+1,

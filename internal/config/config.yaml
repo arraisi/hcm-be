@@ -1,6 +1,6 @@
 app:
   name: hcm-be
-  env: production # development|staging|production
+  env: development # development|staging|production
 server:
   host: 0.0.0.0
   port: 8080

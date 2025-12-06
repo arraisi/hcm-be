@@ -32,6 +32,16 @@ func (w *Worker) handleServiceBookingConfirm(ctx context.Context, t *asynq.Task)
 
 	// Call the DIDX external API
 	err := w.didxSvc.Confirm(ctx, payload.ServiceBookingEvent)
+
+	// Send callback to DMS
+	w.sendDMSCallback(
+		ctx,
+		taskID,
+		payload.ServiceBookingEvent.EventID,
+		payload.ServiceBookingEvent.Data.ServiceBookingRequest.BookingId,
+		err,
+	)
+
 	if err != nil {
 		// Log failure and return error to trigger retry
 		log.Printf("[ERROR] TaskID: %s DIDX Confirm failed (attempt %d) for ServiceBookingID: %s - Error: %v",
