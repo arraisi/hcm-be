@@ -13,7 +13,7 @@ func (c *client) CreateOneAccess(ctx context.Context, body any) error {
 	p, _ := json.Marshal(body)
 	fmt.Println(string(p))
 
-	url := fmt.Sprintf("%s/lead/add", c.cfg.Http.DMSApi.BaseUrl)
+	url := fmt.Sprintf("%s/didx/oneaccess", c.cfg.Http.DMSApi.BaseUrl)
 
 	result, err := c.httpUtil.Post(ctx, url, body, token, header)
 	if err != nil {

@@ -13,7 +13,7 @@ func (c *client) CreateToyotaID(ctx context.Context, body any) error {
 	p, _ := json.Marshal(body)
 	fmt.Println(string(p))
 
-	url := fmt.Sprintf("%s/lead/addToyotaID", c.cfg.Http.DMSApi.BaseUrl)
+	url := fmt.Sprintf("%s/didx/toyotaID", c.cfg.Http.DMSApi.BaseUrl)
 
 	result, err := c.httpUtil.Post(ctx, url, body, token, header)
 	if err != nil {
