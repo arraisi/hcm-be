@@ -58,6 +58,7 @@ http:
     apiKey: ''
     timeout: 10s
     retryCount: 3
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkRNU0FQSSIsIm5iZiI6MTY1NzY4Njk0OCwiZXhwIjoxNjU3NzczMzQ4LCJpYXQiOjE2NTc2ODY5NDh9.bUYAvpDlEGnQl386hYhkHTaOp2msMX2jtQYcKma2JJQ'
 asynq:
   redisAddr: 'localhost:6379' # use 'localhost:6379' for local development, 'redis:6379' for Docker
   redisDB: 0

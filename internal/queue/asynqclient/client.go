@@ -12,15 +12,15 @@ import (
 
 type client struct {
 	asynqClient *asynq.Client
-	cfg         config.AsynqConfig
+	cfg         *config.Config
 }
 
 // New creates a new Asynq client instance
-func New(cfg config.AsynqConfig) *client {
+func New(cfg *config.Config) *client {
 	c := asynq.NewClient(asynq.RedisClientOpt{
-		Addr:     cfg.RedisAddr,
-		DB:       cfg.RedisDB,
-		Password: cfg.RedisPassword,
+		Addr:     cfg.Asynq.RedisAddr,
+		DB:       cfg.Asynq.RedisDB,
+		Password: cfg.Asynq.RedisPassword,
 	})
 	return &client{
 		asynqClient: c,
@@ -45,7 +45,7 @@ func (c *client) EnqueueDIDXServiceBookingConfirm(ctx context.Context, payload i
 	taskInfo, err := c.asynqClient.EnqueueContext(
 		ctx,
 		task,
-		asynq.Queue(c.cfg.Queue),
+		asynq.Queue(c.cfg.Asynq.Queue),
 		asynq.MaxRetry(3),
 		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
 		asynq.Timeout(30*time.Second), // Task timeout
@@ -74,7 +74,7 @@ func (c *client) EnqueueDIDXTestDriveConfirm(ctx context.Context, payload interf
 	taskInfo, err := c.asynqClient.EnqueueContext(
 		ctx,
 		task,
-		asynq.Queue(c.cfg.Queue),
+		asynq.Queue(c.cfg.Asynq.Queue),
 		asynq.MaxRetry(3),
 		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
 		asynq.Timeout(30*time.Second), // Task timeout
@@ -103,7 +103,7 @@ func (c *client) EnqueueDMSTestDriveRequest(ctx context.Context, payload interfa
 	taskInfo, err := c.asynqClient.EnqueueContext(
 		ctx,
 		task,
-		asynq.Queue(c.cfg.Queue),
+		asynq.Queue(c.cfg.Asynq.Queue),
 		asynq.MaxRetry(3),
 		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
 		asynq.Timeout(30*time.Second), // Task timeout
@@ -132,7 +132,7 @@ func (c *client) EnqueueDMSCreateOneAccess(ctx context.Context, payload interfac
 	taskInfo, err := c.asynqClient.EnqueueContext(
 		ctx,
 		task,
-		asynq.Queue(c.cfg.Queue),
+		asynq.Queue(c.cfg.Asynq.Queue),
 		asynq.MaxRetry(3),
 		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
 		asynq.Timeout(30*time.Second), // Task timeout
@@ -161,7 +161,7 @@ func (c *client) EnqueueDMSCreateToyotaID(ctx context.Context, payload interface
 	taskInfo, err := c.asynqClient.EnqueueContext(
 		ctx,
 		task,
-		asynq.Queue(c.cfg.Queue),
+		asynq.Queue(c.cfg.Asynq.Queue),
 		asynq.MaxRetry(3),
 		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
 		asynq.Timeout(30*time.Second), // Task timeout
@@ -191,7 +191,7 @@ func (c *client) EnqueueDMSAppraisalBookingRequest(ctx context.Context, payload 
 	taskInfo, err := c.asynqClient.EnqueueContext(
 		ctx,
 		task,
-		asynq.Queue(c.cfg.Queue),
+		asynq.Queue(c.cfg.Asynq.Queue),
 		asynq.MaxRetry(3),
 		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
 		asynq.Timeout(30*time.Second), // Task timeout
@@ -221,7 +221,7 @@ func (c *client) EnqueueDMSCreateGetOffer(ctx context.Context, payload interface
 	taskInfo, err := c.asynqClient.EnqueueContext(
 		ctx,
 		task,
-		asynq.Queue(c.cfg.Queue),
+		asynq.Queue(c.cfg.Asynq.Queue),
 		asynq.MaxRetry(3),
 		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
 		asynq.Timeout(30*time.Second), // Task timeout

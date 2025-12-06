@@ -43,11 +43,11 @@ type TaskInfo struct {
 }
 
 // New creates a new Inspector instance
-func New(cfg config.AsynqConfig) *Inspector {
+func New(cfg *config.Config) *Inspector {
 	inspector := asynq.NewInspector(asynq.RedisClientOpt{
-		Addr:     cfg.RedisAddr,
-		DB:       cfg.RedisDB,
-		Password: cfg.RedisPassword,
+		Addr:     cfg.Asynq.RedisAddr,
+		DB:       cfg.Asynq.RedisDB,
+		Password: cfg.Asynq.RedisPassword,
 	})
 
 	return &Inspector{

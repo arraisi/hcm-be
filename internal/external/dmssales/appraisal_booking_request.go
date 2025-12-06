@@ -7,7 +7,9 @@ import (
 )
 
 func (c *client) AppraisalBookingRequest(ctx context.Context, body any) error {
-	header := map[string]string{}
+	header := map[string]string{
+		"Authorization": fmt.Sprintf("Bearer %v", c.cfg.Http.DMSApi.Token),
+	}
 	token := c.cfg.Http.DMSApi.APIKey
 
 	p, _ := json.Marshal(body)

@@ -88,6 +88,7 @@ type HttpClientConfig struct {
 	APIKey     string        `yaml:"apiKey"`
 	Timeout    time.Duration `yaml:"timeout"`
 	RetryCount int           `yaml:"retryCount"`
+	Token      string        `yaml:"token"`
 }
 
 type AsynqConfig struct {

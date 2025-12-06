@@ -1,8 +1,9 @@
 package app
 
 import (
-	"github.com/arraisi/hcm-be/internal/http/handlers/appraisal"
 	"time"
+
+	"github.com/arraisi/hcm-be/internal/http/handlers/appraisal"
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/external/didx"
@@ -101,9 +102,9 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	dmsAfterSalesClient := dmsaftersales.New(cfg, dbDmsAfterSales)
 
 	// init Asynq client and worker
-	queueClient := asynqclient.New(cfg.Asynq)
-	queueWorker := asynqworker.New(cfg.Asynq, apimDIDXApiClient, dmsApiClient)
-	queueInspector := inspector.New(cfg.Asynq)
+	queueClient := asynqclient.New(cfg)
+	queueWorker := asynqworker.New(cfg, apimDIDXApiClient, dmsApiClient)
+	queueInspector := inspector.New(cfg)
 
 	// Start Asynq worker in a goroutine (local development only)
 	// In production, worker runs as a separate process/container

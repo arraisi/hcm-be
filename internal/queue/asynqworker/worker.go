@@ -33,17 +33,17 @@ type Worker struct {
 }
 
 // New creates a new Asynq worker instance
-func New(cfg config.AsynqConfig, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
+func New(cfg *config.Config, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{
-			Addr:     cfg.RedisAddr,
-			DB:       cfg.RedisDB,
-			Password: cfg.RedisPassword,
+			Addr:     cfg.Asynq.RedisAddr,
+			DB:       cfg.Asynq.RedisDB,
+			Password: cfg.Asynq.RedisPassword,
 		},
 		asynq.Config{
-			Concurrency: cfg.Concurrency,
+			Concurrency: cfg.Asynq.Concurrency,
 			Queues: map[string]int{
-				cfg.Queue: 1,
+				cfg.Asynq.Queue: 1,
 			},
 			// Custom retry delay function: 1m, 5m, 10m
 			// n is the number of times the task has been retried (0-indexed for next retry)
