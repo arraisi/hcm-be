@@ -184,6 +184,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		ApimDIDXSvc:         apimDIDXApiClient,
 		QueueClient:         queueClient,
 		DMSAfterSalesClient: dmsAfterSalesClient,
+		OutletRepo:          outletRepo,
 	})
 	oneAccessSvc := oneaccessService.New(cfg, oneaccessService.ServiceContainer{
 		TransactionRepo: txRepo,
@@ -235,6 +236,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		InterestedPartRepo:    interestedPartRepo,
 		CustomerSvc:           customerSvc,
 		QueueClient:           queueClient,
+		OutletRepo:            outletRepo,
 	})
 
 	appraisalSvc := appraisalService.New(appraisalService.ServiceContainer{
