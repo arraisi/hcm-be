@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	errorx "github.com/arraisi/hcm-be/pkg/errors"
@@ -18,6 +19,11 @@ func (s *service) RequestServiceBooking(ctx context.Context, event servicebookin
 		return errorx.ErrServiceBookingCategoryInvalid
 	}
 
+	outletData, err := s.outletRepo.GetOutletCodeByTAMOutletID(ctx, event.Data.ServiceBookingRequest.OutletID)
+	if err != nil {
+		return err
+	}
+
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err
@@ -26,7 +32,13 @@ func (s *service) RequestServiceBooking(ctx context.Context, event servicebookin
 		_ = s.transactionRepo.RollbackTransaction(tx)
 	}()
 
-	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, event.Data.OneAccount)
+	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, event.Data.OneAccount, hasjratid.GenerateRequest{
+		SourceCode:       "H",
+		CustomerType:     "personal",
+		TamOutletID:      event.Data.ServiceBookingRequest.OutletID,
+		OutletCode:       outletData.OutletCode,
+		RegistrationDate: time.Now().Unix(),
+	})
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/sales"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
@@ -70,6 +72,11 @@ func (s *service) RequestTestDriveBooking(ctx context.Context, request testdrive
 		FirstName: salesAssignment.EmpName,
 	}
 
+	outletData, err := s.outletRepo.GetOutletCodeByTAMOutletID(ctx, request.Data.TestDrive.OutletID)
+	if err != nil {
+		return err
+	}
+
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err
@@ -79,7 +86,13 @@ func (s *service) RequestTestDriveBooking(ctx context.Context, request testdrive
 	}()
 
 	// Upsert Customer
-	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount)
+	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount, hasjratid.GenerateRequest{
+		SourceCode:       "H",
+		CustomerType:     "personal",
+		TamOutletID:      request.Data.TestDrive.OutletID,
+		OutletCode:       outletData.OutletCode,
+		RegistrationDate: time.Now().Unix(),
+	})
 	if err != nil {
 		return err
 	}

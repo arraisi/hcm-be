@@ -8,6 +8,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
 	"github.com/arraisi/hcm-be/internal/queue"
 	"github.com/arraisi/hcm-be/pkg/constants"
@@ -27,6 +28,11 @@ func (s *service) ConfirmServiceBookingBP(ctx context.Context, request servicebo
 // confirmServiceBookingFromEvent contains the shared logic for confirming service bookings from webhook events
 // This method handles both GR (General Repair) and BP (Body and Paint) bookings as they share the same process
 func (s *service) confirmServiceBookingFromEvent(ctx context.Context, request servicebooking.ServiceBookingEvent) error {
+	outletData, err := s.outletRepo.GetOutletCodeByTAMOutletID(ctx, request.Data.ServiceBookingRequest.OutletID)
+	if err != nil {
+		return err
+	}
+
 	// Start transaction
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
@@ -39,7 +45,13 @@ func (s *service) confirmServiceBookingFromEvent(ctx context.Context, request se
 	}()
 
 	// Upsert customer
-	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount)
+	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount, hasjratid.GenerateRequest{
+		SourceCode:       "H",
+		CustomerType:     "personal",
+		TamOutletID:      request.Data.ServiceBookingRequest.OutletID,
+		OutletCode:       outletData.OutletCode,
+		RegistrationDate: time.Now().Unix(),
+	})
 	if err != nil {
 		return err
 	}

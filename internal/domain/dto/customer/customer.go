@@ -29,6 +29,7 @@ type OneAccountRequest struct {
 	PhoneNumber          string  `json:"phone_number" validate:"required"`
 	CustomerType         *string `json:"customer_type"`
 	Gender               *string `json:"gender"`
+	HasjratID            *string `json:"hasjrat_id"`
 }
 
 func NewOneAccountRequest(customer domain.Customer) OneAccountRequest {
@@ -50,6 +51,7 @@ func NewOneAccountRequest(customer domain.Customer) OneAccountRequest {
 		PhoneNumber:          customer.PhoneNumber,
 		CustomerType:         utils.ToPointer(customer.CustomerType),
 		Gender:               customer.Gender,
+		HasjratID:            utils.ToPointer(customer.HasjratID),
 	}
 }
 
@@ -154,6 +156,7 @@ func (be *OneAccountRequest) ToDomain() domain.Customer {
 		CreatedBy:            constants.System,
 		UpdatedAt:            time.Now(),
 		UpdatedBy:            utils.ToPointer(constants.System),
+		HasjratID:            utils.ToValue(be.HasjratID),
 	}
 }
 

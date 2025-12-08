@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	dtoLeads "github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/utils"
@@ -14,6 +15,11 @@ import (
 )
 
 func (s *service) RequestFinanceSimulation(ctx context.Context, request dtoLeads.FinanceSimulationWebhookEvent) error {
+	outletData, err := s.outletRepo.GetOutletCodeByTAMOutletID(ctx, request.Data.Leads.OutletID)
+	if err != nil {
+		return err
+	}
+
 	// Start transaction
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
@@ -26,7 +32,13 @@ func (s *service) RequestFinanceSimulation(ctx context.Context, request dtoLeads
 	}()
 
 	// 1. Upsert customer
-	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount)
+	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount, hasjratid.GenerateRequest{
+		SourceCode:       "H",
+		CustomerType:     "personal",
+		TamOutletID:      request.Data.Leads.OutletID,
+		OutletCode:       outletData.OutletCode,
+		RegistrationDate: time.Now().Unix(),
+	})
 	if err != nil {
 		return fmt.Errorf("failed to upsert customer: %w", err)
 	}

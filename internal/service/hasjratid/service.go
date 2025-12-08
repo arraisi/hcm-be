@@ -14,6 +14,7 @@ type transactionRepository interface {
 
 type Repository interface {
 	GetNextSequence(ctx context.Context, sourceCode string, customerTypeCode string, outletCode string, year string) (uint64, error)
+	GetNextSequenceV2(ctx context.Context, sourceCode string, customerTypeCode string, outletCode string, year string) (uint64, error)
 }
 
 type OutletRepository interface {

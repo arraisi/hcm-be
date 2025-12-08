@@ -6,6 +6,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	"github.com/arraisi/hcm-be/internal/queue"
@@ -15,6 +16,11 @@ import (
 
 // ConfirmTestDrive processes test drive confirmation from webhook event
 func (s *service) ConfirmTestDrive(ctx context.Context, request testdrive.TestDriveEvent) error {
+	outletData, err := s.outletRepo.GetOutletCodeByTAMOutletID(ctx, request.Data.TestDrive.OutletID)
+	if err != nil {
+		return err
+	}
+
 	// Start transaction
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
@@ -27,7 +33,13 @@ func (s *service) ConfirmTestDrive(ctx context.Context, request testdrive.TestDr
 	}()
 
 	// Upsert customer
-	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount)
+	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, request.Data.OneAccount, hasjratid.GenerateRequest{
+		SourceCode:       "H",
+		CustomerType:     "personal",
+		TamOutletID:      request.Data.TestDrive.OutletID,
+		OutletCode:       outletData.OutletCode,
+		RegistrationDate: time.Now().Unix(),
+	})
 	if err != nil {
 		return err
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/employee"
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/arraisi/hcm-be/internal/domain/dto/sales"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
@@ -27,7 +28,7 @@ type CustomerRepository interface {
 }
 
 type CustomerService interface {
-	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest) (string, error)
+	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest, hasjratidReq hasjratid.GenerateRequest) (string, error)
 }
 
 type LeadRepository interface {
@@ -60,6 +61,14 @@ type SalesService interface {
 	GetSalesAssignment(ctx context.Context, request sales.GetSalesAssignmentRequest) (*domain.SalesScoring, error)
 }
 
+type HasjratIDService interface {
+	GenerateHasjratID(ctx context.Context, request hasjratid.GenerateRequest) (string, error)
+}
+
+type OutletRepository interface {
+	GetOutletCodeByTAMOutletID(ctx context.Context, tamOutletCode string) (*domain.Outlet, error)
+}
+
 type ServiceContainer struct {
 	TransactionRepo transactionRepository
 	Repo            Repository
@@ -70,6 +79,8 @@ type ServiceContainer struct {
 	ApimDIDXSvc     ApimDIDXService
 	QueueClient     QueueClient
 	SalesSvc        SalesService
+	HasjratIDSvc    HasjratIDService
+	OutletRepo      OutletRepository
 }
 
 type service struct {
@@ -83,6 +94,8 @@ type service struct {
 	apimDIDXSvc     ApimDIDXService
 	queueClient     QueueClient
 	salesSvc        SalesService
+	hasjratIDSvc    HasjratIDService
+	outletRepo      OutletRepository
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -97,5 +110,7 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		apimDIDXSvc:     container.ApimDIDXSvc,
 		queueClient:     container.QueueClient,
 		salesSvc:        container.SalesSvc,
+		hasjratIDSvc:    container.HasjratIDSvc,
+		outletRepo:      container.OutletRepo,
 	}
 }

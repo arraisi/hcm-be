@@ -6,6 +6,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	"github.com/arraisi/hcm-be/internal/domain/dto/salesorder"
 	"github.com/arraisi/hcm-be/internal/domain/dto/spk"
 	"github.com/jmoiron/sqlx"
@@ -19,7 +20,7 @@ type transactionRepository interface {
 
 // CustomerService defines customer service operations
 type CustomerService interface {
-	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, request customer.OneAccountRequest) (string, error)
+	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, request customer.OneAccountRequest, hasjratIDReq hasjratid.GenerateRequest) (string, error)
 }
 
 type SpkRepository interface {
@@ -46,12 +47,17 @@ type Repository interface {
 	DeleteSalesOrderPayment(ctx context.Context, tx *sqlx.Tx, req salesorder.DeleteSalesOrderPaymentRequest) error
 }
 
+type OutletRepository interface {
+	GetOutletCodeByTAMOutletID(ctx context.Context, tamOutletCode string) (*domain.Outlet, error)
+}
+
 // ServiceContainer holds all dependencies for the sales order service
 type ServiceContainer struct {
 	TransactionRepo transactionRepository
 	CustomerSvc     CustomerService
 	Repository      Repository
 	SpkRepository   SpkRepository
+	OutletRepo      OutletRepository
 }
 
 type service struct {
@@ -60,6 +66,7 @@ type service struct {
 	customerSvc     CustomerService
 	repo            Repository
 	spkRepo         SpkRepository
+	outletRepo      OutletRepository
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -69,5 +76,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		customerSvc:     container.CustomerSvc,
 		repo:            container.Repository,
 		spkRepo:         container.SpkRepository,
+		outletRepo:      container.OutletRepo,
 	}
 }

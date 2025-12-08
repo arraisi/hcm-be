@@ -82,7 +82,7 @@ func (s *service) GenerateHasjratID(
 	yearStr := fmt.Sprintf("%02d", regTime.Year()%100)
 
 	// --- Get next sequence value from DB (running number 1..n) ---
-	seq, err := s.repo.GetNextSequence(
+	seq, err := s.repo.GetNextSequenceV2(
 		ctx,
 		request.SourceCode,
 		customerTypeCode,

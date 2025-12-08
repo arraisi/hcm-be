@@ -5,8 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	"github.com/arraisi/hcm-be/internal/domain/dto/order"
 	"github.com/arraisi/hcm-be/internal/domain/dto/salesorder"
 	"github.com/arraisi/hcm-be/internal/domain/dto/spk"
@@ -16,6 +18,11 @@ import (
 
 // TrackOrderStatus processes the track order status webhook event
 func (s *service) TrackOrderStatus(ctx context.Context, event order.TrackOrderStatusEvent) error {
+	outletData, err := s.outletRepo.GetOutletCodeByTAMOutletID(ctx, event.Data.SPK.OutletID)
+	if err != nil {
+		return err
+	}
+
 	// Begin transaction
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
@@ -26,7 +33,13 @@ func (s *service) TrackOrderStatus(ctx context.Context, event order.TrackOrderSt
 	}()
 
 	// 1. Upsert Customer
-	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, event.Data.OneAccount)
+	customerID, err := s.customerSvc.UpsertCustomer(ctx, tx, event.Data.OneAccount, hasjratid.GenerateRequest{
+		SourceCode:       "H",
+		CustomerType:     "personal",
+		TamOutletID:      event.Data.SPK.OutletID,
+		OutletCode:       outletData.OutletCode,
+		RegistrationDate: time.Now().Unix(),
+	})
 	if err != nil {
 		return err
 	}

@@ -138,10 +138,17 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	salesRepo := salesRepository.New(dbHcm)
 
 	// init services
+	hasjratIDSvc := hasjratidService.New(hasjratidService.ServiceContainer{
+		TransactionRepo: txRepo,
+		Repo:            hasjratIDRepo,
+		OutletRepo:      outletRepo,
+	})
 	userSvc := userService.NewUserService(mockApiClient)
 	customerSvc := customerService.New(cfg, customerService.ServiceContainer{
 		TransactionRepo: txRepo,
 		Repo:            customerRepo,
+		HasjratIDSvc:    hasjratIDSvc,
+		OutletRepo:      outletRepo,
 	})
 	salesSvc := salesService.New(cfg, salesService.ServiceContainer{
 		TransactionRepo: txRepo,
@@ -159,6 +166,8 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		ApimDIDXSvc:     apimDIDXApiClient,
 		QueueClient:     queueClient,
 		SalesSvc:        salesSvc,
+		HasjratIDSvc:    hasjratIDSvc,
+		OutletRepo:      outletRepo,
 	})
 	idempotencyStore := idempotencyService.NewInMemoryIdempotencyStore(24 * time.Hour) // 24 hour TTL
 	customerVehicleSvc := customervehicleService.New(cfg, customervehicleService.ServiceContainer{
@@ -193,11 +202,6 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		CustomerSvc:        customerSvc,
 		CustomerVehicleSvc: customerVehicleSvc,
 	})
-	_ = hasjratidService.New(hasjratidService.ServiceContainer{
-		TransactionRepo: txRepo,
-		Repo:            hasjratIDRepo,
-		OutletRepo:      outletRepo,
-	})
 	tokenGenerator, err := auth.New(cfg.JWT)
 	if err != nil {
 		return nil, err
@@ -209,6 +213,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		CustomerSvc:     customerSvc,
 		Repository:      salesOrderRepo,
 		SpkRepository:   spkRepo,
+		OutletRepo:      outletRepo,
 	})
 	usedCarSvc := usedcarService.New(usedcarService.ServiceContainer{
 		TransactionRepo: txRepo,

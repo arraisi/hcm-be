@@ -7,6 +7,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customervehicle"
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	dtoLeads "github.com/arraisi/hcm-be/internal/domain/dto/leads"
 	"github.com/jmoiron/sqlx"
 )
@@ -54,11 +55,15 @@ type interestedPartRepository interface {
 }
 
 type customerService interface {
-	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest) (string, error)
+	UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest, hasjratidReq hasjratid.GenerateRequest) (string, error)
 }
 
 type queueClient interface {
 	EnqueueDMSCreateGetOffer(ctx context.Context, payload interface{}) error
+}
+
+type OutletRepository interface {
+	GetOutletCodeByTAMOutletID(ctx context.Context, tamOutletCode string) (*domain.Outlet, error)
 }
 
 type ServiceContainer struct {
@@ -71,6 +76,7 @@ type ServiceContainer struct {
 	InterestedPartRepo    interestedPartRepository
 	CustomerSvc           customerService
 	QueueClient           queueClient
+	OutletRepo            OutletRepository
 }
 
 type service struct {
@@ -84,6 +90,7 @@ type service struct {
 	interestedPartRepo    interestedPartRepository
 	customerSvc           customerService
 	queueClient           queueClient
+	outletRepo            OutletRepository
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -98,5 +105,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		interestedPartRepo:    container.InterestedPartRepo,
 		customerSvc:           container.CustomerSvc,
 		queueClient:           container.QueueClient,
+		outletRepo:            container.OutletRepo,
 	}
 }
