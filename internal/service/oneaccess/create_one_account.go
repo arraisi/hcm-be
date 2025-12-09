@@ -20,7 +20,8 @@ func (s *service) CreateOneAccess(ctx context.Context, request oneaccess.Request
 
 	// Get Sales Assignment
 	salesAssignment, err := s.salesSvc.GetSalesAssignment(ctx, sales.GetSalesAssignmentRequest{
-		TAMOutletCode: request.Data.OneAccount.OutletID,
+		TAMOutletCode:  request.Data.OneAccount.OutletID,
+		SkipLeadsCount: true,
 	})
 	if err != nil {
 		return err

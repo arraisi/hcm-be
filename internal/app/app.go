@@ -197,6 +197,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		CustomerSvc:        customerSvc,
 		CustomerVehicleSvc: customerVehicleSvc,
 		QueueClient:        queueClient,
+		SalesSvc:           salesSvc,
 	})
 	customerReminderSvc := customerreminderService.New(cfg, customerreminderService.ServiceContainer{
 		TransactionRepo:    txRepo,

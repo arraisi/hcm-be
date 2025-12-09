@@ -17,8 +17,17 @@ type Request struct {
 }
 
 type Data struct {
-	OneAccount      OneAccount      `json:"one_account" validate:"required"`
-	CustomerVehicle CustomerVehicle `json:"customer_vehicle" validate:"required"`
+	OneAccount           OneAccount            `json:"one_account" validate:"required"`
+	CustomerVehicle      CustomerVehicle       `json:"customer_vehicle" validate:"required"`
+	PICAssignmentRequest *PICAssignmentRequest `json:"pic_assignment,omitempty"`
+}
+
+type PICAssignmentRequest struct {
+	EmployeeID string `json:"employee_ID"`
+	FirstName  string `json:"first_name" `
+	LastName   string `json:"last_name"`
+
+	NIK string `json:"nik"`
 }
 
 // OneAccount represents customer information
@@ -50,6 +59,7 @@ type OneAccount struct {
 	ToyotaSingleIDStatus string `json:"toyota_single_ID_status" validate:"omitempty,oneof=ACTIVE INACTIVE DELETED"`
 	CustomerCategory     string `json:"customer_category" validate:"omitempty,oneof=INDIVIDUAL COMPANY"`
 	KTPImage             string `json:"ktp_image" validate:"omitempty,base64"`
+	OutletID             string `json:"outlet_ID" validate:"omitempty"`
 }
 
 // ToCustomerModel converts a OneAccount DTO into a domain.Customer entity.
@@ -86,6 +96,7 @@ func (dto *OneAccount) ToCustomerModel() (domain.Customer, error) {
 		CreatedBy:            constants.System,
 		CreatedAt:            now,
 		UpdatedAt:            now,
+		OutletID:             utils.ToPointer(dto.OutletID),
 	}
 
 	// Handle time fields if available (UNIX timestamps)
