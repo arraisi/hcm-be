@@ -45,6 +45,7 @@ type Customer struct {
 	CreatedBy               string    `json:"created_by" db:"c_created_by"`
 	UpdatedAt               time.Time `json:"updated_at" db:"d_updated_at"`
 	UpdatedBy               *string   `json:"updated_by" db:"c_updated_by"`
+	OutletID                *string   `json:"outlet_id" db:"i_outlet_id"`
 }
 
 // TableName returns the database table name for the User model
@@ -94,6 +95,7 @@ func (u *Customer) Columns() []string {
 		"c_created_by",
 		"d_updated_at",
 		"c_updated_by",
+		"i_outlet_id",
 	}
 }
 
@@ -112,6 +114,7 @@ func (u *Customer) SelectColumns() []string {
 		"c_created_by",
 		"d_updated_at",
 		"c_updated_by",
+		"i_outlet_id",
 	}
 }
 
@@ -235,6 +238,10 @@ func (u *Customer) ToCreateMap() (columns []string, values []interface{}) {
 		columns = append(columns, "c_toyota_id_single_status")
 		values = append(values, u.ToyotaIDSingleStatus)
 	}
+	if u.OutletID != nil {
+		columns = append(columns, "i_outlet_id")
+		values = append(values, u.OutletID)
+	}
 	columns = append(columns, "c_isnew")
 	values = append(values, u.IsNew)
 	columns = append(columns, "c_ismerge")
@@ -273,6 +280,9 @@ func (u *Customer) ToUpdateMap() map[string]interface{} {
 	}
 	if u.Email != "" {
 		updateMap["e_email"] = u.Email
+	}
+	if u.OutletID != nil {
+		updateMap["i_outlet_id"] = u.OutletID
 	}
 	updateMap["d_updated_at"] = u.UpdatedAt.UTC()
 	updateMap["c_updated_by"] = u.UpdatedBy
