@@ -2,6 +2,7 @@ package appraisal
 
 import (
 	"context"
+
 	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 
 	"github.com/arraisi/hcm-be/internal/domain"
@@ -40,6 +41,11 @@ type AppraisalBookingRepository interface {
 
 type QueueClient interface {
 	EnqueueDMSAppraisalBookingRequest(ctx context.Context, payload interface{}) error
+	EnqueueDIDXAppraisalConfirm(ctx context.Context, payload interface{}) error
+}
+
+type OutletRepository interface {
+	GetOutletCodeByTAMOutletID(ctx context.Context, tamOutletCode string) (*domain.Outlet, error)
 }
 
 type ServiceContainer struct {
@@ -49,6 +55,7 @@ type ServiceContainer struct {
 	LeadsSvc        LeadsService
 	LeadsScoreSvc   LeadsScoreService
 	AppraisalRepo   AppraisalBookingRepository
+	OutletRepo      OutletRepository
 	QueueClient     QueueClient
 }
 
@@ -59,6 +66,7 @@ type service struct {
 	leadsSvc             LeadsService
 	leadsScoreSvc        LeadsScoreService
 	appraisalBookingRepo AppraisalBookingRepository
+	outletRepo           OutletRepository
 	queueClient          QueueClient
 }
 
@@ -68,6 +76,7 @@ func New(c ServiceContainer) *service {
 		customerSvc:          c.CustomerSvc,
 		usedCarSvc:           c.UsedCarSvc,
 		leadsSvc:             c.LeadsSvc,
+		outletRepo:           c.OutletRepo,
 		leadsScoreSvc:        c.LeadsScoreSvc,
 		appraisalBookingRepo: c.AppraisalRepo,
 		queueClient:          c.QueueClient,

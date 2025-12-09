@@ -4,6 +4,7 @@ const (
 	// TaskTypeDIDXServiceBookingConfirm represents the task type for DIDX confirm operations
 	TaskTypeDIDXServiceBookingConfirm  = "didx:service_booking_confirm"
 	TaskTypeDIDXTestDriveConfirm       = "didx:test_drive_confirm"
+	TaskTypeDIDXAppraisalConfirm       = "didx:appraisal_confirm"
 	TaskTypeDMSTestDriveRequest        = "dms:test_drive_request"
 	TaskTypeDMSCreateOneAccess         = "dms:create_one_access"
 	TaskTypeDMSCreateToyotaID          = "dms:create_toyota_id"

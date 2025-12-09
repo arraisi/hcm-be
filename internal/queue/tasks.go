@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/leads"
@@ -41,6 +42,21 @@ func NewDIDXTestDriveConfirmTask(payload DIDXTestDriveConfirmPayload) (*asynq.Ta
 		return nil, err
 	}
 	taskKey := fmt.Sprintf("%s:%s", TaskTypeDIDXTestDriveConfirm, payload.TestDriveEvent.EventID)
+	return asynq.NewTask(taskKey, b), nil
+}
+
+// DIDXAppraisalConfirmPayload represents the payload for DIDX appraisal confirm task
+type DIDXAppraisalConfirmPayload struct {
+	AppraisalConfirmEvent appraisal.AppraisalConfirmEvent `json:"appraisal_confirm_event"`
+}
+
+// NewDIDXAppraisalConfirmTask creates a new Asynq task for DIDX appraisal confirm
+func NewDIDXAppraisalConfirmTask(payload DIDXAppraisalConfirmPayload) (*asynq.Task, error) {
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDIDXAppraisalConfirm, payload.AppraisalConfirmEvent.EventID)
 	return asynq.NewTask(taskKey, b), nil
 }
 

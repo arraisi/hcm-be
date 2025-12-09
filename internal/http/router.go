@@ -1,10 +1,11 @@
 package http
 
 import (
-	"github.com/arraisi/hcm-be/internal/http/handlers/appraisal"
 	"log"
 	"net/http"
 	stdprof "net/http/pprof"
+
+	"github.com/arraisi/hcm-be/internal/http/handlers/appraisal"
 
 	"github.com/arraisi/hcm-be/internal/http/handlers/order"
 	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
@@ -123,6 +124,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			webhooks.Post("/track-order-status", handler.OrderHandler.TrackOrderStatus)
 
 			webhooks.Post("/appraisal-booking-request", handler.AppraisalHandler.RequestAppraisal)
+			webhooks.Post("/appraisal-booking-request/confirm", handler.AppraisalHandler.ConfirmAppraisal)
 		})
 
 		// Queue monitoring endpoints

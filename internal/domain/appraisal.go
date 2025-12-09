@@ -10,17 +10,17 @@ type Appraisal struct {
 	OutletID   string `json:"outlet_id" db:"i_outlet_id"`
 	OutletName string `json:"outlet_name" db:"n_outlet_name"`
 
-	OneAccountID string `json:"one_account_id" db:"i_one_account_id"`
-	VIN          string `json:"vin" db:"c_vin"`
-	LeadsID      string `json:"leads_id" db:"i_leads_id"`
+	OneAccountID *string `json:"one_account_id" db:"i_one_account_id"`
+	VIN          *string `json:"vin" db:"c_vin"`
+	LeadsID      *string `json:"leads_id" db:"i_leads_id"`
 
-	AppraisalLocation string `json:"appraisal_location" db:"c_appraisal_location"`
-	HomeAddress       string `json:"home_address" db:"e_home_address"`
-	Province          string `json:"province" db:"e_province"`
-	City              string `json:"city" db:"e_city"`
-	District          string `json:"district" db:"e_district"`
-	Subdistrict       string `json:"subdistrict" db:"e_subdistrict"`
-	PostalCode        string `json:"postal_code" db:"e_postal_code"`
+	AppraisalLocation *string `json:"appraisal_location" db:"c_appraisal_location"`
+	HomeAddress       *string `json:"home_address" db:"e_home_address"`
+	Province          *string `json:"province" db:"e_province"`
+	City              *string `json:"city" db:"e_city"`
+	District          *string `json:"district" db:"e_district"`
+	Subdistrict       *string `json:"subdistrict" db:"e_subdistrict"`
+	PostalCode        *string `json:"postal_code" db:"e_postal_code"`
 
 	CreatedDatetime        time.Time  `json:"created_datetime" db:"d_created_datetime"`
 	AppraisalStartDatetime *time.Time `json:"appraisal_start_datetime" db:"d_appraisal_start_datetime"`
@@ -32,23 +32,23 @@ type Appraisal struct {
 	BookingStatus           string  `json:"appraisal_booking_status" db:"c_appraisal_booking_status"`
 	CancelledBy             *string `json:"cancelled_by" db:"c_cancelled_by"`
 	CancellationReason      *string `json:"cancellation_reason" db:"c_cancellation_reason"`
-	OtherCancellationReason string  `json:"other_cancellation_reason" db:"e_other_cancellation_reason"`
+	OtherCancellationReason *string `json:"other_cancellation_reason" db:"e_other_cancellation_reason"`
 	BookingServiceFlag      bool    `json:"booking_service_flag" db:"c_booking_service_flag"`
 
 	// vehicle
-	KatashikiSuffix string `json:"katashiki_suffix" db:"c_katashiki_suffix"`
-	ColorCode       string `json:"color_code" db:"c_color_code"`
-	Model           string `json:"model" db:"n_model"`
-	Variant         string `json:"variant" db:"n_variant"`
-	Color           string `json:"color" db:"n_color"`
+	KatashikiSuffix *string `json:"katashiki_suffix" db:"c_katashiki_suffix"`
+	ColorCode       *string `json:"color_code" db:"c_color_code"`
+	Model           *string `json:"model" db:"n_model"`
+	Variant         *string `json:"variant" db:"n_variant"`
+	Color           *string `json:"color" db:"n_color"`
 
 	// trade-in latest summary
 	FinalTradeInStatus        *string    `json:"final_trade_in_status" db:"c_final_trade_in_status"`
 	LastTradeInStatusDatetime *time.Time `json:"last_trade_in_status_datetime" db:"d_last_trade_in_status_datetime"`
 
 	// sales docs
-	SPKNumber string `json:"spk_number" db:"c_spk_number"`
-	SONumber  string `json:"so_number" db:"c_so_number"`
+	SPKNumber *string `json:"spk_number" db:"c_spk_number"`
+	SONumber  *string `json:"so_number" db:"c_so_number"`
 
 	// negotiation (snapshot of latest NEGOTIATION)
 	CustomerNegotiationPrice           *float64 `json:"customer_negotiation_price" db:"v_customer_negotiation_price"`
@@ -56,23 +56,23 @@ type Appraisal struct {
 	DealPrice                          *float64 `json:"deal_price" db:"v_deal_price"`
 	DownPaymentEstimation              *float64 `json:"down_payment_estimation" db:"v_down_payment_estimation"`
 	EstimatedRemainingPayment          *float64 `json:"estimated_remaining_payment" db:"v_estimated_remaining_payment"`
-	NoDealReason                       string   `json:"no_deal_reason" db:"c_no_deal_reason"`
-	NoDealReasonOldVehicleOthers       string   `json:"no_deal_reason_old_vehicle_others" db:"e_no_deal_reason_old_vehicle_others"`
+	NoDealReason                       *string  `json:"no_deal_reason" db:"c_no_deal_reason"`
+	NoDealReasonOldVehicleOthers       *string  `json:"no_deal_reason_old_vehicle_others" db:"e_no_deal_reason_old_vehicle_others"`
 	NoDealReasonOldVehicleExpectedSell *float64 `json:"no_deal_reason_old_vehicle_expected_sell_price" db:"v_no_deal_reason_old_vehicle_expected_sell_price"`
 	NoDealReasonOldVehiclePriceSold    *float64 `json:"no_deal_reason_old_vehicle_price_sold" db:"v_no_deal_reason_old_vehicle_price_sold"`
-	NoDealReasonNewVehicleOthers       string   `json:"no_deal_reason_new_vehicle_others" db:"e_no_deal_reason_new_vehicle_others"`
+	NoDealReasonNewVehicleOthers       *string  `json:"no_deal_reason_new_vehicle_others" db:"e_no_deal_reason_new_vehicle_others"`
 
 	// handover (snapshot of latest HANDOVER)
 	TradeInPaymentDatetime  *time.Time `json:"trade_in_payment_datetime" db:"d_trade_in_payment_datetime"`
 	TradeInHandoverStatus   *string    `json:"trade_in_handover_status" db:"c_trade_in_handover_status"`
 	TradeInHandoverDatetime *time.Time `json:"trade_in_handover_datetime" db:"d_trade_in_handover_datetime"`
 	TradeInHandoverLocation *string    `json:"trade_in_handover_location" db:"c_trade_in_handover_location"`
-	TradeInHandoverAddress  string     `json:"trade_in_handover_address" db:"e_trade_in_handover_address"`
-	HandoverProvince        string     `json:"handover_province" db:"e_handover_province"`
-	HandoverCity            string     `json:"handover_city" db:"e_handover_city"`
-	HandoverDistrict        string     `json:"handover_district" db:"e_handover_district"`
-	HandoverSubdistrict     string     `json:"handover_subdistrict" db:"e_handover_subdistrict"`
-	HandoverPostalCode      string     `json:"handover_postal_code" db:"e_handover_postal_code"`
+	TradeInHandoverAddress  *string    `json:"trade_in_handover_address" db:"e_trade_in_handover_address"`
+	HandoverProvince        *string    `json:"handover_province" db:"e_handover_province"`
+	HandoverCity            *string    `json:"handover_city" db:"e_handover_city"`
+	HandoverDistrict        *string    `json:"handover_district" db:"e_handover_district"`
+	HandoverSubdistrict     *string    `json:"handover_subdistrict" db:"e_handover_subdistrict"`
+	HandoverPostalCode      *string    `json:"handover_postal_code" db:"e_handover_postal_code"`
 
 	CreatedDate time.Time  `json:"created_date" db:"d_createdate"`
 	UpdatedDate *time.Time `json:"updated_date" db:"d_updatedate"`
@@ -142,19 +142,60 @@ func (a *Appraisal) Columns() []string {
 
 func (a *Appraisal) SelectColumns() []string {
 	return []string{
-		"i_id",
+		"CAST(i_id AS VARCHAR(36)) AS i_id",
 		"i_appraisal_booking_id",
 		"c_appraisal_booking_number",
 		"i_outlet_id",
 		"n_outlet_name",
+		"i_one_account_id",
+		"c_vin",
+		"i_leads_id",
 		"c_appraisal_location",
+		"e_home_address",
+		"e_province",
+		"e_city",
+		"e_district",
+		"e_subdistrict",
+		"e_postal_code",
 		"d_created_datetime",
 		"d_appraisal_start_datetime",
 		"d_appraisal_end_datetime",
+		"d_appraisal_confirmation_start_datetime",
+		"d_appraisal_confirmation_end_datetime",
 		"c_appraisal_booking_status",
+		"c_cancelled_by",
+		"c_cancellation_reason",
+		"e_other_cancellation_reason",
+		"c_booking_service_flag",
+		"c_katashiki_suffix",
+		"c_color_code",
+		"n_model",
+		"n_variant",
+		"n_color",
 		"c_final_trade_in_status",
 		"d_last_trade_in_status_datetime",
-		"c_booking_service_flag",
+		"c_spk_number",
+		"c_so_number",
+		"v_customer_negotiation_price",
+		"v_dealer_negotiation_price",
+		"v_deal_price",
+		"v_down_payment_estimation",
+		"v_estimated_remaining_payment",
+		"c_no_deal_reason",
+		"e_no_deal_reason_old_vehicle_others",
+		"v_no_deal_reason_old_vehicle_expected_sell_price",
+		"v_no_deal_reason_old_vehicle_price_sold",
+		"e_no_deal_reason_new_vehicle_others",
+		"d_trade_in_payment_datetime",
+		"c_trade_in_handover_status",
+		"d_trade_in_handover_datetime",
+		"c_trade_in_handover_location",
+		"e_trade_in_handover_address",
+		"e_handover_province",
+		"e_handover_city",
+		"e_handover_district",
+		"e_handover_subdistrict",
+		"e_handover_postal_code",
 		"d_createdate",
 		"d_updatedate",
 	}
@@ -234,7 +275,7 @@ func (a *Appraisal) ToCreateMap() (cols []string, vals []interface{}) {
 		cols = append(cols, "c_cancellation_reason")
 		vals = append(vals, a.CancellationReason)
 	}
-	if a.OtherCancellationReason != "" {
+	if a.OtherCancellationReason != nil {
 		cols = append(cols, "e_other_cancellation_reason")
 		vals = append(vals, a.OtherCancellationReason)
 	}
@@ -242,23 +283,23 @@ func (a *Appraisal) ToCreateMap() (cols []string, vals []interface{}) {
 	cols = append(cols, "c_booking_service_flag")
 	vals = append(vals, a.BookingServiceFlag)
 
-	if a.KatashikiSuffix != "" {
+	if a.KatashikiSuffix != nil {
 		cols = append(cols, "c_katashiki_suffix")
 		vals = append(vals, a.KatashikiSuffix)
 	}
-	if a.ColorCode != "" {
+	if a.ColorCode != nil {
 		cols = append(cols, "c_color_code")
 		vals = append(vals, a.ColorCode)
 	}
-	if a.Model != "" {
+	if a.Model != nil {
 		cols = append(cols, "n_model")
 		vals = append(vals, a.Model)
 	}
-	if a.Variant != "" {
+	if a.Variant != nil {
 		cols = append(cols, "n_variant")
 		vals = append(vals, a.Variant)
 	}
-	if a.Color != "" {
+	if a.Color != nil {
 		cols = append(cols, "n_color")
 		vals = append(vals, a.Color)
 	}
@@ -272,11 +313,11 @@ func (a *Appraisal) ToCreateMap() (cols []string, vals []interface{}) {
 		vals = append(vals, a.LastTradeInStatusDatetime.UTC())
 	}
 
-	if a.SPKNumber != "" {
+	if a.SPKNumber != nil {
 		cols = append(cols, "c_spk_number")
 		vals = append(vals, a.SPKNumber)
 	}
-	if a.SONumber != "" {
+	if a.SONumber != nil {
 		cols = append(cols, "c_so_number")
 		vals = append(vals, a.SONumber)
 	}
@@ -302,11 +343,11 @@ func (a *Appraisal) ToCreateMap() (cols []string, vals []interface{}) {
 		cols = append(cols, "v_estimated_remaining_payment")
 		vals = append(vals, a.EstimatedRemainingPayment)
 	}
-	if a.NoDealReason != "" {
+	if a.NoDealReason != nil {
 		cols = append(cols, "c_no_deal_reason")
 		vals = append(vals, a.NoDealReason)
 	}
-	if a.NoDealReasonOldVehicleOthers != "" {
+	if a.NoDealReasonOldVehicleOthers != nil {
 		cols = append(cols, "e_no_deal_reason_old_vehicle_others")
 		vals = append(vals, a.NoDealReasonOldVehicleOthers)
 	}
@@ -318,7 +359,7 @@ func (a *Appraisal) ToCreateMap() (cols []string, vals []interface{}) {
 		cols = append(cols, "v_no_deal_reason_old_vehicle_price_sold")
 		vals = append(vals, a.NoDealReasonOldVehiclePriceSold)
 	}
-	if a.NoDealReasonNewVehicleOthers != "" {
+	if a.NoDealReasonNewVehicleOthers != nil {
 		cols = append(cols, "e_no_deal_reason_new_vehicle_others")
 		vals = append(vals, a.NoDealReasonNewVehicleOthers)
 	}
@@ -340,27 +381,27 @@ func (a *Appraisal) ToCreateMap() (cols []string, vals []interface{}) {
 		cols = append(cols, "c_trade_in_handover_location")
 		vals = append(vals, a.TradeInHandoverLocation)
 	}
-	if a.TradeInHandoverAddress != "" {
+	if a.TradeInHandoverAddress != nil {
 		cols = append(cols, "e_trade_in_handover_address")
 		vals = append(vals, a.TradeInHandoverAddress)
 	}
-	if a.HandoverProvince != "" {
+	if a.HandoverProvince != nil {
 		cols = append(cols, "e_handover_province")
 		vals = append(vals, a.HandoverProvince)
 	}
-	if a.HandoverCity != "" {
+	if a.HandoverCity != nil {
 		cols = append(cols, "e_handover_city")
 		vals = append(vals, a.HandoverCity)
 	}
-	if a.HandoverDistrict != "" {
+	if a.HandoverDistrict != nil {
 		cols = append(cols, "e_handover_district")
 		vals = append(vals, a.HandoverDistrict)
 	}
-	if a.HandoverSubdistrict != "" {
+	if a.HandoverSubdistrict != nil {
 		cols = append(cols, "e_handover_subdistrict")
 		vals = append(vals, a.HandoverSubdistrict)
 	}
-	if a.HandoverPostalCode != "" {
+	if a.HandoverPostalCode != nil {
 		cols = append(cols, "e_handover_postal_code")
 		vals = append(vals, a.HandoverPostalCode)
 	}
@@ -390,7 +431,7 @@ func (a *Appraisal) ToUpdateMap() map[string]interface{} {
 	if a.CancellationReason != nil {
 		m["c_cancellation_reason"] = a.CancellationReason
 	}
-	if a.OtherCancellationReason != "" {
+	if a.OtherCancellationReason != nil {
 		m["e_other_cancellation_reason"] = a.OtherCancellationReason
 	}
 
@@ -425,10 +466,10 @@ func (a *Appraisal) ToUpdateMap() map[string]interface{} {
 	if a.EstimatedRemainingPayment != nil {
 		m["v_estimated_remaining_payment"] = a.EstimatedRemainingPayment
 	}
-	if a.NoDealReason != "" {
+	if a.NoDealReason != nil {
 		m["c_no_deal_reason"] = a.NoDealReason
 	}
-	if a.NoDealReasonOldVehicleOthers != "" {
+	if a.NoDealReasonOldVehicleOthers != nil {
 		m["e_no_deal_reason_old_vehicle_others"] = a.NoDealReasonOldVehicleOthers
 	}
 	if a.NoDealReasonOldVehicleExpectedSell != nil {
@@ -437,7 +478,7 @@ func (a *Appraisal) ToUpdateMap() map[string]interface{} {
 	if a.NoDealReasonOldVehiclePriceSold != nil {
 		m["v_no_deal_reason_old_vehicle_price_sold"] = a.NoDealReasonOldVehiclePriceSold
 	}
-	if a.NoDealReasonNewVehicleOthers != "" {
+	if a.NoDealReasonNewVehicleOthers != nil {
 		m["e_no_deal_reason_new_vehicle_others"] = a.NoDealReasonNewVehicleOthers
 	}
 
@@ -454,22 +495,22 @@ func (a *Appraisal) ToUpdateMap() map[string]interface{} {
 	if a.TradeInHandoverLocation != nil {
 		m["c_trade_in_handover_location"] = a.TradeInHandoverLocation
 	}
-	if a.TradeInHandoverAddress != "" {
+	if a.TradeInHandoverAddress != nil {
 		m["e_trade_in_handover_address"] = a.TradeInHandoverAddress
 	}
-	if a.HandoverProvince != "" {
+	if a.HandoverProvince != nil {
 		m["e_handover_province"] = a.HandoverProvince
 	}
-	if a.HandoverCity != "" {
+	if a.HandoverCity != nil {
 		m["e_handover_city"] = a.HandoverCity
 	}
-	if a.HandoverDistrict != "" {
+	if a.HandoverDistrict != nil {
 		m["e_handover_district"] = a.HandoverDistrict
 	}
-	if a.HandoverSubdistrict != "" {
+	if a.HandoverSubdistrict != nil {
 		m["e_handover_subdistrict"] = a.HandoverSubdistrict
 	}
-	if a.HandoverPostalCode != "" {
+	if a.HandoverPostalCode != nil {
 		m["e_handover_postal_code"] = a.HandoverPostalCode
 	}
 

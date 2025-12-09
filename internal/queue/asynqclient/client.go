@@ -81,7 +81,36 @@ func (c *client) EnqueueDIDXTestDriveConfirm(ctx context.Context, payload interf
 		asynq.Unique(5*time.Minute),   // Prevent duplicate tasks within 5 minutes
 	)
 
-	fmt.Printf("EnqueueDIDXTestDriveConfirm taskInfo: %+v\n", taskInfo)
+	fmt.Printf("EnqueueDIDXTestDriveConfirmTask taskInfo: %+v\n", taskInfo)
+
+	return err
+}
+
+// EnqueueDIDXAppraisalConfirm enqueues a DIDX appraisal confirm task with custom retry configuration
+func (c *client) EnqueueDIDXAppraisalConfirm(ctx context.Context, payload interface{}) error {
+	// Type assert to DIDXAppraisalConfirmPayload
+	body, ok := payload.(queue.DIDXAppraisalConfirmPayload)
+	if !ok {
+		return fmt.Errorf("invalid payload type: expected queue.DIDXAppraisalConfirmPayload")
+	}
+
+	task, err := queue.NewDIDXAppraisalConfirmTask(body)
+	if err != nil {
+		return err
+	}
+
+	// Retry 3 times with custom backoff: 1m, 5m, 10m
+	taskInfo, err := c.asynqClient.EnqueueContext(
+		ctx,
+		task,
+		asynq.Queue(c.cfg.Asynq.Queue),
+		asynq.MaxRetry(3),
+		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
+		asynq.Timeout(30*time.Second), // Task timeout
+		asynq.Unique(5*time.Minute),   // Prevent duplicate tasks within 5 minutes
+	)
+
+	fmt.Printf("EnqueueDIDXAppraisalConfirmTask taskInfo: %+v\n", taskInfo)
 
 	return err
 }

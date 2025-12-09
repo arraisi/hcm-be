@@ -246,6 +246,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		LeadsSvc:        roAutomationSvc,
 		LeadsScoreSvc:   leadsScoreSvc,
 		AppraisalRepo:   appraisalRepo,
+		OutletRepo:      outletRepo,
 		QueueClient:     queueClient,
 	})
 

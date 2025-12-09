@@ -129,7 +129,7 @@ type RequestAppraisalDTO struct {
 	BookingServiceFlag bool `json:"booking_service_flag"` // true / false
 }
 
-// ToModel converts RequestAppraisalDTO into domain.Appraisal.
+// ToAppraisalModel ToModel converts RequestAppraisalDTO into domain.Appraisal.
 func (dto RequestAppraisalDTO) ToAppraisalModel(OneAccountID, vin, leadsID string) domain.Appraisal {
 	entity := domain.Appraisal{
 		AppraisalBookingID:     dto.AppraisalBookingID,
@@ -138,17 +138,17 @@ func (dto RequestAppraisalDTO) ToAppraisalModel(OneAccountID, vin, leadsID strin
 		OutletID:   dto.OutletID,
 		OutletName: dto.OutletName,
 
-		OneAccountID: OneAccountID,
-		VIN:          vin,
-		LeadsID:      leadsID,
+		OneAccountID: utils.ToPointer(OneAccountID),
+		VIN:          utils.ToPointer(vin),
+		LeadsID:      utils.ToPointer(leadsID),
 
-		AppraisalLocation: dto.AppraisalLocation,
-		HomeAddress:       dto.HomeAddress,
-		Province:          dto.Province,
-		City:              dto.City,
-		District:          dto.District,
-		Subdistrict:       dto.Subdistrict,
-		PostalCode:        dto.PostalCode,
+		AppraisalLocation: utils.ToPointer(dto.AppraisalLocation),
+		HomeAddress:       utils.ToPointer(dto.HomeAddress),
+		Province:          utils.ToPointer(dto.Province),
+		City:              utils.ToPointer(dto.City),
+		District:          utils.ToPointer(dto.District),
+		Subdistrict:       utils.ToPointer(dto.Subdistrict),
+		PostalCode:        utils.ToPointer(dto.PostalCode),
 
 		CreatedDatetime: utils.GetTimeUnix(dto.CreatedDatetime),
 
@@ -157,23 +157,23 @@ func (dto RequestAppraisalDTO) ToAppraisalModel(OneAccountID, vin, leadsID strin
 
 		BookingStatus: dto.AppraisalBookingStatus,
 
-		OtherCancellationReason: dto.OtherCancellationReason,
+		OtherCancellationReason: utils.ToPointer(dto.OtherCancellationReason),
 		BookingServiceFlag:      dto.BookingServiceFlag,
 
 		// vehicle (not present in request, filled on update)
-		KatashikiSuffix: "",
-		ColorCode:       "",
-		Model:           "",
-		Variant:         "",
-		Color:           "",
+		KatashikiSuffix: nil,
+		ColorCode:       nil,
+		Model:           nil,
+		Variant:         nil,
+		Color:           nil,
 
 		// trade-in summary (not present on request)
 		FinalTradeInStatus:        nil,
 		LastTradeInStatusDatetime: nil,
 
 		// sales docs (not present on request)
-		SPKNumber: "",
-		SONumber:  "",
+		SPKNumber: nil,
+		SONumber:  nil,
 
 		// negotiation (not present on request)
 		CustomerNegotiationPrice:           nil,
@@ -181,26 +181,26 @@ func (dto RequestAppraisalDTO) ToAppraisalModel(OneAccountID, vin, leadsID strin
 		DealPrice:                          nil,
 		DownPaymentEstimation:              nil,
 		EstimatedRemainingPayment:          nil,
-		NoDealReason:                       "",
-		NoDealReasonOldVehicleOthers:       "",
+		NoDealReason:                       nil,
+		NoDealReasonOldVehicleOthers:       nil,
 		NoDealReasonOldVehicleExpectedSell: nil,
 		NoDealReasonOldVehiclePriceSold:    nil,
-		NoDealReasonNewVehicleOthers:       "",
+		NoDealReasonNewVehicleOthers:       nil,
 
 		// handover (not present on request)
 		TradeInPaymentDatetime:  nil,
 		TradeInHandoverStatus:   nil,
 		TradeInHandoverDatetime: nil,
 		TradeInHandoverLocation: nil,
-		TradeInHandoverAddress:  "",
-		HandoverProvince:        "",
-		HandoverCity:            "",
-		HandoverDistrict:        "",
-		HandoverSubdistrict:     "",
-		HandoverPostalCode:      "",
+		TradeInHandoverAddress:  nil,
+		HandoverProvince:        nil,
+		HandoverCity:            nil,
+		HandoverDistrict:        nil,
+		HandoverSubdistrict:     nil,
+		HandoverPostalCode:      nil,
 
 		// audit – d_createdate/d_updatedate diisi oleh DB / service layer
-		CreatedDate: time.Time{},
+		CreatedDate: time.Now(),
 		UpdatedDate: nil,
 	}
 

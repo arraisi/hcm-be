@@ -2,14 +2,15 @@ package appraisal
 
 import (
 	"encoding/json"
+	"io"
+	"net/http"
+
 	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 	webhookDto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/http/middleware"
 	"github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/response"
 	"github.com/arraisi/hcm-be/pkg/utils/validator"
-	"io"
-	"net/http"
 )
 
 func (h *Handler) RequestAppraisal(w http.ResponseWriter, r *http.Request) {

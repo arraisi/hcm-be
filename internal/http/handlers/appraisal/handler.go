@@ -16,6 +16,7 @@ type IdempotencyService interface {
 
 type Service interface {
 	RequestAppraisal(ctx context.Context, req appraisal.EventRequest) error
+	ConfirmAppraisal(ctx context.Context, req appraisal.AppraisalConfirmEvent) error
 }
 
 // Handler handles HTTP requests for user operations

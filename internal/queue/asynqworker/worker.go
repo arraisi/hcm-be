@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/config"
+	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 	"github.com/arraisi/hcm-be/internal/domain/dto/testdrive"
 	webhookdto "github.com/arraisi/hcm-be/internal/domain/dto/webhook"
 	"github.com/arraisi/hcm-be/internal/queue"
@@ -16,6 +17,7 @@ import (
 type DIDXSvc interface {
 	Confirm(ctx context.Context, body any) error
 	ConfirmTestDrive(ctx context.Context, request testdrive.TestDriveEvent) error
+	ConfirmAppraisal(ctx context.Context, request appraisal.AppraisalConfirmEvent) error
 }
 
 type DMSSvc interface {
@@ -84,6 +86,7 @@ func New(cfg *config.Config, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
 	// Register task handlers
 	mux.HandleFunc(queue.TaskTypeDIDXServiceBookingConfirm, w.handleServiceBookingConfirm)
 	mux.HandleFunc(queue.TaskTypeDIDXTestDriveConfirm, w.handleTestDriveConfirm)
+	mux.HandleFunc(queue.TaskTypeDIDXAppraisalConfirm, w.handleAppraisalConfirm)
 	mux.HandleFunc(queue.TaskTypeDMSTestDriveRequest, w.handleDMSTestDriveRequest)
 	mux.HandleFunc(queue.TaskTypeDMSCreateOneAccess, w.handleDMSCreateOneAccess)
 	mux.HandleFunc(queue.TaskTypeDMSCreateToyotaID, w.handleDMSCreateToyotaID)
