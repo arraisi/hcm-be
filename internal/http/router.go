@@ -12,6 +12,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
+	"github.com/arraisi/hcm-be/internal/http/handlers/creditsimulation"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
 	"github.com/arraisi/hcm-be/internal/http/handlers/leads"
@@ -40,6 +41,7 @@ type Handler struct {
 	TokenHandler            handlers.TokenHandler
 	OrderHandler            order.Handler
 	AppraisalHandler        appraisal.Handler
+	CreditSimulationHandler *creditsimulation.CreditSimulationHandler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -92,6 +94,18 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 
 		api.Route("/customers", func(customers chi.Router) {
 			customers.Get("/", handler.CustomerHandler.GetCustomers)
+		})
+
+		//Credit Simulation 
+		api.Route("/credit-simulation", func(cs chi.Router) {
+			cs.Get("/branches", handler.CreditSimulationHandler.GetBranches)
+			cs.Get("/outlets", handler.CreditSimulationHandler.GetOutlets)
+			cs.Get("/asset-groups", handler.CreditSimulationHandler.GetAssetGroups)
+			cs.Get("/asset-types", handler.CreditSimulationHandler.GetAssetTypes)
+			cs.Get("/min-max-installment", handler.CreditSimulationHandler.GetMinMaxInstallments)
+			cs.Get("/by-installment", handler.CreditSimulationHandler.GetCreditSimulationByInstallment)
+			cs.Get("/by-downpayment", handler.CreditSimulationHandler.GetCreditSimulationByDownPayment)
+			
 		})
 
 		api.Route("/webhooks", func(webhooks chi.Router) {

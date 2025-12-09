@@ -65,6 +65,12 @@ import (
 	usedcarService "github.com/arraisi/hcm-be/internal/service/usedcar"
 	userService "github.com/arraisi/hcm-be/internal/service/user"
 
+
+    repoCredit "github.com/arraisi/hcm-be/internal/repository/creditsimulation"
+    serviceCredit "github.com/arraisi/hcm-be/internal/service/creditsimulation"
+    handlerCredit "github.com/arraisi/hcm-be/internal/http/handlers/creditsimulation"
+
+
 	"github.com/arraisi/hcm-be/pkg/utils"
 
 	"github.com/jmoiron/sqlx"
@@ -136,6 +142,8 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	leadsScoreRepo := leadsScoreRepository.New(dbHcm)
 	appraisalRepo := appraisalRepository.New(dbHcm)
 	salesRepo := salesRepository.New(dbHcm)
+	branchRepo := repoCredit.NewBranchRepository() // jika-butuh cfg
+
 
 	// init services
 	hasjratIDSvc := hasjratidService.New(hasjratidService.ServiceContainer{
@@ -144,6 +152,8 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		OutletRepo:      outletRepo,
 	})
 	userSvc := userService.NewUserService(mockApiClient)
+	branchService := serviceCredit.NewBranchService(branchRepo)
+
 	customerSvc := customerService.New(cfg, customerService.ServiceContainer{
 		TransactionRepo: txRepo,
 		Repo:            customerRepo,
@@ -269,6 +279,8 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	orderHandler := order.New(cfg, salesOrderSvc, idempotencyStore)
 	leadsHandler := leadsHandler.New(cfg, roAutomationSvc, idempotencyStore)
 	appraisalHandler := appraisal.New(appraisalSvc, idempotencyStore)
+	creditSimulationHandler := handlerCredit.NewCreditSimulationHandler(branchService)
+
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                  cfg,
@@ -284,6 +296,8 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		TokenHandler:            tokenHandler,
 		OrderHandler:            orderHandler,
 		AppraisalHandler:        appraisalHandler,
+		CreditSimulationHandler: creditSimulationHandler,
+
 	})
 
 	srv := apphttp.NewServer(cfg, router)
