@@ -94,6 +94,10 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			customers.Get("/", handler.CustomerHandler.GetCustomers)
 		})
 
+		api.Route("/prospecting", func(leads chi.Router) {
+			leads.Get("/", handler.LeadsHandler.ListProspecting)
+		})
+
 		api.Route("/webhooks", func(webhooks chi.Router) {
 			// Create webhook middleware
 			webhookMiddleware := middleware.NewWebhookMiddleware(config)

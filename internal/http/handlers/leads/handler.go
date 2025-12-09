@@ -18,6 +18,7 @@ type IdempotencyService interface {
 type Service interface {
 	RequestFinanceSimulation(ctx context.Context, request leads.FinanceSimulationWebhookEvent) error
 	RequestGetOffer(ctx context.Context, request leads.GetOfferWebhookEvent) error
+	ListLeads(ctx context.Context, request leads.ListLeadsRequest) (leads.ListLeadsResponse, error)
 }
 
 // Handler handles HTTP requests for leads operations
