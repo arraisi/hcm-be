@@ -9,13 +9,14 @@ import (
 
 // GetSalesAssignmentRequest represents the request parameters for getting sales scoring data
 type GetSalesAssignmentRequest struct {
-	TAMOutletCode string
-	OutletCode    string
-	Periode       string
-	NIK           string
-	BranchCode    string
-	Page          int
-	PageSize      int
+	TAMOutletCode  string
+	OutletCode     string
+	Periode        string
+	NIK            string
+	BranchCode     string
+	Page           int
+	PageSize       int
+	SkipLeadsCount bool
 }
 
 // Apply applies the request parameters to the given SelectBuilder

@@ -31,6 +31,7 @@ type leadsRepository interface {
 	CreateLeads(ctx context.Context, tx *sqlx.Tx, req *domain.Leads) error
 	UpdateLeads(ctx context.Context, tx *sqlx.Tx, req domain.Leads) error
 	GetLeads(ctx context.Context, req dtoLeads.GetLeadsRequest) (domain.Leads, error)
+	ListLeads(ctx context.Context, req dtoLeads.ListLeadsRequest) ([]dtoLeads.LeadListItem, int64, error)
 }
 
 type financeSimulationRepository interface {

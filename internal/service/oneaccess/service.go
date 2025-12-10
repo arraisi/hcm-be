@@ -2,8 +2,10 @@ package oneaccess
 
 import (
 	"context"
+
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/sales"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -21,10 +23,15 @@ type QueueClient interface {
 	EnqueueDMSCreateOneAccess(ctx context.Context, payload interface{}) error
 }
 
+type SalesService interface {
+	GetSalesAssignment(ctx context.Context, request sales.GetSalesAssignmentRequest) (*domain.SalesScoring, error)
+}
+
 type ServiceContainer struct {
 	TransactionRepo transactionRepository
 	CustomerSvc     CustomerService
 	QueueClient     QueueClient
+	SalesSvc        SalesService
 }
 
 type service struct {
@@ -32,6 +39,7 @@ type service struct {
 	transactionRepo transactionRepository
 	customerSvc     CustomerService
 	queueClient     QueueClient
+	salesSvc        SalesService
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -40,5 +48,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		transactionRepo: container.TransactionRepo,
 		customerSvc:     container.CustomerSvc,
 		queueClient:     container.QueueClient,
+		salesSvc:        container.SalesSvc,
 	}
 }

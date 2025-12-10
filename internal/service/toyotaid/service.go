@@ -2,8 +2,10 @@ package toyotaid
 
 import (
 	"context"
+
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/internal/domain/dto/sales"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -24,11 +26,16 @@ type QueueClient interface {
 	EnqueueDMSCreateToyotaID(ctx context.Context, payload interface{}) error
 }
 
+type SalesService interface {
+	GetSalesAssignment(ctx context.Context, request sales.GetSalesAssignmentRequest) (*domain.SalesScoring, error)
+}
+
 type ServiceContainer struct {
 	TransactionRepo    transactionRepository
 	CustomerSvc        CustomerService
 	CustomerVehicleSvc CustomerVehicleService
 	QueueClient        QueueClient
+	SalesSvc           SalesService
 }
 
 type service struct {
@@ -37,6 +44,7 @@ type service struct {
 	customerSvc        CustomerService
 	customerVehicleSvc CustomerVehicleService
 	queueClient        QueueClient
+	salesSvc           SalesService
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
@@ -46,5 +54,6 @@ func New(cfg *config.Config, container ServiceContainer) *service {
 		customerSvc:        container.CustomerSvc,
 		customerVehicleSvc: container.CustomerVehicleSvc,
 		queueClient:        container.QueueClient,
+		salesSvc:           container.SalesSvc,
 	}
 }

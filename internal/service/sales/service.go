@@ -135,9 +135,14 @@ func (s *service) getActiveTestDriveCounts(ctx context.Context, salesNIKs []stri
 func pickBestSalesCandidate(candidates domain.SalesScorings, maxActive int) (*domain.SalesScoring, error) {
 	// Filter eligible candidates
 	eligible := make(domain.SalesScorings, 0, len(candidates))
-	for i := range candidates {
-		if candidates[i].ActiveTestDriveCount < maxActive {
-			eligible = append(eligible, candidates[i])
+	if maxActive < 0 {
+		// No limit, all candidates are eligible
+		eligible = append(eligible, candidates...)
+	} else {
+		for i := range candidates {
+			if candidates[i].ActiveTestDriveCount < maxActive {
+				eligible = append(eligible, candidates[i])
+			}
 		}
 	}
 

@@ -106,6 +106,8 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 			cs.Get("/by-installment", handler.CreditSimulationHandler.GetCreditSimulationByInstallment)
 			cs.Get("/by-downpayment", handler.CreditSimulationHandler.GetCreditSimulationByDownPayment)
 			
+		api.Route("/prospecting", func(leads chi.Router) {
+			leads.Get("/", handler.LeadsHandler.ListProspecting)
 		})
 
 		api.Route("/webhooks", func(webhooks chi.Router) {

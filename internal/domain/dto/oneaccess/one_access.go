@@ -16,7 +16,16 @@ type Request struct {
 }
 
 type RequestData struct {
-	OneAccount OneAccount `json:"one_account" validate:"required"`
+	OneAccount           OneAccount            `json:"one_account" validate:"required"`
+	PICAssignmentRequest *PICAssignmentRequest `json:"pic_assignment,omitempty"`
+}
+
+type PICAssignmentRequest struct {
+	EmployeeID string `json:"employee_ID"`
+	FirstName  string `json:"first_name" `
+	LastName   string `json:"last_name"`
+
+	NIK string `json:"nik"`
 }
 
 type OneAccount struct {
@@ -43,7 +52,8 @@ type OneAccount struct {
 	District            string `json:"district" validate:"omitempty,max=64"`                                                       // N
 	Subdistrict         string `json:"subdistrict" validate:"omitempty,max=64"`                                                    // N
 	PostalCode          string `json:"postal_code" validate:"omitempty,len=5,numeric"`                                             // N (VARCHAR(5), treating as numeric postal code)
-	DetailAddress       string `json:"detail_address" validate:"omitempty,max=256"`                                                // N
+	DetailAddress       string `json:"detail_address" validate:"omitempty,max=256"`
+	OutletID            string `json:"outlet_id" validate:"omitempty,max=64"` // N
 }
 
 func (oa *OneAccount) ToCustomerModel() (domain.Customer, error) {
@@ -84,6 +94,7 @@ func (oa *OneAccount) ToCustomerModel() (domain.Customer, error) {
 		CreatedBy:            constants.System,
 		UpdatedAt:            now,
 		UpdatedBy:            utils.ToPointer(constants.System),
+		OutletID:             utils.ToPointer(oa.OutletID),
 	}
 
 	if oa.BirthDate != "" {

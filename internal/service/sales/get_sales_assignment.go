@@ -45,22 +45,30 @@ func (s *service) GetSalesAssignment(ctx context.Context, request sales.GetSales
 		)
 	}
 
-	// Step 2: Get all unique NIKs
-	niks := salesData.GetUniqueNIKs()
+	// Step 2 & 3: Count active test drives per sales person (skip if requested)
+	var activeTestDriveCounts map[string]int
+	if !request.SkipLeadsCount {
+		// Get all unique NIKs
+		niks := salesData.GetUniqueNIKs()
 
-	// Step 3: Count active test drives per sales person
-	activeTestDriveCounts, err := s.getActiveTestDriveCounts(ctx, niks)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get test drive counts: %w", err)
-	}
+		// Count active test drives per sales person
+		activeTestDriveCounts, err = s.getActiveTestDriveCounts(ctx, niks)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get test drive counts: %w", err)
+		}
 
-	// Step 4: Enrich sales data with active test drive counts
-	for i := range salesData {
-		salesData[i].ActiveTestDriveCount = activeTestDriveCounts[salesData[i].NIK]
+		// Step 4: Enrich sales data with active test drive counts
+		for i := range salesData {
+			salesData[i].ActiveTestDriveCount = activeTestDriveCounts[salesData[i].NIK]
+		}
 	}
 
 	// Step 5: Select the best eligible sales candidate
-	selected, err := pickBestSalesCandidate(salesData, maxActiveTestDrives)
+	maxLimit := maxActiveTestDrives
+	if request.SkipLeadsCount {
+		maxLimit = -1 // No limit when skipping leads count
+	}
+	selected, err := pickBestSalesCandidate(salesData, maxLimit)
 	if err != nil {
 		return nil, err
 	}
