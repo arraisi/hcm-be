@@ -12,10 +12,8 @@ import (
 )
 
 func (s *service) UpsertCustomer(ctx context.Context, tx *sqlx.Tx, req customer.OneAccountRequest, hasjratidReq hasjratid.GenerateRequest) (string, error) {
-	oneAccountID := req.OneAccountID
-
 	customerData, err := s.repo.GetCustomer(ctx, customer.GetCustomerRequest{
-		OneAccountID: oneAccountID,
+		OneAccountID: req.OneAccountID,
 	})
 	if err == nil {
 		// Found → update

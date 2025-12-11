@@ -98,12 +98,16 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	})
 	dmsApiClient := dmssales.New(cfg, DMSApiHttpUtil)
 
-	// init DMS After Sales client with Oracle DB
-	dmsAfterSalesClient := dmsaftersales.New(cfg, dbDmsAfterSales)
+	// init DMS After Sales client with HttpUtil
+	DMSAfterSalesApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.ApimDMSAfterSalesApi.Timeout,
+		Retries: cfg.Http.ApimDMSAfterSalesApi.RetryCount,
+	})
+	dmsAfterSalesClient := dmsaftersales.New(cfg, DMSAfterSalesApiHttpUtil)
 
 	// init Asynq client and worker
 	queueClient := asynqclient.New(cfg)
-	queueWorker := asynqworker.New(cfg, apimDIDXApiClient, dmsApiClient)
+	queueWorker := asynqworker.New(cfg, apimDIDXApiClient, dmsApiClient, dmsAfterSalesClient)
 	queueInspector := inspector.New(cfg)
 
 	// Start Asynq worker in a goroutine (local development only)
@@ -175,16 +179,15 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		Repo:            customerVehicleRepo,
 	})
 	serviceBookingSvc := servicebookingService.New(cfg, servicebookingService.ServiceContainer{
-		TransactionRepo:     txRepo,
-		Repo:                serviceBookingRepo,
-		CustomerRepo:        customerRepo,
-		CustomerSvc:         customerSvc,
-		CustomerVehicleSvc:  customerVehicleSvc,
-		EmployeeRepo:        employeeRepo,
-		ApimDIDXSvc:         apimDIDXApiClient,
-		QueueClient:         queueClient,
-		DMSAfterSalesClient: dmsAfterSalesClient,
-		OutletRepo:          outletRepo,
+		TransactionRepo:    txRepo,
+		Repo:               serviceBookingRepo,
+		CustomerRepo:       customerRepo,
+		CustomerSvc:        customerSvc,
+		CustomerVehicleSvc: customerVehicleSvc,
+		EmployeeRepo:       employeeRepo,
+		ApimDIDXSvc:        apimDIDXApiClient,
+		QueueClient:        queueClient,
+		OutletRepo:         outletRepo,
 	})
 	oneAccessSvc := oneaccessService.New(cfg, oneaccessService.ServiceContainer{
 		TransactionRepo: txRepo,

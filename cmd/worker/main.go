@@ -8,6 +8,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/external/didx"
+	"github.com/arraisi/hcm-be/internal/external/dmsaftersales"
 	"github.com/arraisi/hcm-be/internal/external/dmssales"
 	"github.com/arraisi/hcm-be/internal/platform/httpclient"
 	"github.com/arraisi/hcm-be/internal/queue/asynqworker"
@@ -36,8 +37,15 @@ func main() {
 	})
 	dmsApiClient := dmssales.New(cfg, DMSApiHttpUtil)
 
+	// Initialize DMS After Sales client
+	DMSAfterSalesApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.ApimDMSAfterSalesApi.Timeout,
+		Retries: cfg.Http.ApimDMSAfterSalesApi.RetryCount,
+	})
+	dmsAfterSalesClient := dmsaftersales.New(cfg, DMSAfterSalesApiHttpUtil)
+
 	// Initialize Asynq worker
-	worker := asynqworker.New(cfg, apimDIDXApiClient, dmsApiClient)
+	worker := asynqworker.New(cfg, apimDIDXApiClient, dmsApiClient, dmsAfterSalesClient)
 
 	// Setup graceful shutdown
 	sigChan := make(chan os.Signal, 1)

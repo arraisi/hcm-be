@@ -78,9 +78,10 @@ type SchedulerConfig struct {
 }
 
 type HttpConfig struct {
-	MockApi     HttpClientConfig `yaml:"mockapi"`
-	ApimDIDXApi HttpClientConfig `yaml:"apimDIDXApi"`
-	DMSApi      HttpClientConfig `yaml:"dmsApi"`
+	MockApi              HttpClientConfig `yaml:"mockapi"`
+	ApimDIDXApi          HttpClientConfig `yaml:"apimDIDXApi"`
+	ApimDMSAfterSalesApi HttpClientConfig `yaml:"apimDMSAfterSalesApi"`
+	DMSApi               HttpClientConfig `yaml:"dmsApi"`
 }
 
 type HttpClientConfig struct {

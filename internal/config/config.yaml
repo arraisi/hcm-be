@@ -53,6 +53,11 @@ http:
     apiKey: ''
     timeout: 10s
     retryCount: 3
+  apimDMSAfterSalesApi:
+    baseURL: 'https://syra.mpurwadi.site/api/v1/hcm'
+    apiKey: ''
+    timeout: 10s
+    retryCount: 3
   dmsApi:
     baseURL: 'https://dms-sales.mpurwadi.site/api'
     apiKey: ''
