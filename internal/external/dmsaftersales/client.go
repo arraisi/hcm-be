@@ -24,19 +24,30 @@ func New(cfg *config.Config, httpUtil utils.HttpUtil) *client {
 }
 
 func (c *client) ServiceBookingRequest(ctx context.Context, body any) error {
+	// Type assert to get ServiceBookingEvent
+	event, ok := body.(interface {
+		ToDmsAfterSaleEvent() interface{}
+	})
+	if !ok {
+		return fmt.Errorf("invalid body type: expected ServiceBookingEvent with ToDmsAfterSaleEvent method")
+	}
+
+	// Convert to DMS After Sales format
+	dmsPayload := event.ToDmsAfterSaleEvent()
+
 	// Set custom headers as shown in the curl request
 	header := map[string]string{
 		"token": c.cfg.Http.ApimDMSAfterSalesApi.APIKey,
 		"str":   "test", // TODO: Update this value based on actual requirements
 	}
 
-	p, _ := json.Marshal(body)
+	p, _ := json.Marshal(dmsPayload)
 	fmt.Println(string(p))
 
 	url := fmt.Sprintf("%s/webhook/after-sales", c.cfg.Http.ApimDMSAfterSalesApi.BaseUrl)
 
 	// Pass empty string for token since we're using custom "token" header
-	result, err := c.httpUtil.Post(ctx, url, body, "", header)
+	result, err := c.httpUtil.Post(ctx, url, dmsPayload, "", header)
 	if err != nil {
 		return err
 	}
