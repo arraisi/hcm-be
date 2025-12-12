@@ -2,11 +2,13 @@ package servicebooking
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	"github.com/arraisi/hcm-be/internal/domain/dto/servicebooking"
+	"github.com/arraisi/hcm-be/internal/queue"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	errorx "github.com/arraisi/hcm-be/pkg/errors"
 	"github.com/arraisi/hcm-be/pkg/utils"
@@ -96,7 +98,12 @@ func (s *service) RequestServiceBooking(ctx context.Context, event servicebookin
 		return err
 	}
 
-	// TODO: call store procedure to sync to external dms after sales system
+	err = s.queueClient.EnqueueDMSAfterSalesServiceBookingRequest(context.Background(), queue.DMSServiceBookingRequestPayload{
+		ServiceBookingEvent: event,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to enqueue DMS service booking request: %w", err)
+	}
 
 	return nil
 }

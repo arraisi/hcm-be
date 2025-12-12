@@ -222,3 +222,231 @@ func NewServiceBookingRequest(sb domain.ServiceBooking, warranties []WarrantyReq
 		ServicePricingCallFlag:       sb.ServicePricingCallFlag,
 	}
 }
+
+// DmsAfterSaleServiceBookingEvent represents the structure for DMS After Sales API
+type DmsAfterSaleServiceBookingEvent struct {
+	Process   string                  `json:"process"`
+	EventID   string                  `json:"event_ID"`
+	Timestamp int                     `json:"timestamp"`
+	Data      DmsAfterSaleDataRequest `json:"data"`
+}
+
+type DmsAfterSaleDataRequest struct {
+	OneAccount      DmsAfterSaleOneAccount      `json:"one_account"`
+	CustomerVehicle DmsAfterSaleCustomerVehicle `json:"customer_vehicle"`
+	ServiceBooking  DmsAfterSaleServiceBooking  `json:"service_booking"`
+	Job             []DmsAfterSaleJob           `json:"job"`
+	Part            []DmsAfterSalePart          `json:"part"`
+}
+
+type DmsAfterSaleOneAccount struct {
+	OneAccountID string `json:"one_account_ID"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Gender       string `json:"gender"`
+	PhoneNumber  string `json:"phone_number"`
+	Email        string `json:"email"`
+	PrimaryUser  string `json:"primary_user"`
+}
+
+type DmsAfterSaleCustomerVehicle struct {
+	VIN             string `json:"vin"`
+	KatashikiSuffix string `json:"katashiki_suffix"`
+	Model           string `json:"model"`
+	Variant         string `json:"variant"`
+	PoliceNumber    string `json:"police_number"`
+	ActualMileage   int32  `json:"actual_mileage"`
+	ColorCode       string `json:"color_code"`
+	Color           string `json:"color"`
+}
+
+type DmsAfterSaleServiceBooking struct {
+	BookingID                    string                 `json:"booking_ID"`
+	BookingNumber                string                 `json:"booking_number"`
+	BookingSource                string                 `json:"booking_source"`
+	BookingStatus                string                 `json:"booking_status"`
+	CreatedDatetime              int64                  `json:"created_datetime"`
+	ServiceCategory              string                 `json:"service_category"`
+	ServiceSequence              int32                  `json:"service_sequence"`
+	SlotDatetimeStart            int64                  `json:"slot_datetime_start"`
+	SlotDatetimeEnd              int64                  `json:"slot_datetime_end"`
+	SlotRequestedDatetimeStart   int64                  `json:"slot_requested_datetime_start"`
+	SlotRequestedDatetimeEnd     int64                  `json:"slot_requested_datetime_end"`
+	SlotUnavailableFlag          bool                   `json:"slot_unavailable_flag"`
+	CarrierName                  string                 `json:"carrier_name"`
+	CarrierPhoneNumber           string                 `json:"carrier_phone_number"`
+	PreferenceContactPhoneNumber string                 `json:"preference_contact_phone_number"`
+	PreferenceContactTimeStart   string                 `json:"preference_contact_time_start"`
+	PreferenceContactTimeEnd     string                 `json:"preference_contact_time_end"`
+	ServiceLocation              string                 `json:"service_location"`
+	OutletID                     string                 `json:"outlet_ID"`
+	OutletName                   string                 `json:"outlet_name"`
+	MobileServiceAddress         string                 `json:"mobile_service_address"`
+	Province                     string                 `json:"province"`
+	City                         string                 `json:"city"`
+	District                     string                 `json:"district"`
+	SubDistrict                  string                 `json:"subdistrict"`
+	PostalCode                   string                 `json:"postal_code"`
+	VehicleProblem               string                 `json:"vehicle_problem"`
+	Warranty                     []DmsAfterSaleWarranty `json:"warranty"`
+	Recalls                      []DmsAfterSaleRecall   `json:"recalls"`
+	CancellationReason           string                 `json:"cancellation_reason"`
+	OtherCancellationReason      string                 `json:"other_cancellation_reason"`
+	ServicePricingCallFlag       bool                   `json:"service_pricing_call_flag"`
+}
+
+type DmsAfterSaleWarranty struct {
+	WarrantyName   string `json:"warranty_name"`
+	WarrantyStatus string `json:"warranty_status"`
+}
+
+type DmsAfterSaleRecall struct {
+	RecallID          string   `json:"recall_ID"`
+	RecallDate        string   `json:"recall_date"`
+	RecallDescription string   `json:"recall_description"`
+	AffectedParts     []string `json:"affected_parts"`
+}
+
+type DmsAfterSaleJob struct {
+	JobID         string  `json:"job_ID"`
+	JobName       string  `json:"job_name"`
+	LaborEstPrice float32 `json:"labor_est_price"`
+}
+
+type DmsAfterSalePart struct {
+	PartType                 string                 `json:"part_type"`
+	PackageID                string                 `json:"package_ID"`
+	PartNumber               string                 `json:"part_number"`
+	PartName                 string                 `json:"part_name"`
+	PartQuantity             int32                  `json:"part_quantity"`
+	PackageParts             []DmsAfterSalePartItem `json:"package_parts"`
+	PartSize                 string                 `json:"part_size"`
+	PartColor                string                 `json:"part_color"`
+	PartEstPrice             float32                `json:"part_est_price"`
+	PartInstallationEstPrice float32                `json:"part_installation_est_price"`
+	FlagPartNeedDownPayment  bool                   `json:"flag_part_need_down_payment"`
+}
+
+type DmsAfterSalePartItem struct {
+	PartNumber string `json:"part_number"`
+	PartName   string `json:"part_name"`
+}
+
+// ToDmsAfterSaleEvent converts ServiceBookingEvent to DmsAfterSaleServiceBookingEvent
+func (sb *ServiceBookingEvent) ToDmsAfterSaleEvent() DmsAfterSaleServiceBookingEvent {
+	// Convert warranties
+	warranties := make([]DmsAfterSaleWarranty, len(sb.Data.ServiceBookingRequest.Warranty))
+	for i, w := range sb.Data.ServiceBookingRequest.Warranty {
+		warranties[i] = DmsAfterSaleWarranty(w)
+	}
+
+	// Convert recalls
+	recalls := make([]DmsAfterSaleRecall, len(sb.Data.ServiceBookingRequest.Recalls))
+	for i, r := range sb.Data.ServiceBookingRequest.Recalls {
+		recalls[i] = DmsAfterSaleRecall(r)
+	}
+
+	// Convert jobs
+	jobs := make([]DmsAfterSaleJob, len(sb.Data.Job))
+	for i, j := range sb.Data.Job {
+		jobs[i] = DmsAfterSaleJob(j)
+	}
+
+	// Convert parts
+	parts := make([]DmsAfterSalePart, len(sb.Data.Part))
+	for i, p := range sb.Data.Part {
+		packageParts := make([]DmsAfterSalePartItem, len(p.PackageParts))
+		for j, pp := range p.PackageParts {
+			packageParts[j] = DmsAfterSalePartItem(pp)
+		}
+
+		parts[i] = DmsAfterSalePart{
+			PartType:                 p.PartType,
+			PackageID:                p.PackageID,
+			PartNumber:               p.PartNumber,
+			PartName:                 p.PartName,
+			PartQuantity:             p.PartQuantity,
+			PackageParts:             packageParts,
+			PartSize:                 p.PartSize,
+			PartColor:                p.PartColor,
+			PartEstPrice:             p.PartEstPrice,
+			PartInstallationEstPrice: p.PartInstallationEstPrice,
+			FlagPartNeedDownPayment:  p.FlagPartNeedDownPayment,
+		}
+	}
+
+	// Get gender value with default
+	gender := ""
+	if sb.Data.OneAccount.Gender != nil {
+		gender = *sb.Data.OneAccount.Gender
+	}
+
+	// Get primary user based on customer type
+	primaryUser := "MASTER"
+	if sb.Data.OneAccount.CustomerType != nil && *sb.Data.OneAccount.CustomerType != "" {
+		primaryUser = *sb.Data.OneAccount.CustomerType
+	}
+
+	return DmsAfterSaleServiceBookingEvent{
+		Process:   sb.Process,
+		EventID:   sb.EventID,
+		Timestamp: sb.Timestamp,
+		Data: DmsAfterSaleDataRequest{
+			OneAccount: DmsAfterSaleOneAccount{
+				OneAccountID: sb.Data.OneAccount.OneAccountID,
+				FirstName:    sb.Data.OneAccount.FirstName,
+				LastName:     sb.Data.OneAccount.LastName,
+				Gender:       gender,
+				PhoneNumber:  sb.Data.OneAccount.PhoneNumber,
+				Email:        sb.Data.OneAccount.Email,
+				PrimaryUser:  primaryUser,
+			},
+			CustomerVehicle: DmsAfterSaleCustomerVehicle{
+				VIN:             sb.Data.CustomerVehicle.Vin,
+				KatashikiSuffix: sb.Data.CustomerVehicle.KatashikiSuffix,
+				Model:           sb.Data.CustomerVehicle.Model,
+				Variant:         sb.Data.CustomerVehicle.Variant,
+				PoliceNumber:    sb.Data.CustomerVehicle.PoliceNumber,
+				ActualMileage:   sb.Data.CustomerVehicle.ActualMileage,
+				ColorCode:       sb.Data.CustomerVehicle.ColorCode,
+				Color:           sb.Data.CustomerVehicle.Color,
+			},
+			ServiceBooking: DmsAfterSaleServiceBooking{
+				BookingID:                    sb.Data.ServiceBookingRequest.BookingId,
+				BookingNumber:                sb.Data.ServiceBookingRequest.BookingNumber,
+				BookingSource:                sb.Data.ServiceBookingRequest.BookingSource,
+				BookingStatus:                sb.Data.ServiceBookingRequest.BookingStatus,
+				CreatedDatetime:              sb.Data.ServiceBookingRequest.CreatedDatetime,
+				ServiceCategory:              sb.Data.ServiceBookingRequest.ServiceCategory,
+				ServiceSequence:              sb.Data.ServiceBookingRequest.ServiceSequence,
+				SlotDatetimeStart:            sb.Data.ServiceBookingRequest.SlotDatetimeStart,
+				SlotDatetimeEnd:              sb.Data.ServiceBookingRequest.SlotDatetimeEnd,
+				SlotRequestedDatetimeStart:   sb.Data.ServiceBookingRequest.SlotRequestedDatetimeStart,
+				SlotRequestedDatetimeEnd:     sb.Data.ServiceBookingRequest.SlotRequestedDatetimeEnd,
+				SlotUnavailableFlag:          sb.Data.ServiceBookingRequest.SlotUnavailableFlag,
+				CarrierName:                  sb.Data.ServiceBookingRequest.CarrierName,
+				CarrierPhoneNumber:           sb.Data.ServiceBookingRequest.CarrierPhoneNumber,
+				PreferenceContactPhoneNumber: sb.Data.ServiceBookingRequest.PreferenceContactPhoneNumber,
+				PreferenceContactTimeStart:   sb.Data.ServiceBookingRequest.PreferenceContactTimeStart,
+				PreferenceContactTimeEnd:     sb.Data.ServiceBookingRequest.PreferenceContactTimeEnd,
+				ServiceLocation:              sb.Data.ServiceBookingRequest.ServiceLocation,
+				OutletID:                     sb.Data.ServiceBookingRequest.OutletID,
+				OutletName:                   sb.Data.ServiceBookingRequest.OutletName,
+				MobileServiceAddress:         sb.Data.ServiceBookingRequest.MobileServiceAddress,
+				Province:                     sb.Data.ServiceBookingRequest.Province,
+				City:                         sb.Data.ServiceBookingRequest.City,
+				District:                     sb.Data.ServiceBookingRequest.District,
+				SubDistrict:                  sb.Data.ServiceBookingRequest.SubDistrict,
+				PostalCode:                   sb.Data.ServiceBookingRequest.PostalCode,
+				VehicleProblem:               sb.Data.ServiceBookingRequest.VehicleProblem,
+				Warranty:                     warranties,
+				Recalls:                      recalls,
+				CancellationReason:           sb.Data.ServiceBookingRequest.CancellationReason,
+				OtherCancellationReason:      sb.Data.ServiceBookingRequest.OtherCancellationReason,
+				ServicePricingCallFlag:       sb.Data.ServiceBookingRequest.ServicePricingCallFlag,
+			},
+			Job:  jobs,
+			Part: parts,
+		},
+	}
+}

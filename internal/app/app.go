@@ -9,11 +9,13 @@ import (
 	"github.com/arraisi/hcm-be/internal/external/didx"
 	"github.com/arraisi/hcm-be/internal/external/dmsaftersales"
 	"github.com/arraisi/hcm-be/internal/external/dmssales"
+	"github.com/arraisi/hcm-be/internal/external/hmf"
 	"github.com/arraisi/hcm-be/internal/external/mockapi"
 	apphttp "github.com/arraisi/hcm-be/internal/http"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
+	hmfHandler "github.com/arraisi/hcm-be/internal/http/handlers/hmf"
 	leadsHandler "github.com/arraisi/hcm-be/internal/http/handlers/leads"
 	"github.com/arraisi/hcm-be/internal/http/handlers/oneaccess"
 	"github.com/arraisi/hcm-be/internal/http/handlers/order"
@@ -65,11 +67,10 @@ import (
 	usedcarService "github.com/arraisi/hcm-be/internal/service/usedcar"
 	userService "github.com/arraisi/hcm-be/internal/service/user"
 
-
-    repoCredit "github.com/arraisi/hcm-be/internal/repository/creditsimulation"
-    serviceCredit "github.com/arraisi/hcm-be/internal/service/creditsimulation"
-    handlerCredit "github.com/arraisi/hcm-be/internal/http/handlers/creditsimulation"
-
+	handlerCredit "github.com/arraisi/hcm-be/internal/http/handlers/creditsimulation"
+	repoCredit "github.com/arraisi/hcm-be/internal/repository/creditsimulation"
+	serviceCredit "github.com/arraisi/hcm-be/internal/service/creditsimulation"
+	hmfService "github.com/arraisi/hcm-be/internal/service/hmf"
 
 	"github.com/arraisi/hcm-be/pkg/utils"
 
@@ -104,12 +105,21 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	})
 	dmsApiClient := dmssales.New(cfg, DMSApiHttpUtil)
 
-	// init DMS After Sales client with Oracle DB
-	dmsAfterSalesClient := dmsaftersales.New(cfg, dbDmsAfterSales)
+	// init DMS After Sales client with HttpUtil
+	DMSAfterSalesApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.ApimDMSAfterSalesApi.Timeout,
+		Retries: cfg.Http.ApimDMSAfterSalesApi.RetryCount,
+	})
+	dmsAfterSalesClient := dmsaftersales.New(cfg, DMSAfterSalesApiHttpUtil)
+	HMFApiHttpUtil := utils.NewHttpUtil(httpclient.Options{
+		Timeout: cfg.Http.HMFApi.Timeout,
+		Retries: cfg.Http.HMFApi.RetryCount,
+	})
+	hmfApiClient := hmf.New(cfg, HMFApiHttpUtil)
 
 	// init Asynq client and worker
 	queueClient := asynqclient.New(cfg)
-	queueWorker := asynqworker.New(cfg, apimDIDXApiClient, dmsApiClient)
+	queueWorker := asynqworker.New(cfg, apimDIDXApiClient, dmsApiClient, dmsAfterSalesClient)
 	queueInspector := inspector.New(cfg)
 
 	// Start Asynq worker in a goroutine (local development only)
@@ -144,7 +154,6 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	salesRepo := salesRepository.New(dbHcm)
 	branchRepo := repoCredit.NewBranchRepository() // jika-butuh cfg
 
-
 	// init services
 	hasjratIDSvc := hasjratidService.New(hasjratidService.ServiceContainer{
 		TransactionRepo: txRepo,
@@ -153,6 +162,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	})
 	userSvc := userService.NewUserService(mockApiClient)
 	branchService := serviceCredit.NewBranchService(branchRepo)
+	hmfSvc := hmfService.NewService(hmfApiClient)
 
 	customerSvc := customerService.New(cfg, customerService.ServiceContainer{
 		TransactionRepo: txRepo,
@@ -185,16 +195,15 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		Repo:            customerVehicleRepo,
 	})
 	serviceBookingSvc := servicebookingService.New(cfg, servicebookingService.ServiceContainer{
-		TransactionRepo:     txRepo,
-		Repo:                serviceBookingRepo,
-		CustomerRepo:        customerRepo,
-		CustomerSvc:         customerSvc,
-		CustomerVehicleSvc:  customerVehicleSvc,
-		EmployeeRepo:        employeeRepo,
-		ApimDIDXSvc:         apimDIDXApiClient,
-		QueueClient:         queueClient,
-		DMSAfterSalesClient: dmsAfterSalesClient,
-		OutletRepo:          outletRepo,
+		TransactionRepo:    txRepo,
+		Repo:               serviceBookingRepo,
+		CustomerRepo:       customerRepo,
+		CustomerSvc:        customerSvc,
+		CustomerVehicleSvc: customerVehicleSvc,
+		EmployeeRepo:       employeeRepo,
+		ApimDIDXSvc:        apimDIDXApiClient,
+		QueueClient:        queueClient,
+		OutletRepo:         outletRepo,
 	})
 	oneAccessSvc := oneaccessService.New(cfg, oneaccessService.ServiceContainer{
 		TransactionRepo: txRepo,
@@ -271,6 +280,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	// init handlers
 	userHandler := user.NewUserHandler(userSvc)
 	customerHandler := customer.New(customerSvc, idempotencyStore)
+	hmfHandler := hmfHandler.New(hmfSvc)
 	serviceBookingHandler := servicebooking.New(cfg, serviceBookingSvc, idempotencyStore)
 	testDriveHandler := testdrive.New(cfg, testDriveSvc, idempotencyStore)
 	toyotaIDHandler := toyotaid.New(cfg, toyotaIDSvc, idempotencyStore)
@@ -282,7 +292,6 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	leadsHandler := leadsHandler.New(cfg, roAutomationSvc, idempotencyStore)
 	appraisalHandler := appraisal.New(appraisalSvc, idempotencyStore)
 	creditSimulationHandler := handlerCredit.NewCreditSimulationHandler(branchService)
-
 
 	router := apphttp.NewRouter(cfg, apphttp.Handler{
 		Config:                  cfg,
@@ -299,7 +308,7 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		OrderHandler:            orderHandler,
 		AppraisalHandler:        appraisalHandler,
 		CreditSimulationHandler: creditSimulationHandler,
-
+		HmfHandler:              hmfHandler,
 	})
 
 	srv := apphttp.NewServer(cfg, router)

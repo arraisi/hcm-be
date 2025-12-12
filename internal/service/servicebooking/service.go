@@ -86,10 +86,7 @@ type ApimDIDXService interface {
 
 type QueueClient interface {
 	EnqueueDIDXServiceBookingConfirm(ctx context.Context, payload interface{}) error
-}
-
-type DMSAfterSalesClient interface {
-	InsertServiceBookingRequest(ctx context.Context, event servicebooking.ServiceBookingEvent) error
+	EnqueueDMSAfterSalesServiceBookingRequest(ctx context.Context, payload interface{}) error
 }
 
 type OutletRepository interface {
@@ -97,44 +94,41 @@ type OutletRepository interface {
 }
 
 type ServiceContainer struct {
-	TransactionRepo     transactionRepository
-	Repo                Repository
-	CustomerRepo        CustomerRepository
-	CustomerSvc         CustomerService
-	CustomerVehicleSvc  CustomerVehicleService
-	EmployeeRepo        EmployeeRepository
-	ApimDIDXSvc         ApimDIDXService
-	QueueClient         QueueClient
-	DMSAfterSalesClient DMSAfterSalesClient
-	OutletRepo          OutletRepository
+	TransactionRepo    transactionRepository
+	Repo               Repository
+	CustomerRepo       CustomerRepository
+	CustomerSvc        CustomerService
+	CustomerVehicleSvc CustomerVehicleService
+	EmployeeRepo       EmployeeRepository
+	ApimDIDXSvc        ApimDIDXService
+	QueueClient        QueueClient
+	OutletRepo         OutletRepository
 }
 
 type service struct {
-	cfg                 *config.Config
-	transactionRepo     transactionRepository
-	repo                Repository
-	customerRepo        CustomerRepository
-	customerSvc         CustomerService
-	customerVehicleSvc  CustomerVehicleService
-	employeeRepo        EmployeeRepository
-	apimDIDXSvc         ApimDIDXService
-	queueClient         QueueClient
-	dmsAfterSalesClient DMSAfterSalesClient
-	outletRepo          OutletRepository
+	cfg                *config.Config
+	transactionRepo    transactionRepository
+	repo               Repository
+	customerRepo       CustomerRepository
+	customerSvc        CustomerService
+	customerVehicleSvc CustomerVehicleService
+	employeeRepo       EmployeeRepository
+	apimDIDXSvc        ApimDIDXService
+	queueClient        QueueClient
+	outletRepo         OutletRepository
 }
 
 func New(cfg *config.Config, container ServiceContainer) *service {
 	return &service{
-		cfg:                 cfg,
-		transactionRepo:     container.TransactionRepo,
-		repo:                container.Repo,
-		customerRepo:        container.CustomerRepo,
-		customerSvc:         container.CustomerSvc,
-		customerVehicleSvc:  container.CustomerVehicleSvc,
-		employeeRepo:        container.EmployeeRepo,
-		apimDIDXSvc:         container.ApimDIDXSvc,
-		queueClient:         container.QueueClient,
-		dmsAfterSalesClient: container.DMSAfterSalesClient,
-		outletRepo:          container.OutletRepo,
+		cfg:                cfg,
+		transactionRepo:    container.TransactionRepo,
+		repo:               container.Repo,
+		customerRepo:       container.CustomerRepo,
+		customerSvc:        container.CustomerSvc,
+		customerVehicleSvc: container.CustomerVehicleSvc,
+		employeeRepo:       container.EmployeeRepo,
+		apimDIDXSvc:        container.ApimDIDXSvc,
+		queueClient:        container.QueueClient,
+		outletRepo:         container.OutletRepo,
 	}
 }
