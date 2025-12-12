@@ -1,0 +1,34 @@
+### Get Branches
+GET {{baseUrl}}/api/v1/hcm/credit-simulation/branches
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Get Outlets
+GET {{baseUrl}}/api/v1/hcm/credit-simulation/outlets?branch_code=BRN001
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Get Asset Groups
+GET {{baseUrl}}/api/v1/hcm/credit-simulation/asset-groups?branch_code=BRN001
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Get Asset Types
+GET {{baseUrl}}/api/v1/hcm/credit-simulation/asset-types?branch_code=BRN001&asset_group_code=AG001
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Get Min Max Installment
+GET {{baseUrl}}/api/v1/hcm/credit-simulation/min-max-installment?branch_code=BRN001&asset_group_code=AG001&asset_type_code=AT001&calculation_type=CALCULATION&price=500000000
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Get Credit Simulation by Installment
+GET {{baseUrl}}/api/v1/hcm/credit-simulation/by-installment?branch_code=BRN001&asset_group_code=AG001&asset_type_code=AT001&price=500000000&installment=10000000
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Get Credit Simulation by Down Payment
+GET {{baseUrl}}/api/v1/hcm/credit-simulation/by-downpayment?branch_code=BRN001&asset_group_code=AG001&asset_type_code=AT001&price=500000000&down_payment=100000000
+Authorization: Bearer {{token}}
+Accept: application/json
