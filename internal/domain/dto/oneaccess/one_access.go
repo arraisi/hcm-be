@@ -61,8 +61,8 @@ func (oa *OneAccount) ToCustomerModel() (domain.Customer, error) {
 	now := time.Now().UTC()
 
 	entity := domain.Customer{
-		OneAccountID:         oa.OneAccountID,
-		HasjratID:            utils.ToValue(oa.HasjratID), // not present in payload
+		OneAccountID:         utils.ToPointer(oa.OneAccountID),
+		HasjratID:            oa.HasjratID, // not present in payload
 		FirstName:            oa.FirstName,
 		LastName:             oa.LastName,
 		Gender:               utils.ToPointer(oa.Gender),

@@ -6,8 +6,8 @@ import (
 
 type Customer struct {
 	ID                      string    `json:"id" db:"i_id"`
-	OneAccountID            string    `json:"one_account_id" db:"i_one_account_id"`
-	HasjratID               string    `json:"hasjrat_id" db:"i_hasjrat_id"`
+	OneAccountID            *string   `json:"one_account_id" db:"i_one_account_id"`
+	HasjratID               *string   `json:"hasjrat_id" db:"i_hasjrat_id"`
 	FirstName               string    `json:"first_name" db:"n_first_name"`
 	LastName                string    `json:"last_name" db:"n_last_name"`
 	Gender                  *string   `json:"gender" db:"n_gender"`
@@ -122,11 +122,11 @@ func (u *Customer) ToCreateMap() (columns []string, values []interface{}) {
 	columns = make([]string, 0, len(u.Columns()))
 	values = make([]interface{}, 0, len(u.Columns()))
 
-	if u.OneAccountID != "" {
+	if u.OneAccountID != nil {
 		columns = append(columns, "i_one_account_id")
 		values = append(values, u.OneAccountID)
 	}
-	if u.HasjratID != "" {
+	if u.HasjratID != nil {
 		columns = append(columns, "i_hasjrat_id")
 		values = append(values, u.HasjratID)
 	}

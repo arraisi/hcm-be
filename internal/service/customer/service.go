@@ -7,6 +7,7 @@ import (
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
+	"github.com/arraisi/hcm-be/internal/domain/dto/outlet"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -29,6 +30,7 @@ type HasjratIDService interface {
 
 type OutletRepository interface {
 	GetOutletCodeByTAMOutletID(ctx context.Context, tamOutletCode string) (*domain.Outlet, error)
+	GetOutlet(ctx context.Context, req outlet.GetOutletRequest) (domain.Outlet, error)
 }
 
 type ServiceContainer struct {

@@ -81,6 +81,9 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 	// API v1
 	r.Route("/api/v1/hcm", func(api chi.Router) {
 		api.Use(tokenValidator.Middleware)
+		// Apply webhook-specific middleware
+		headerMiddleware := middleware.NewWebhookMiddleware(config)
+		api.Use(headerMiddleware.ExtractAndValidateHeaders)
 
 		api.Route("/users", func(users chi.Router) {
 			users.Get("/", handler.UserHandler.List)
@@ -92,6 +95,7 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 
 		api.Route("/customers", func(customers chi.Router) {
 			customers.Get("/", handler.CustomerHandler.GetCustomers)
+			customers.Post("/", handler.CustomerHandler.CreateCustomer)
 		})
 
 		api.Route("/prospecting", func(leads chi.Router) {

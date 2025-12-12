@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/arraisi/hcm-be/internal/domain"
+	"github.com/arraisi/hcm-be/pkg/utils"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/jmoiron/sqlx"
@@ -13,9 +14,12 @@ import (
 
 func (s *service) UpsertCustomerV2(ctx context.Context, tx *sqlx.Tx, req domain.Customer) (string, error) {
 	customerData, err := s.repo.GetCustomer(ctx, customer.GetCustomerRequest{
-		OneAccountID: req.OneAccountID,
+		OneAccountID:     utils.ToValue(req.OneAccountID),
+		DealerCustomerID: req.DealerCustomerID,
 	})
 	if err == nil {
+		req.ID = customerData.ID
+
 		// Found → update
 		err = s.repo.UpdateCustomer(ctx, tx, req)
 		if err != nil {

@@ -34,7 +34,7 @@ type OneAccountRequest struct {
 
 func NewOneAccountRequest(customer domain.Customer) OneAccountRequest {
 	return OneAccountRequest{
-		OneAccountID:         customer.OneAccountID,
+		OneAccountID:         utils.ToValue(customer.OneAccountID),
 		DealerCustomerID:     utils.ToPointer(customer.DealerCustomerID),
 		CustomerCategory:     utils.ToPointer(customer.CustomerCategory),
 		FirstName:            customer.FirstName,
@@ -51,23 +51,24 @@ func NewOneAccountRequest(customer domain.Customer) OneAccountRequest {
 		PhoneNumber:          customer.PhoneNumber,
 		CustomerType:         utils.ToPointer(customer.CustomerType),
 		Gender:               customer.Gender,
-		HasjratID:            utils.ToPointer(customer.HasjratID),
+		HasjratID:            customer.HasjratID,
 	}
 }
 
 // GetCustomerRequest represents the request parameters for getting users
 type GetCustomerRequest struct {
-	Limit        int
-	Offset       int
-	Search       string
-	SortBy       string
-	Order        string
-	OneAccountID string
-	CustomerID   string
-	KTPNumber    string
-	PhoneNumber  string
-	Page         int
-	PageSize     int
+	Limit            int
+	Offset           int
+	Search           string
+	SortBy           string
+	Order            string
+	OneAccountID     string
+	CustomerID       string
+	KTPNumber        string
+	PhoneNumber      string
+	Page             int
+	PageSize         int
+	DealerCustomerID string
 }
 
 // Apply applies the request parameters to the given SelectBuilder
@@ -82,6 +83,10 @@ func (req GetCustomerRequest) Apply(q *sqrl.SelectBuilder) {
 
 	if req.PhoneNumber != "" {
 		q.Where(sqrl.Eq{"c_phone_number": req.PhoneNumber})
+	}
+
+	if req.DealerCustomerID != "" {
+		q.Where(sqrl.Eq{"i_dealer_customer_id": req.DealerCustomerID})
 	}
 
 	if req.PageSize > 0 {
@@ -135,7 +140,7 @@ func (be *OneAccountRequest) ToDomain() domain.Customer {
 	}
 
 	return domain.Customer{
-		OneAccountID:         be.OneAccountID,
+		OneAccountID:         utils.ToPointer(be.OneAccountID),
 		DealerCustomerID:     utils.ToValue(be.DealerCustomerID),
 		CustomerCategory:     utils.ToValue(be.CustomerCategory),
 		FirstName:            be.FirstName,
@@ -156,7 +161,7 @@ func (be *OneAccountRequest) ToDomain() domain.Customer {
 		CreatedBy:            constants.System,
 		UpdatedAt:            time.Now(),
 		UpdatedBy:            utils.ToPointer(constants.System),
-		HasjratID:            utils.ToValue(be.HasjratID),
+		HasjratID:            be.HasjratID,
 	}
 }
 
@@ -175,4 +180,90 @@ type Pagination struct {
 type GetCustomersResponse struct {
 	Data       []domain.Customer `json:"data"`
 	Pagination Pagination        `json:"pagination"`
+}
+
+type CreateCustomerRequest struct {
+	DealerCustomerID     string `json:"dealer_customer_ID"`
+	FirstName            string `json:"first_name"`
+	LastName             string `json:"last_name"`
+	PhoneNumber          string `json:"phone_number"`
+	Email                string `json:"email"`
+	BirthDate            string `json:"birth_date"`
+	VerificationChannel  string `json:"verification_channel"`
+	KtpNumber            string `json:"ktp_number"`
+	Occupation           string `json:"occupation"`
+	Gender               string `json:"gender"`
+	RegistrationChannel  string `json:"registration_channel"`
+	RegistrationDatetime int    `json:"registration_datetime"`
+	ConsentGiven         bool   `json:"consent_given"`
+	ConsentGivenAt       int    `json:"consent_given_at"`
+	ConsentGivenDuring   string `json:"consent_given_during"`
+	AddressLabel         string `json:"address_label"`
+	ResidenceAddress     string `json:"residence_address"`
+	Province             string `json:"province"`
+	City                 string `json:"city"`
+	District             string `json:"district"`
+	Subdistrict          string `json:"subdistrict"`
+	PostalCode           string `json:"postal_code"`
+	OutletID             string `json:"outlet_ID"`
+	DetailAddress        string `json:"detail_address"`
+	HasjratID            string `json:"hasjrat_id"`
+	CustomerType         string `json:"customer_type"`
+}
+
+type CreateCustomerResponse struct {
+	HasjratID string `json:"hasjrat_id"`
+}
+
+func (req CreateCustomerRequest) ToDomain() domain.Customer {
+	now := time.Now().UTC()
+
+	entity := domain.Customer{
+		HasjratID:            utils.ToPointer(req.HasjratID),
+		FirstName:            req.FirstName,
+		LastName:             req.LastName,
+		Gender:               utils.ToPointer(req.Gender),
+		PhoneNumber:          req.PhoneNumber,
+		Email:                req.Email,
+		IsNew:                true,  // business rule guess: first time we see this event
+		IsMerge:              false, // default false
+		DealerCustomerID:     req.DealerCustomerID,
+		IsValid:              true,  // you may flip this if validation failed elsewhere
+		IsOmnichannel:        false, // not provided
+		LeadsInID:            "",    // not provided
+		CustomerCategory:     "",    // not provided
+		KTPNumber:            req.KtpNumber,
+		ResidenceAddress:     req.ResidenceAddress,
+		ResidenceSubdistrict: req.Subdistrict,
+		ResidenceDistrict:    req.District,
+		ResidenceCity:        req.City,
+		ResidenceProvince:    req.Province,
+		ResidencePostalCode:  req.PostalCode,
+		CustomerType:         req.CustomerType, // not provided
+		LeadsID:              "",               // not provided
+		Occupation:           req.Occupation,
+		RegistrationChannel:  req.RegistrationChannel,
+		ConsentGiven:         req.ConsentGiven,
+		ConsentGivenDuring:   req.ConsentGivenDuring,
+		AddressLabel:         req.AddressLabel,
+		DetailAddress:        req.DetailAddress,
+		ToyotaIDSingleStatus: "", // not provided
+		CreatedAt:            now,
+		CreatedBy:            constants.System,
+		UpdatedAt:            now,
+		UpdatedBy:            utils.ToPointer(constants.System),
+		OutletID:             utils.ToPointer(req.OutletID),
+	}
+
+	if req.BirthDate != "" {
+		birthDate, err := utils.ParseDateString(req.BirthDate)
+		if err != nil {
+			return domain.Customer{}
+		}
+		entity.BirthDate = birthDate
+	}
+
+	entity.RegistrationDatetime = now
+
+	return entity
 }

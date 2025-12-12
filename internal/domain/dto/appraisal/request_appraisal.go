@@ -56,8 +56,8 @@ func (dto OneAccountDTO) ToCustomerModel() domain.Customer {
 
 	return domain.Customer{
 		ID:                      "", // created by DB on upsert
-		OneAccountID:            dto.OneAccountID,
-		HasjratID:               "", // unknown
+		OneAccountID:            utils.ToPointer(dto.OneAccountID),
+		HasjratID:               utils.ToPointer(""), // unknown
 		FirstName:               dto.FirstName,
 		LastName:                dto.LastName,
 		Gender:                  nil, // tidak ada di DTO

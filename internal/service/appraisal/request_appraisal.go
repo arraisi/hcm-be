@@ -3,8 +3,10 @@ package appraisal
 import (
 	"context"
 	"fmt"
+
 	"github.com/arraisi/hcm-be/internal/domain/dto/appraisal"
 	"github.com/arraisi/hcm-be/internal/queue"
+	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
 // ==========================
@@ -50,7 +52,7 @@ func (s *service) RequestAppraisal(ctx context.Context, event appraisal.EventReq
 	}
 
 	// ==== 4. Create Appraisal Booking record ====
-	appraisalBookingModel := event.Data.RequestAppraisal.ToAppraisalModel(customerModel.OneAccountID, usedCarModel.VIN, leadsModel.LeadsID)
+	appraisalBookingModel := event.Data.RequestAppraisal.ToAppraisalModel(utils.ToValue(customerModel.OneAccountID), usedCarModel.VIN, leadsModel.LeadsID)
 	err = s.appraisalBookingRepo.CreateAppraisal(ctx, tx, &appraisalBookingModel)
 	if err != nil {
 		return fmt.Errorf("create appraisal booking: %w", err)

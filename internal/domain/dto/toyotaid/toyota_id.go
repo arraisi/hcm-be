@@ -67,7 +67,7 @@ func (dto *OneAccount) ToCustomerModel() (domain.Customer, error) {
 	now := time.Now().UTC()
 
 	customer := domain.Customer{
-		OneAccountID:         dto.OneAccountID,
+		OneAccountID:         utils.ToPointer(dto.OneAccountID),
 		DealerCustomerID:     dto.DealerCustomerID,
 		FirstName:            dto.FirstName,
 		LastName:             dto.LastName,

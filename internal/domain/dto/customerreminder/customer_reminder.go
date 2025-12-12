@@ -2,11 +2,12 @@ package customerreminder
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/pkg/constants"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/elgris/sqrl"
-	"time"
 )
 
 // Root request payload
@@ -45,7 +46,7 @@ type OneAccount struct {
 func (dto *OneAccount) ToCustomerModel() domain.Customer {
 	now := time.Now().UTC()
 	entity := domain.Customer{
-		OneAccountID:            dto.OneAccountID,
+		OneAccountID:            utils.ToPointer(dto.OneAccountID),
 		DealerCustomerID:        dto.DealerCustomerID,
 		FirstName:               dto.FirstName,
 		LastName:                dto.LastName,

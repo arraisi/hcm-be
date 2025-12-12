@@ -2,7 +2,9 @@ package customerreminder
 
 import (
 	"context"
+
 	"github.com/arraisi/hcm-be/internal/domain/dto/customerreminder"
+	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
 func (s *service) CreateCustomerReminder(ctx context.Context, request customerreminder.Request) error {
@@ -31,7 +33,7 @@ func (s *service) CreateCustomerReminder(ctx context.Context, request customerre
 		// 2) Upsert customer vehicle
 		cv := reminder.CustomerVehicle.ToCustomerVehicleModel()
 		cv.CustomerID = customerID
-		cv.OneAccountID = c.OneAccountID
+		cv.OneAccountID = utils.ToValue(c.OneAccountID)
 		customerVehicleID, err := s.customerVehicleSvc.UpsertCustomerVehicleV2(ctx, tx, cv)
 		if err != nil {
 			return err

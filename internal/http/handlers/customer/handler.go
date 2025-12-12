@@ -20,6 +20,7 @@ type IdempotencyService interface {
 type Service interface {
 	GetCustomers(ctx context.Context, req customer.GetCustomerRequest) (customer.GetCustomersResponse, error)
 	InquiryCustomer(ctx context.Context, req customer.CustomerInquiryRequest) (domain.Customer, error)
+	CreateCustomer(ctx context.Context, request customer.CreateCustomerRequest) (customer.CreateCustomerResponse, error)
 }
 
 // Handler handles HTTP requests for user operations

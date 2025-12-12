@@ -6,6 +6,7 @@ import (
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/sales"
 	"github.com/arraisi/hcm-be/internal/queue"
+	"github.com/arraisi/hcm-be/pkg/utils"
 
 	"github.com/arraisi/hcm-be/internal/domain/dto/toyotaid"
 )
@@ -43,7 +44,7 @@ func (s *service) CreateToyotaID(ctx context.Context, request toyotaid.Request) 
 		return err
 	}
 
-	cv, err := request.Data.CustomerVehicle.ToCustomerVehicleModel(customerID, c.OneAccountID)
+	cv, err := request.Data.CustomerVehicle.ToCustomerVehicleModel(customerID, utils.ToValue(c.OneAccountID))
 	if err != nil {
 		return err
 	}

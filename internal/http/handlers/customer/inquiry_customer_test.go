@@ -3,16 +3,17 @@ package customer
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+	"time"
+
 	"github.com/arraisi/hcm-be/internal/domain"
 	"github.com/arraisi/hcm-be/internal/domain/dto/customer"
 	"github.com/arraisi/hcm-be/pkg/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-	"time"
 )
 
 // local helper type for decoding the HTTP response
@@ -47,8 +48,8 @@ func TestCustomerHandler_InquiryCustomerByNIK_Success(t *testing.T) {
 	now := time.Now().UTC()
 	expectedCustomer := domain.Customer{
 		ID:               "cust-123",
-		OneAccountID:     "OA-001",
-		HasjratID:        "HJ-001",
+		OneAccountID:     utils.ToPointer("OA-001"),
+		HasjratID:        utils.ToPointer("HJ-001"),
 		FirstName:        "John",
 		LastName:         "Doe",
 		PhoneNumber:      "08123456789",
@@ -116,8 +117,8 @@ func TestCustomerHandler_InquiryCustomerByPhoneNumber_Success(t *testing.T) {
 	now := time.Now().UTC()
 	expectedCustomer := domain.Customer{
 		ID:               "cust-123",
-		OneAccountID:     "OA-001",
-		HasjratID:        "HJ-001",
+		OneAccountID:     utils.ToPointer("OA-001"),
+		HasjratID:        utils.ToPointer("HJ-001"),
 		FirstName:        "John",
 		LastName:         "Doe",
 		PhoneNumber:      "08123456789",
