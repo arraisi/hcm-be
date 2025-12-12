@@ -48,11 +48,11 @@ func (h *Handler) RequestServiceBooking(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Store event ID for idempotency
-	if err := h.idempotencySvc.Store(bookingEvent.EventID); err != nil {
-		errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookIdempotencyFailed, errors.ErrListWebhook)
-		response.ErrorResponseJSON(w, errorResponse)
-		return
-	}
+	//if err := h.idempotencySvc.Store(bookingEvent.EventID); err != nil {
+	//	errorResponse := errors.NewErrorResponseFromList(errors.ErrWebhookIdempotencyFailed, errors.ErrListWebhook)
+	//	response.ErrorResponseJSON(w, errorResponse)
+	//	return
+	//}
 
 	err = h.svc.RequestServiceBooking(r.Context(), bookingEvent)
 	if err != nil {

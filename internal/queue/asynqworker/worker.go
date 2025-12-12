@@ -29,16 +29,21 @@ type DMSSvc interface {
 	CallbackTamResponse(ctx context.Context, body any) error
 }
 
+type DMSAfterSalesSvc interface {
+	ServiceBookingRequest(ctx context.Context, body any) error
+}
+
 // Worker handles Asynq task processing
 type Worker struct {
-	srv     *asynq.Server
-	mux     *asynq.ServeMux
-	didxSvc DIDXSvc
-	dmsSvc  DMSSvc
+	srv              *asynq.Server
+	mux              *asynq.ServeMux
+	didxSvc          DIDXSvc
+	dmsSvc           DMSSvc
+	dmsAfterSalesSvc DMSAfterSalesSvc
 }
 
 // New creates a new Asynq worker instance
-func New(cfg *config.Config, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
+func New(cfg *config.Config, didxSvc DIDXSvc, dmsSvc DMSSvc, dmsAfterSalesSvc DMSAfterSalesSvc) *Worker {
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{
 			Addr:     cfg.Asynq.RedisAddr,
@@ -77,10 +82,11 @@ func New(cfg *config.Config, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
 	mux := asynq.NewServeMux()
 
 	w := &Worker{
-		srv:     srv,
-		mux:     mux,
-		didxSvc: didxSvc,
-		dmsSvc:  dmsSvc,
+		srv:              srv,
+		mux:              mux,
+		didxSvc:          didxSvc,
+		dmsSvc:           dmsSvc,
+		dmsAfterSalesSvc: dmsAfterSalesSvc,
 	}
 
 	// Register task handlers
@@ -88,6 +94,7 @@ func New(cfg *config.Config, didxSvc DIDXSvc, dmsSvc DMSSvc) *Worker {
 	mux.HandleFunc(queue.TaskTypeDIDXTestDriveConfirm, w.handleTestDriveConfirm)
 	mux.HandleFunc(queue.TaskTypeDIDXAppraisalConfirm, w.handleAppraisalConfirm)
 	mux.HandleFunc(queue.TaskTypeDMSTestDriveRequest, w.handleDMSTestDriveRequest)
+	mux.HandleFunc(queue.TaskTypeDMSServiceBookingRequest, w.handleDMSServiceBookingRequest)
 	mux.HandleFunc(queue.TaskTypeDMSCreateOneAccess, w.handleDMSCreateOneAccess)
 	mux.HandleFunc(queue.TaskTypeDMSCreateToyotaID, w.handleDMSCreateToyotaID)
 	mux.HandleFunc(queue.TaskTypeDMSAppraisalBookingRequest, w.handleDMSAppraisalBookingRequest)

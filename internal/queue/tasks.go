@@ -75,6 +75,21 @@ func NewDMSTestDriveRequestTask(payload DMSTestDriveRequestPayload) (*asynq.Task
 	return asynq.NewTask(taskKey, b), nil
 }
 
+// DMSServiceBookingRequestPayload represents the payload for DMS service booking request task
+type DMSServiceBookingRequestPayload struct {
+	ServiceBookingEvent servicebooking.ServiceBookingEvent `json:"service_booking_event"`
+}
+
+// NewDMSServiceBookingRequestTask creates a new Asynq task for DMS test drive request
+func NewDMSServiceBookingRequestTask(payload DMSServiceBookingRequestPayload) (*asynq.Task, error) {
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	taskKey := fmt.Sprintf("%s:%s", TaskTypeDMSServiceBookingRequest, payload.ServiceBookingEvent.EventID)
+	return asynq.NewTask(taskKey, b), nil
+}
+
 // DMSCreateOneAccessPayload represents the payload for DMS create one access task
 type DMSCreateOneAccessPayload struct {
 	OneAccessRequest oneaccess.Request `json:"one_access_request"`

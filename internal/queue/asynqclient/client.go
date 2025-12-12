@@ -57,6 +57,35 @@ func (c *client) EnqueueDIDXServiceBookingConfirm(ctx context.Context, payload i
 	return err
 }
 
+// EnqueueDMSAfterSalesServiceBookingRequest enqueues a DMS After Sales service booking request task with custom retry configuration
+func (c *client) EnqueueDMSAfterSalesServiceBookingRequest(ctx context.Context, payload interface{}) error {
+	// Type assert to DMSServiceBookingRequestPayload
+	body, ok := payload.(queue.DMSServiceBookingRequestPayload)
+	if !ok {
+		return fmt.Errorf("invalid payload type: expected queue.DMSServiceBookingRequestPayload")
+	}
+
+	task, err := queue.NewDMSServiceBookingRequestTask(body)
+	if err != nil {
+		return err
+	}
+
+	// Retry 3 times with custom backoff: 1m, 5m, 10m
+	taskInfo, err := c.asynqClient.EnqueueContext(
+		ctx,
+		task,
+		asynq.Queue(c.cfg.Asynq.Queue),
+		asynq.MaxRetry(3),
+		asynq.Retention(24*time.Hour), // Keep task info for 24 hours after completion
+		asynq.Timeout(30*time.Second), // Task timeout
+		asynq.Unique(5*time.Minute),   // Prevent duplicate tasks within 5 minutes
+	)
+
+	fmt.Printf("EnqueueDMSAfterSalesServiceBookingRequest taskInfo: %+v\n", taskInfo)
+
+	return err
+}
+
 // EnqueueDIDXTestDriveConfirm enqueues a DIDX test drive confirm task with custom retry configuration
 func (c *client) EnqueueDIDXTestDriveConfirm(ctx context.Context, payload interface{}) error {
 	// Type assert to DIDXTestDriveConfirmPayload

@@ -10,4 +10,5 @@ const (
 	TaskTypeDMSCreateToyotaID          = "dms:create_toyota_id"
 	TaskTypeDMSCreateGetOffer          = "dms:create_get_offer"
 	TaskTypeDMSAppraisalBookingRequest = "dms:appraisal_booking_request"
+	TaskTypeDMSServiceBookingRequest   = "dms:service_booking_request"
 )
