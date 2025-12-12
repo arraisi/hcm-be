@@ -117,9 +117,6 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 	})
 	hmfApiClient := hmf.New(cfg, HMFApiHttpUtil)
 
-	// init DMS After Sales client with Oracle DB
-	dmsAfterSalesClient := dmsaftersales.New(cfg, dbDmsAfterSales)
-
 	// init Asynq client and worker
 	queueClient := asynqclient.New(cfg)
 	queueWorker := asynqworker.New(cfg, apimDIDXApiClient, dmsApiClient, dmsAfterSalesClient)
