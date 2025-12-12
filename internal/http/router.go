@@ -6,12 +6,14 @@ import (
 	stdprof "net/http/pprof"
 
 	"github.com/arraisi/hcm-be/internal/http/handlers/appraisal"
+	"github.com/arraisi/hcm-be/internal/http/handlers/hmf"
 
 	"github.com/arraisi/hcm-be/internal/http/handlers/order"
 	"github.com/arraisi/hcm-be/internal/http/handlers/toyotaid"
 
 	"github.com/arraisi/hcm-be/internal/config"
 	"github.com/arraisi/hcm-be/internal/http/handlers"
+	"github.com/arraisi/hcm-be/internal/http/handlers/creditsimulation"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customer"
 	"github.com/arraisi/hcm-be/internal/http/handlers/customerreminder"
 	"github.com/arraisi/hcm-be/internal/http/handlers/leads"
@@ -40,6 +42,8 @@ type Handler struct {
 	TokenHandler            handlers.TokenHandler
 	OrderHandler            order.Handler
 	AppraisalHandler        appraisal.Handler
+	CreditSimulationHandler *creditsimulation.CreditSimulationHandler
+	HmfHandler              hmf.Handler
 }
 
 // NewRouter creates and configures a new HTTP router.
@@ -96,6 +100,17 @@ func NewRouter(config *config.Config, handler Handler) http.Handler {
 		api.Route("/customers", func(customers chi.Router) {
 			customers.Get("/", handler.CustomerHandler.GetCustomers)
 			customers.Post("/", handler.CustomerHandler.CreateCustomer)
+		})
+
+		//Credit Simulation
+		api.Route("/credit-simulation", func(cs chi.Router) {
+			cs.Get("/branches", handler.HmfHandler.GetBranches)
+			cs.Get("/outlets", handler.CreditSimulationHandler.GetOutlets)
+			cs.Get("/asset-groups", handler.CreditSimulationHandler.GetAssetGroups)
+			cs.Get("/asset-types", handler.CreditSimulationHandler.GetAssetTypes)
+			cs.Get("/min-max-installment", handler.CreditSimulationHandler.GetMinMaxInstallments)
+			cs.Get("/by-installment", handler.CreditSimulationHandler.GetCreditSimulationByInstallment)
+			cs.Get("/by-downpayment", handler.CreditSimulationHandler.GetCreditSimulationByDownPayment)
 		})
 
 		api.Route("/prospecting", func(leads chi.Router) {

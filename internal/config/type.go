@@ -82,6 +82,7 @@ type HttpConfig struct {
 	ApimDIDXApi          HttpClientConfig `yaml:"apimDIDXApi"`
 	ApimDMSAfterSalesApi HttpClientConfig `yaml:"apimDMSAfterSalesApi"`
 	DMSApi               HttpClientConfig `yaml:"dmsApi"`
+	HMFApi      HttpClientConfig `yaml:"hmfApi"`
 }
 
 type HttpClientConfig struct {
