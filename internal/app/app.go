@@ -194,6 +194,8 @@ func NewApp(cfg *config.Config, dbHcm *sqlx.DB, dbDmsAfterSales *sqlx.DB) (*App,
 		CustomerSvc:     customerSvc,
 		QueueClient:     queueClient,
 		SalesSvc:        salesSvc,
+		HasjratIDSvc:    hasjratIDSvc,
+		OutletRepo:      outletRepo,
 	})
 	toyotaIDSvc := toyotaidService.New(cfg, toyotaidService.ServiceContainer{
 		TransactionRepo:    txRepo,

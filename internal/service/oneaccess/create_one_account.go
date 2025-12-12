@@ -3,13 +3,35 @@ package oneaccess
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"github.com/arraisi/hcm-be/internal/domain/dto/hasjratid"
 	"github.com/arraisi/hcm-be/internal/domain/dto/oneaccess"
 	"github.com/arraisi/hcm-be/internal/domain/dto/sales"
 	"github.com/arraisi/hcm-be/internal/queue"
+	"github.com/arraisi/hcm-be/pkg/utils"
 )
 
 func (s *service) CreateOneAccess(ctx context.Context, request oneaccess.Request) error {
+	// Get Outlet Code
+	outletData, err := s.outletRepo.GetOutletCodeByTAMOutletID(ctx, request.Data.OneAccount.OutletID)
+	if err != nil {
+		return err
+	}
+
+	// Generate Hasjrat ID
+	haID, err := s.hasjratIDSvc.GenerateHasjratID(ctx, hasjratid.GenerateRequest{
+		SourceCode:       "H",
+		CustomerType:     "personal",
+		TamOutletID:      request.Data.OneAccount.OutletID,
+		OutletCode:       outletData.OutletCode,
+		RegistrationDate: time.Now().Unix(),
+	})
+	if err != nil {
+		return err
+	}
+	request.Data.OneAccount.HasjratID = utils.ToPointer(haID)
+
 	tx, err := s.transactionRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err
